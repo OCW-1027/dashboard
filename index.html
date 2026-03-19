@@ -182,26 +182,354 @@
     </div>
   </div>
 
-  <!-- 02 미니차트 8종 ETF -->
+  <!-- 02-A 미국 경제지표 추가 — TradingView 미니차트 -->
   <div>
-    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">주요 지수 실시간 미니 차트 — ETF 기준</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
-    <div class="g4">
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:SPY","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(31,189,138,1)","underLineColor":"rgba(31,189,138,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"NASDAQ:QQQ","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(124,92,252,1)","underLineColor":"rgba(124,92,252,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:EWJ","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,160,48,1)","underLineColor":"rgba(232,160,48,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:USO","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+    <div class="sec-head"><span class="sec-num">02-A</span><span class="sec-title">미국 추가 경제지표 — 실시간 미니 차트</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
+    <div class="g3">
+      <!-- PCE 물가지수 -->
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head">
+          <span class="card-title">PCE 물가지수</span>
+          <span class="card-src"><a href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank">FRED / BEA</a></span>
+        </div>
+        <div class="bval" style="color:var(--amber);">2.6%</div>
+        <div class="blabel">코어 PCE (1월 YoY) — FED 공식 인플레 지표</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta neu">FED 목표 2.0% 상회</span>
+          <span class="tag ta">CPI보다 FED 중시</span>
+        </div>
+        <div class="tv-wrap" style="height:140px;">
+          <div class="tradingview-widget-container" style="height:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {"symbol":"FRED:PCEPILFE","width":"100%","height":"100%","locale":"kr","dateRange":"3Y","colorTheme":"dark","trendLineColor":"rgba(232,160,48,1)","underLineColor":"rgba(232,160,48,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}
+            </script>
+          </div>
+        </div>
+        <div class="iblock">
+          <div class="note note-b">💡 CPI와 함께 FED 의사결정의 핵심. PCE가 CPI보다 낮게 나오는 경향. 2% 목표 지속 상회 → 금리 인하 지연 요인.</div>
+        </div>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank">↗ FRED PCE</a>
+      </div>
+      <!-- ISM 제조업 PMI -->
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head">
+          <span class="card-title">ISM 제조업 PMI</span>
+          <span class="card-src"><a href="https://www.ismworld.org/" target="_blank">ISM</a></span>
+        </div>
+        <div class="bval" style="color:var(--red);">49.3</div>
+        <div class="blabel">2월 — 50 이하 = 제조업 위축 국면</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta dn">위축 지속</span>
+          <span class="tag tr">경기 선행 지표</span>
+        </div>
+        <div class="tv-wrap" style="height:140px;">
+          <div class="tradingview-widget-container" style="height:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {"symbol":"ECONOMICS:USBCOI","width":"100%","height":"100%","locale":"kr","dateRange":"3Y","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}
+            </script>
+          </div>
+        </div>
+        <div class="iblock">
+          <div class="note note-a">⚡ 50 이상 = 경기 확장 / 50 이하 = 위축. 제조업 PMI 지속 위축은 경기 침체 선행 신호. 현재 49.3으로 경계선 하회.</div>
+        </div>
+        <a class="lbtn" href="https://www.ismworld.org/" target="_blank">↗ ISM 공식</a>
+        <a class="lbtn" href="https://www.tradingview.com/symbols/ECONOMICS-USBCOI/" target="_blank">↗ TradingView</a>
+      </div>
+      <!-- 미시간 소비자신뢰지수 -->
+      <div class="card" style="animation-delay:.15s;">
+        <div class="card-head">
+          <span class="card-title">미시간 소비자신뢰지수</span>
+          <span class="card-src"><a href="https://fred.stlouisfed.org/series/UMCSENT" target="_blank">FRED / Umich</a></span>
+        </div>
+        <div class="bval" style="color:var(--red);">55.5</div>
+        <div class="blabel">3월 예비치 — 전월 56.6에서 하락</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta dn">↓ 전월比 -1.1</span>
+          <span class="tag tr">소비 선행 지표</span>
+        </div>
+        <div class="tv-wrap" style="height:140px;">
+          <div class="tradingview-widget-container" style="height:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {"symbol":"FRED:UMCSENT","width":"100%","height":"100%","locale":"kr","dateRange":"3Y","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}
+            </script>
+          </div>
+        </div>
+        <div class="iblock">
+          <div class="note note-a">⚡ 이란 전쟁·유가 급등·고물가로 소비자 심리 급격히 위축. 소비는 미국 GDP의 70% → 침체 전조 신호로 주시 필요.</div>
+        </div>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/UMCSENT" target="_blank">↗ FRED 미시간</a>
+      </div>
     </div>
-    <div class="g4" style="margin-top:14px;">
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:GLD","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(201,150,74,1)","underLineColor":"rgba(201,150,74,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"NASDAQ:TLT","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(86,204,178,1)","underLineColor":"rgba(86,204,178,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:UUP","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(61,142,245,1)","underLineColor":"rgba(61,142,245,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:UVXY","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-      <span style="font-size:.63rem;color:var(--muted);">📌 ETF 기준:</span>
-      <span class="tag tg">SPY=S&P500</span><span style="font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:3px;color:#7c5cfc;background:rgba(124,92,252,.12);">QQQ=나스닥100</span><span class="tag ta">EWJ=닛케이</span><span class="tag tr">USO=WTI유</span><span style="font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:3px;color:var(--gold);background:rgba(201,150,74,.12);">GLD=금</span><span class="tag tg">TLT=미국채20Y</span><span class="tag tb">UUP=달러인덱스</span><span class="tag tr">UVXY=VIX변동성</span>
+
+    <div class="g2" style="margin-top:20px;">
+      <!-- Shiller CAPE -->
+      <div class="card" style="animation-delay:.2s;">
+        <div class="card-head">
+          <span class="card-title">Shiller CAPE (P/E10)</span>
+          <span class="card-src"><a href="https://www.gurufocus.com/shiller-PE.php" target="_blank">GuruFocus / Multpl</a></span>
+        </div>
+        <div class="bval" style="color:var(--red);">38.3</div>
+        <div class="blabel">2026.03.18 기준 — 20년 평균(27.5) 대비 +39%</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta dn">역사적 2번째 고점권</span>
+          <span class="tag tr">강력 고평가</span>
+        </div>
+        <div class="tv-wrap" style="height:140px;">
+          <div class="tradingview-widget-container" style="height:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {"symbol":"MULTPL:SHILLER_PE_RATIO_MONTH","width":"100%","height":"100%","locale":"kr","dateRange":"10Y","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}
+            </script>
+          </div>
+        </div>
+        <div class="iblock">
+          <p><strong>Shiller CAPE란?</strong> 10년 물가조정 평균이익 기준 PER. 단기 이익 변동을 제거해 장기 밸류에이션 측정. 버핏 지표와 함께 미국 주식 고평가 여부 판단에 활용.</p>
+          <div class="note note-r">⚠️ 현재 38.3은 1929년 대공황 직전(32.6), 2000년 닷컴 버블(44.2) 사이 수준. 역사적으로 CAPE 30+ 구간에서 향후 10년 기대수익률은 낮게 나타남.</div>
+          <div class="note note-b">💡 내재 미래 연수익률 추정 약 2.5% — 장기 투자자에게 기대수익률 하향 조정 신호.</div>
+        </div>
+        <a class="lbtn" href="https://www.gurufocus.com/shiller-PE.php" target="_blank">↗ GuruFocus CAPE</a>
+        <a class="lbtn" href="https://www.multpl.com/shiller-pe" target="_blank">↗ Multpl 실시간</a>
+      </div>
+      <!-- TradingView 뉴스 위젯 -->
+      <div class="card" style="animation-delay:.25s;">
+        <div class="card-head">
+          <span class="card-title">실시간 금융 뉴스</span>
+          <span class="card-src">TradingView News Widget</span>
+        </div>
+        <div class="tv-wrap" style="height:380px;">
+          <div class="tradingview-widget-container" style="height:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+            {
+              "feedMode": "market",
+              "market": "stock",
+              "isTransparent": false,
+              "displayMode": "regular",
+              "width": "100%",
+              "height": "100%",
+              "colorTheme": "dark",
+              "locale": "kr"
+            }
+            </script>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- 02-B 일본 지표 바로가기 패널 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">02-B</span><span class="sec-title">일본 지표 — 원클릭 바로가기</span><div class="sec-line"></div><span class="sec-badge" style="color:var(--accent);background:rgba(61,142,245,.1);border-color:rgba(61,142,245,.2);">링크</span></div>
+    <div class="g2">
+      <!-- 닛케이 관련 지표 -->
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head">
+          <span class="card-title">📊 닛케이 밸류에이션 &amp; 기술 지표</span>
+          <span class="card-src"><a href="https://nikkei225jp.com/" target="_blank">nikkei225jp.com</a></span>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">일별 업데이트 — 버튼 클릭 시 해당 페이지로 바로 이동</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <a href="https://nikkei225jp.com/data/per.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">닛케이 PER</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">일본 주식 밸류에이션</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/touraku.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">등락레시오 (騰落レシオ)</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">과열·과매도 신호</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/karauri.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">공매도 비율 (空売り比率)</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">하락 베팅 강도</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/nt.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">NT배율</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">닛케이 / TOPIX 비율</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/shutai.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">투자주체별 동향</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--amber);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">외국인·개인·기관 (주 1회)</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/sinyou.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">신용평가손익률</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--amber);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">강제청산 리스크 측정</div>
+            </div>
+          </a>
+        </div>
+        <div class="iblock">
+          <div class="note note-b">💡 <strong>투자주체별 동향</strong>이 가장 중요. 외국인 순매수 ↑ = 닛케이 상승 압력 / 순매도 전환 = 하락 선행 신호.</div>
+        </div>
+      </div>
+      <!-- ADR + 기타 일본 지표 -->
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head">
+          <span class="card-title">🌐 ADR &amp; 추가 일본 데이터</span>
+          <span class="card-src">nikkei225jp / kabutan / Yahoo</span>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">ADR은 다음날 닛케이 방향 예측에 직접 활용 가능</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <a href="https://nikkei225jp.com/adr/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">ADR 전 종목</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">미국 상장 일본기업 전일 동향 → 다음날 닛케이 예측</div></div>
+              <span style="color:var(--green);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/adr/japan.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">ADR 주요 종목</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">소니·토요타·닌텐도 등 주요 ADR 가격</div></div>
+              <span style="color:var(--green);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/dollar.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">달러 환산 닛케이</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">외국인 투자자 시각의 닛케이 수익률</div></div>
+              <span style="color:var(--accent);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/schedule/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">경제 스케줄</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">일본·미국 주요 경제지표 발표 일정</div></div>
+              <span style="color:var(--amber);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/vix.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">공포지수 VIX (일본판)</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">닛케이 기준 변동성 지수</div></div>
+              <span style="color:var(--red);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02-C 종목 검색 도구 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">02-C</span><span class="sec-title">종목 검색 — 원클릭 멀티사이트</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">신규</span></div>
+    <div class="card" style="animation-delay:.05s;">
+      <div class="card-head">
+        <span class="card-title">🔍 종목 코드 입력 → 전체 사이트 동시 열기</span>
+        <span class="card-src">kabutan · 스카우터 · 야후재팬 · TradingView · IR Bank</span>
+      </div>
+      <!-- 검색 입력 -->
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+        <input type="text" id="stockCode" placeholder="종목 코드 입력 (예: 6594)" maxlength="6"
+          style="font-family:'DM Mono',monospace;font-size:1rem;padding:10px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);width:240px;outline:none;"
+          onkeydown="if(event.key==='Enter')searchAll()"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border2)'"
+        />
+        <button onclick="searchAll()"
+          style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;padding:10px 20px;background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;transition:opacity .2s;"
+          onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          🔍 검색
+        </button>
+        <span style="font-size:.72rem;color:var(--muted);">Enter 키 또는 버튼 클릭 → 각 사이트 새 탭으로 열림</span>
+      </div>
+      <!-- 사이트 버튼들 -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;" id="searchButtons">
+        <div onclick="openSite('scouter')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">재무분석 · 10년업적</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">📊 銘柄スカウター</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">scouter.monex.co.jp</div>
+        </div>
+        <div onclick="openSite('kabutan')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">종합정보 · 뉴스</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">📈 kabutan (株探)</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">kabutan.jp</div>
+        </div>
+        <div onclick="openSite('yahoo')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">주가 · 주주 · 뉴스</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">🗾 야후 재팬</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">finance.yahoo.co.jp</div>
+        </div>
+        <div onclick="openSite('tradingview')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">실시간 차트</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">📉 TradingView</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">tradingview.com</div>
+        </div>
+        <div onclick="openSite('irbank')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">장기 재무 데이터</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--amber);">🏦 IR Bank</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">irbank.net</div>
+        </div>
+        <div onclick="openSite('tdnet')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">공시 원문 PDF</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--amber);">📋 적시공시 (TDnet)</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">開示情報 검색</div>
+        </div>
+      </div>
+      <!-- 전체 열기 버튼 -->
+      <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button onclick="openAll()"
+          style="font-size:.78rem;font-weight:700;padding:9px 18px;background:transparent;border:1px solid var(--accent);border-radius:8px;color:var(--accent);cursor:pointer;transition:background .2s;"
+          onmouseover="this.style.background='rgba(61,142,245,.1)'" onmouseout="this.style.background='transparent'">
+          ↗ 전체 사이트 동시 열기
+        </button>
+        <span style="font-size:.7rem;color:var(--muted);">* 팝업 차단 해제 필요할 수 있음</span>
+      </div>
+      <div class="iblock">
+        <div class="note note-b">💡 <strong>추천 조합:</strong> 銘柄スカウター(10년 업적) + kabutan(뉴스) + TradingView(차트) 3개를 함께 열면 종목 분석의 80%가 커버됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function getCode() {
+    var code = document.getElementById('stockCode').value.trim();
+    if (!code) { alert('종목 코드를 입력해주세요 (예: 6594)'); return null; }
+    return code;
+  }
+  function openSite(site) {
+    var code = getCode(); if (!code) return;
+    var urls = {
+      'scouter':     'https://scouter.monex.co.jp/report/zaimu/' + code,
+      'kabutan':     'https://kabutan.jp/stock/?code=' + code,
+      'yahoo':       'https://finance.yahoo.co.jp/quote/' + code + '.T',
+      'tradingview': 'https://www.tradingview.com/symbols/TSE-' + code + '/',
+      'irbank':      'https://irbank.net/' + code,
+      'tdnet':       'https://www.release.tdnet.info/inbs/I_main_00.html'
+    };
+    if (urls[site]) window.open(urls[site], '_blank');
+  }
+  function openAll() {
+    var code = getCode(); if (!code) return;
+    var sites = ['scouter','kabutan','yahoo','tradingview','irbank'];
+    sites.forEach(function(s){ openSite(s); });
+  }
+  function searchAll() { openAll(); }
+  </script>
 
   <!-- 03 VIX + 수익률 곡선 -->
   <div>
