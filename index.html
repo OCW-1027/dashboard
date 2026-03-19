@@ -6,18 +6,12 @@
 <title>글로벌 투자 핵심 지표 대시보드</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;
-    --text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;
-    --red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--gold:#c9964a;--shadow:0 2px 20px rgba(0,0,0,.6);
-  }
+  :root{--bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--gold:#c9964a;--shadow:0 2px 20px rgba(0,0,0,.6);}
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
-
   #ticker-wrap{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.5);}
   #ticker-wrap .tradingview-widget-container{height:46px;}
-
   header{background:linear-gradient(160deg,#0c1220 0%,#0e1828 60%,#080d16 100%);border-bottom:1px solid var(--border);padding:36px 48px 30px;position:relative;overflow:hidden;}
   header::before{content:'';position:absolute;top:-60px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(61,142,245,.05) 0%,transparent 65%);pointer-events:none;}
   header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(61,142,245,.3),transparent);}
@@ -34,16 +28,13 @@
   .header-right .date{font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);font-weight:500;}
   .live-dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px;animation:pulse 2s ease-in-out infinite;vertical-align:middle;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
-
   .page{max-width:1440px;margin:0 auto;padding:32px 32px 80px;display:flex;flex-direction:column;gap:32px;}
-
   .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
   .sec-num{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1px;}
   .sec-title{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
   .sec-line{flex:1;height:1px;background:var(--border);}
   .sec-badge{font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:3px;color:var(--green);background:rgba(31,189,138,.1);border:1px solid rgba(31,189,138,.2);}
   .sec-badge-new{color:var(--red);background:rgba(232,73,90,.1);border-color:rgba(232,73,90,.2);}
-
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow);transition:border-color .25s;animation:fadeUp .5s ease both;}
   .card:hover{border-color:var(--border2);}
   @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -52,28 +43,21 @@
   .card-src{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);opacity:.6;}
   .card-src a{color:inherit;text-decoration:none;}
   .card-src a:hover{color:var(--accent);opacity:1;}
-
   .g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
   .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
   .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-  .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
   .g-tv{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
-  .g-tv2{display:grid;grid-template-columns:3fr 2fr;gap:16px;}
-
   .bval{font-family:'DM Mono',monospace;font-size:2.4rem;font-weight:400;letter-spacing:-1px;line-height:1;margin-bottom:5px;}
   .blabel{font-size:.75rem;color:var(--muted);margin-bottom:12px;}
-
   .delta{display:inline-flex;align-items:center;gap:3px;font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;padding:2px 7px;border-radius:4px;}
   .up{color:var(--green);background:rgba(31,189,138,.1);}
   .dn{color:var(--red);background:rgba(232,73,90,.1);}
   .neu{color:var(--amber);background:rgba(232,160,48,.1);}
-
   .tag{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 7px;border-radius:3px;}
   .tg{color:var(--green);background:rgba(31,189,138,.12);}
   .tr{color:var(--red);background:rgba(232,73,90,.12);}
   .ta{color:var(--amber);background:rgba(232,160,48,.12);}
   .tb{color:var(--accent);background:rgba(61,142,245,.12);}
-
   .iblock{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
   .iblock p{font-size:.8rem;color:var(--text);line-height:1.7;}
   .note{padding:9px 13px;border-radius:0 6px 6px 0;font-size:.79rem;line-height:1.65;}
@@ -81,28 +65,22 @@
   .note-a{border-left:3px solid var(--amber);background:rgba(232,160,48,.07);}
   .note-r{border-left:3px solid var(--red);background:rgba(232,73,90,.07);}
   .note-g{border-left:3px solid var(--green);background:rgba(31,189,138,.07);}
-
   .spill{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;}
   .spill .sl{font-size:.65rem;color:var(--muted);margin-bottom:3px;}
   .spill .sv{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;}
-
   .pbar-wrap{margin:14px 0 4px;}
   .pbar-track{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;}
   .pbar-fill{height:100%;border-radius:99px;}
   .pbar-labels{display:flex;justify-content:space-between;font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:5px;}
-
   .dtable{width:100%;border-collapse:collapse;font-size:.79rem;margin-top:12px;}
   .dtable th{text-align:left;padding:7px 11px;color:var(--muted);font-size:.64rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
   .dtable td{padding:8px 11px;border-bottom:1px solid rgba(28,35,51,.7);vertical-align:middle;}
   .dtable tr:last-child td{border-bottom:none;}
   .dtable tr:hover td{background:rgba(255,255,255,.015);}
   .mono{font-family:'DM Mono',monospace;}
-
   .lbtn{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid rgba(61,142,245,.22);padding:4px 11px;border-radius:5px;margin-top:12px;margin-right:6px;transition:background .2s;}
   .lbtn:hover{background:rgba(61,142,245,.08);}
-
   .tv-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);}
-
   .gauge-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
   .gauge-num{font-family:'DM Mono',monospace;font-size:4.5rem;font-weight:300;line-height:1;}
   .gauge-status{font-size:.95rem;font-weight:700;margin-bottom:10px;}
@@ -110,29 +88,24 @@
   .gauge-item:last-child{border:none;}
   .gauge-item span:first-child{color:var(--muted);}
   .gauge-item span:last-child{font-family:'DM Mono',monospace;font-weight:500;}
-
   .fw-bar{display:flex;height:32px;border-radius:6px;overflow:hidden;margin:14px 0 8px;gap:2px;}
   .fw-seg{display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'DM Mono',monospace;font-weight:600;}
-
-  .bzone-bar{display:flex;height:16px;border-radius:6px;overflow:hidden;margin:16px 0 6px;gap:2px;position:relative;}
+  .bzone-bar{display:flex;height:16px;border-radius:6px;overflow:hidden;margin:16px 0 6px;gap:2px;}
   .bzone{flex:1;position:relative;}
-  .bzone-pointer{position:absolute;top:-8px;width:2px;height:32px;background:#fff;border-radius:2px;left:92%;transform:translateX(-50%);}
-  .bzone-pointer::before{content:'▼ 227%';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:.65rem;color:#fff;white-space:nowrap;font-weight:600;}
+  .bzone-ptr{position:absolute;top:-8px;width:2px;height:32px;background:#fff;border-radius:2px;left:92%;transform:translateX(-50%);}
+  .bzone-ptr::before{content:'▼ 227%';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:.65rem;color:#fff;white-space:nowrap;font-weight:600;}
   .bzone-labels{display:flex;font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);text-align:center;gap:2px;}
   .bzone-labels span{flex:1;line-height:1.4;}
-
   .risk-card{border-color:rgba(232,73,90,.25)!important;background:linear-gradient(135deg,#0e1218 0%,#140d10 100%)!important;}
   .tbl-scroll{overflow-x:auto;}
-
   footer{max-width:1440px;margin:0 auto;padding:20px 32px 48px;font-size:.68rem;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);}
-
-  @media(max-width:1024px){.g4,.g5{grid-template-columns:repeat(2,1fr);}.g-tv,.g-tv2{grid-template-columns:1fr;}}
-  @media(max-width:768px){.g2,.g3,.g4,.g5{grid-template-columns:1fr;}header{padding:24px 20px 20px;}.page{padding:20px 14px 60px;}.logo-area h1{font-size:1.5rem;}.bval{font-size:1.9rem;}.gauge-num{font-size:3rem;}}
+  @media(max-width:1024px){.g4{grid-template-columns:repeat(2,1fr);}.g-tv{grid-template-columns:1fr;}}
+  @media(max-width:768px){.g2,.g3,.g4{grid-template-columns:1fr;}header{padding:24px 20px 20px;}.page{padding:20px 14px 60px;}.logo-area h1{font-size:1.5rem;}.bval{font-size:1.9rem;}.gauge-num{font-size:3rem;}}
 </style>
 </head>
 <body>
 
-<!-- TICKER TAPE -->
+<!-- 티커 테이프: ETF + FX 심볼만 사용 -->
 <div id="ticker-wrap">
   <div class="tradingview-widget-container">
     <div class="tradingview-widget-container__widget"></div>
@@ -141,22 +114,20 @@
       {"proName":"FX:USDJPY","title":"USD/JPY"},
       {"proName":"FX:EURJPY","title":"EUR/JPY"},
       {"proName":"FX:GBPJPY","title":"GBP/JPY"},
-      {"proName":"NASDAQ:NDX","title":"나스닥100"},
-      {"proName":"SP:SPX","title":"S&P500"},
-      {"proName":"OSE:NI225","title":"닛케이225"},
-      {"proName":"NYMEX:CL1!","title":"WTI유"},
-      {"proName":"NYMEX:BZ1!","title":"브렌트유"},
-      {"proName":"COMEX:GC1!","title":"금"},
-      {"proName":"CBOT:ZN1!","title":"미국채10Y"},
-      {"proName":"ICEUS:DX1!","title":"달러인덱스"},
-      {"proName":"CBOE:VIX","title":"VIX"},
+      {"proName":"AMEX:SPY","title":"S&P500"},
+      {"proName":"NASDAQ:QQQ","title":"나스닥100"},
+      {"proName":"AMEX:EWJ","title":"닛케이ETF"},
+      {"proName":"AMEX:USO","title":"WTI유ETF"},
+      {"proName":"AMEX:GLD","title":"금ETF"},
+      {"proName":"NASDAQ:TLT","title":"미국채ETF"},
+      {"proName":"AMEX:UUP","title":"달러인덱스ETF"},
+      {"proName":"AMEX:UVXY","title":"VIX ETF"},
       {"proName":"BITSTAMP:BTCUSD","title":"BTC"}
     ],"showSymbolLogo":true,"isTransparent":false,"displayMode":"adaptive","colorTheme":"dark","locale":"kr"}
     </script>
   </div>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="header-inner">
     <div class="logo-area">
@@ -170,7 +141,7 @@
       </div>
     </div>
     <div class="header-right">
-      <div><span class="live-dot"></span>환율·지수·VIX 실시간 업데이트</div>
+      <div><span class="live-dot"></span>환율·ETF·VIX 실시간 업데이트</div>
       <div>경제지표 최신: <span class="date">2026년 3월 기준</span></div>
       <div>제작: <span class="date">ocw-1027</span></div>
     </div>
@@ -179,7 +150,7 @@
 
 <div class="page">
 
-  <!-- 01: 환율 -->
+  <!-- 01 USD/JPY -->
   <div>
     <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">환율 — 실시간 USD/JPY 차트</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
     <div class="g-tv">
@@ -187,79 +158,72 @@
         <div class="tradingview-widget-container" style="height:100%;">
           <div class="tradingview-widget-container__widget" style="height:100%;"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-          {"autosize":true,"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"kr","backgroundColor":"rgba(13,18,28,1)","gridColor":"rgba(28,35,51,0.8)","withdateranges":true,"range":"6M","hide_side_toolbar":false,"allow_symbol_change":true,"watchlist":["FX:USDJPY","FX:EURJPY","FX:GBPJPY","ICEUS:DX1!","CBOT:ZN1!"],"details":true,"hotlist":true,"studies":["STD;BB","STD;RSI","STD;MACD"],"show_popup_button":true,"popup_width":"1000","popup_height":"650"}
+          {"autosize":true,"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"kr","backgroundColor":"rgba(13,18,28,1)","gridColor":"rgba(28,35,51,0.8)","withdateranges":true,"range":"6M","hide_side_toolbar":false,"allow_symbol_change":true,"watchlist":["FX:USDJPY","FX:EURJPY","FX:GBPJPY","FX:EURUSD","FX:AUDJPY"],"details":true,"hotlist":true,"studies":["STD;BB","STD;RSI","STD;MACD"],"show_popup_button":true,"popup_width":"1000","popup_height":"650"}
           </script>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div class="card" style="animation-delay:.1s;">
-          <div class="card-head"><span class="card-title">🏦 BOJ 정책금리 현황</span></div>
-          <div class="bval" style="color:var(--amber);">0.75%</div>
-          <div class="blabel">현행 정책금리 (30년 최고)</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><span class="delta neu">2025.12 인상</span><span class="delta neu">2026.01·03 동결</span></div>
-          <table class="dtable">
-            <tr><td style="color:var(--muted);font-size:.72rem;">다음 회의</td><td class="mono" style="text-align:right;">2026.05.01</td></tr>
-            <tr><td style="color:var(--muted);font-size:.72rem;">인상 전망</td><td class="mono" style="text-align:right;color:var(--amber);">중반 → 1.0%</td></tr>
-            <tr><td style="color:var(--muted);font-size:.72rem;">일본 CPI (2월)</td><td class="mono" style="text-align:right;color:var(--amber);">2.9% YoY</td></tr>
-            <tr><td style="color:var(--muted);font-size:.72rem;">개입 경계선</td><td class="mono" style="text-align:right;color:var(--red);">¥160.00</td></tr>
-          </table>
-          <div class="iblock"><div class="note note-a">⚡ 160엔 돌파 시 재무성 실개입 가능. 52주 고점 ¥159.76 근접 경계.</div></div>
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head"><span class="card-title">🏦 BOJ 정책금리 현황</span></div>
+        <div class="bval" style="color:var(--amber);">0.75%</div>
+        <div class="blabel">현행 정책금리 (30년 최고)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><span class="delta neu">2025.12 인상</span><span class="delta neu">2026.01·03 동결</span></div>
+        <table class="dtable">
+          <tr><td style="color:var(--muted);font-size:.72rem;">다음 회의</td><td class="mono" style="text-align:right;">2026.05.01</td></tr>
+          <tr><td style="color:var(--muted);font-size:.72rem;">인상 전망</td><td class="mono" style="text-align:right;color:var(--amber);">중반 → 1.0%</td></tr>
+          <tr><td style="color:var(--muted);font-size:.72rem;">일본 CPI (2월)</td><td class="mono" style="text-align:right;color:var(--amber);">2.9% YoY</td></tr>
+          <tr><td style="color:var(--muted);font-size:.72rem;">개입 경계선</td><td class="mono" style="text-align:right;color:var(--red);">¥160.00</td></tr>
+        </table>
+        <div class="iblock">
+          <div class="note note-a">⚡ 160엔 돌파 시 재무성 실개입 가능. 52주 고점 ¥159.76 근접 경계.</div>
+          <div class="note note-b">💡 BOJ 점진 인상 → 엔화 지지. 이란 전쟁 유가 급등으로 인플레 명분 강화.</div>
         </div>
-        <div class="tv-wrap" style="height:150px;">
-          <div class="tradingview-widget-container" style="height:100%;">
-            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-            {"symbol":"ICEUS:DX1!","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(61,142,245,1)","underLineColor":"rgba(61,142,245,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}
-            </script>
-          </div>
-        </div>
+        <a class="lbtn" href="https://www.boj.or.jp/en/" target="_blank">↗ BOJ 공식</a>
       </div>
     </div>
   </div>
 
-  <!-- 02: 미니차트 5종 -->
+  <!-- 02 미니차트 8종 ETF -->
   <div>
-    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">주요 자산 실시간 미니 차트</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
-    <div class="g5">
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"SP:SPX","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(31,189,138,1)","underLineColor":"rgba(31,189,138,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"OSE:NI225","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,160,48,1)","underLineColor":"rgba(232,160,48,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"NYMEX:CL1!","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"COMEX:GC1!","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(201,150,74,1)","underLineColor":"rgba(201,150,74,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
-      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"CBOE:VIX","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">주요 자산 실시간 미니 차트 — ETF 기준</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
+    <div class="g4">
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:SPY","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(31,189,138,1)","underLineColor":"rgba(31,189,138,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"NASDAQ:QQQ","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(124,92,252,1)","underLineColor":"rgba(124,92,252,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:EWJ","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,160,48,1)","underLineColor":"rgba(232,160,48,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:USO","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+    </div>
+    <div class="g4" style="margin-top:14px;">
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:GLD","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(201,150,74,1)","underLineColor":"rgba(201,150,74,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"NASDAQ:TLT","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(86,204,178,1)","underLineColor":"rgba(86,204,178,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:UUP","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(61,142,245,1)","underLineColor":"rgba(61,142,245,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+      <div class="tv-wrap" style="height:175px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"AMEX:UVXY","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+      <span style="font-size:.63rem;color:var(--muted);">📌 ETF 기준:</span>
+      <span class="tag tg">SPY=S&P500</span><span style="font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:3px;color:#7c5cfc;background:rgba(124,92,252,.12);">QQQ=나스닥100</span><span class="tag ta">EWJ=닛케이</span><span class="tag tr">USO=WTI유</span><span style="font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:3px;color:var(--gold);background:rgba(201,150,74,.12);">GLD=금</span><span class="tag tg">TLT=미국채20Y</span><span class="tag tb">UUP=달러인덱스</span><span class="tag tr">UVXY=VIX변동성</span>
     </div>
   </div>
 
-  <!-- 03: VIX + 수익률 곡선 (신규) -->
+  <!-- 03 VIX + 수익률 곡선 -->
   <div>
-    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">시장 공포·경기 침체 경보 지표</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">신규 추가</span></div>
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">시장 공포·경기 침체 경보 지표</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">신규</span></div>
     <div class="g2">
-      <!-- VIX -->
       <div class="card" style="animation-delay:.05s;">
-        <div class="card-head"><span class="card-title">📊 VIX — 공포지수 (변동성)</span><span class="card-src"><a href="https://www.cboe.com/tradable-products/vix/" target="_blank">CBOE</a></span></div>
-        <div class="g-tv2" style="align-items:start;">
-          <div>
-            <div class="bval" style="color:var(--red);">25.09</div>
-            <div class="blabel">2026.03.18 종가 (+12.16% 급등)</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"><span class="delta dn">3/9 고점 31.77</span><span class="delta neu">3/17 -13.5% 급락 후</span></div>
-            <div style="height:8px;background:linear-gradient(90deg,var(--green) 0%,#8bc34a 25%,var(--amber) 50%,#ff9800 70%,var(--red) 100%);border-radius:99px;position:relative;margin-bottom:6px;">
-              <div style="position:absolute;top:-4px;left:35%;width:3px;height:16px;background:white;border-radius:2px;transform:translateX(-50%);"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);">
-              <span>안정&lt;15</span><span>주의15~20</span><span style="color:var(--amber);font-weight:700;">▲25</span><span>경계20~30</span><span>패닉40+</span>
-            </div>
-          </div>
-          <div class="tv-wrap" style="height:160px;"><div class="tradingview-widget-container" style="height:100%;"><div class="tradingview-widget-container__widget" style="height:100%;"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"CBOE:VIX","width":"100%","height":"100%","locale":"kr","dateRange":"3M","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}</script></div></div>
+        <div class="card-head"><span class="card-title">📊 VIX — 공포지수</span><span class="card-src"><a href="https://www.cboe.com/tradable-products/vix/" target="_blank">CBOE</a></span></div>
+        <div class="bval" style="color:var(--red);">25.09</div>
+        <div class="blabel">2026.03.18 종가 (+12.16% 급등)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"><span class="delta dn">3/9 고점 31.77</span><span class="delta neu">3/17 -13.5% 진정</span></div>
+        <div style="height:8px;background:linear-gradient(90deg,var(--green) 0%,#8bc34a 25%,var(--amber) 50%,#ff9800 70%,var(--red) 100%);border-radius:99px;position:relative;margin-bottom:6px;">
+          <div style="position:absolute;top:-4px;left:34%;width:3px;height:16px;background:white;border-radius:2px;transform:translateX(-50%);"></div>
         </div>
+        <div style="display:flex;justify-content:space-between;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:14px;"><span>안정&lt;15</span><span>주의15~20</span><span style="color:var(--amber);font-weight:700;">▲25</span><span>경계20~30</span><span>패닉40+</span></div>
         <div class="iblock">
-          <p><strong>VIX 해석:</strong> <span style="color:var(--green);">15 이하</span> 안정 / <span style="color:var(--amber);">20~30</span> 경계 / <span style="color:var(--red);">30+</span> 패닉 / <span style="color:var(--red);">40+</span> 위기 (2020 코로나: 82.69)</p>
-          <div class="note note-a">⚡ 이란 전쟁 확전으로 31.77까지 급등 후 FOMC 앞두고 진정. 20 이상 지속 시 밸류에이션 재조정 신호.</div>
-          <div class="note note-b">💡 VIX 30+ = 공포 절정 → 역발상 매수 기회. Fear & Greed Index와 교차 확인 권장.</div>
+          <p><strong>VIX 해석:</strong> <span style="color:var(--green);">15 이하</span> 안정 / <span style="color:var(--amber);">20~30</span> 경계 / <span style="color:var(--red);">30+</span> 패닉 / <span style="color:var(--red);">40+</span> 위기</p>
+          <div class="note note-a">⚡ 이란 전쟁 확전으로 31.77 급등 후 진정. 20 이상 지속 시 밸류에이션 재조정 신호.</div>
+          <div class="note note-g">💡 VIX 30+ = 공포 절정 → 역발상 매수 기회. Fear & Greed Index와 교차 확인.</div>
         </div>
         <a class="lbtn" href="https://www.cboe.com/tradable-products/vix/" target="_blank">↗ CBOE VIX</a>
-        <a class="lbtn" href="https://fred.stlouisfed.org/series/VIXCLS" target="_blank">↗ FRED 장기 차트</a>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/VIXCLS" target="_blank">↗ FRED 장기차트</a>
       </div>
-
-      <!-- 수익률 곡선 -->
       <div class="card" style="animation-delay:.1s;">
         <div class="card-head"><span class="card-title">📉 미국 수익률 곡선 (Yield Curve)</span><span class="card-src"><a href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank">FRED</a></span></div>
         <div class="bval" style="font-size:1.9rem;color:var(--green);">+0.35%p</div>
@@ -275,17 +239,16 @@
           </tbody>
         </table>
         <div style="margin:14px 0 6px;font-size:.68rem;color:var(--muted);">수익률 곡선 형태 (현재: 우상향 정상)</div>
-        <div style="display:flex;align-items:flex-end;gap:4px;height:48px;padding:0 4px;">
-          <div style="flex:1;background:rgba(31,189,138,0.5);border-radius:3px 3px 0 0;height:38%;"></div>
-          <div style="flex:1;background:rgba(31,189,138,0.65);border-radius:3px 3px 0 0;height:54%;"></div>
-          <div style="flex:1;background:rgba(31,189,138,0.82);border-radius:3px 3px 0 0;height:70%;"></div>
+        <div style="display:flex;align-items:flex-end;gap:4px;height:48px;">
+          <div style="flex:1;background:rgba(31,189,138,.5);border-radius:3px 3px 0 0;height:38%;"></div>
+          <div style="flex:1;background:rgba(31,189,138,.65);border-radius:3px 3px 0 0;height:54%;"></div>
+          <div style="flex:1;background:rgba(31,189,138,.82);border-radius:3px 3px 0 0;height:70%;"></div>
           <div style="flex:1;background:rgba(31,189,138,1);border-radius:3px 3px 0 0;height:88%;"></div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:4px;"><span>2Y</span><span>5Y</span><span>10Y</span><span>30Y</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:4px;margin-bottom:14px;"><span>2Y</span><span>5Y</span><span>10Y</span><span>30Y</span></div>
         <div class="iblock">
-          <p>과거 8번의 침체 중 7번 사전 예고. 역전(단기&gt;장기) = 침체 경고. 현재 정상화 구간이나 스티프닝 자체가 침체 직전 패턴일 수 있음.</p>
-          <div class="note note-g">✅ 현재 +0.35%p 정상 구간. 단, 이란 전쟁으로 장기 금리 상승 압박 → 스프레드 확대 모니터링.</div>
-          <div class="note note-a">⚡ 실업률 상승(4.4%)과 수익률 곡선 정상화 동시 진행 = 과거 침체 직전 패턴과 유사.</div>
+          <div class="note note-g">✅ 역대 최장(16개월) 역전 이후 정상화 완료. 현재 +0.35%p 정상 구간.</div>
+          <div class="note note-a">⚡ 스티프닝 + 실업률 상승 동시 진행 = 과거 침체 직전 패턴과 유사. 주의.</div>
         </div>
         <a class="lbtn" href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank">↗ FRED 10Y-2Y</a>
         <a class="lbtn" href="https://www.newyorkfed.org/research/capital_markets/ycfaq" target="_blank">↗ NY연준 침체 확률</a>
@@ -293,7 +256,7 @@
     </div>
   </div>
 
-  <!-- 04: 3대 경제지표 -->
+  <!-- 04 3대 경제지표 -->
   <div>
     <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">초심자 필수 — 미국 3대 경제지표</span><div class="sec-line"></div></div>
     <div class="card" style="margin-bottom:20px;">
@@ -306,11 +269,11 @@
       <div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" style="width:48%;background:linear-gradient(90deg,var(--green),var(--amber));"></div></div><div class="pbar-labels"><span>FED 목표 2.0%</span><span style="color:var(--amber);font-weight:600;">▲ 현재 2.4%</span><span>과열 5%+</span></div></div>
       <div class="iblock">
         <p><strong>세부 항목:</strong> 주거비 +0.2%, 식품 +0.4%, 에너지 +0.6%, 중고차 -3.2%(YoY), 쇠고기 +15%, 커피 +18%</p>
-        <div class="note note-a">⚡ 2월 CPI는 이란 전쟁 이전 데이터. 3~4월 에너지 항목 급등 반영 예정 → 2026년말 3.5% 시나리오 주시.</div>
-        <div class="note note-b">💡 CPI↑ → 금리 고공행진 → 달러↑ / 미국주식 부담 → 엔화·원화 약세 압력.</div>
+        <div class="note note-a">⚡ 2월 CPI는 이란 전쟁 이전 데이터. 3~4월 에너지 급등 반영 예정 → 연말 3.5% 시나리오 주시.</div>
+        <div class="note note-b">💡 CPI↑ → 금리 고공행진 → 달러↑ / 미국주식 부담 → 엔화·원화 약세.</div>
       </div>
       <a class="lbtn" href="https://www.bls.gov/cpi/" target="_blank">↗ BLS CPI</a>
-      <a class="lbtn" href="https://fred.stlouisfed.org/series/CPIAUCSL" target="_blank">↗ FRED 장기 차트</a>
+      <a class="lbtn" href="https://fred.stlouisfed.org/series/CPIAUCSL" target="_blank">↗ FRED 장기차트</a>
     </div>
     <div class="g2">
       <div class="card" style="animation-delay:.1s;">
@@ -338,7 +301,7 @@
     </div>
   </div>
 
-  <!-- 05: 투자심리 -->
+  <!-- 05 투자심리 -->
   <div>
     <div class="sec-head"><span class="sec-num">05</span><span class="sec-title">투자 심리 &amp; 밸류에이션 지표</span><div class="sec-line"></div></div>
     <div class="g2" style="margin-bottom:20px;">
@@ -355,11 +318,11 @@
           </div>
         </div>
         <div class="pbar-wrap" style="margin-top:14px;"><div class="pbar-track"><div class="pbar-fill" style="width:22%;background:var(--red);"></div></div><div class="pbar-labels"><span>0 극도공포</span><span style="color:var(--red);font-weight:700;">▲ 22</span><span>50 중립</span><span>100 극도탐욕</span></div></div>
-        <div class="iblock"><div class="note note-g">💡 25 이하는 통계적으로 향후 12개월 수익률 우수 구간. VIX·수익률 곡선 교차 확인 필수.</div></div>
+        <div class="iblock"><div class="note note-g">💡 25 이하는 향후 12개월 수익률 우수 구간(역발상). VIX·수익률 곡선 교차 확인 필수.</div></div>
         <a class="lbtn" href="https://edition.cnn.com/markets/fear-and-greed" target="_blank">↗ CNN 실시간</a>
       </div>
       <div class="card" style="animation-delay:.1s;">
-        <div class="card-head"><span class="card-title">② CME FedWatch</span><span class="card-src"><a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">CME Group</a></span></div>
+        <div class="card-head"><span class="card-title">② CME FedWatch — 금리 인하 확률</span><span class="card-src"><a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">CME Group</a></span></div>
         <div class="bval" style="font-size:1.6rem;color:var(--accent);">3.50 ~ 3.75%</div>
         <div class="blabel">현행 FF금리 — 2026.03.19 동결 결정</div>
         <div style="font-size:.7rem;color:var(--muted);margin:12px 0 4px;">9월 FOMC 인하 확률 분포</div>
@@ -373,7 +336,7 @@
             <tr><td>12월</td><td class="mono"><span class="delta up">60.5%</span></td><td>연내 1회 유력</td></tr>
           </tbody>
         </table>
-        <div class="iblock"><div class="note note-a">⚡ 이란 전쟁 → 유가 급등 → 인플레 재점화 → 인하 기대 대폭 후퇴.</div></div>
+        <div class="iblock"><div class="note note-a">⚡ 이란 전쟁 → 유가 급등 → 인플레 재점화 → 인하 기대 후퇴.</div></div>
         <a class="lbtn" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">↗ CME FedWatch</a>
       </div>
     </div>
@@ -390,19 +353,20 @@
         <div class="bzone" style="background:rgba(86,204,178,.5);"></div>
         <div class="bzone" style="background:rgba(232,160,48,.5);"></div>
         <div class="bzone" style="background:rgba(232,120,60,.6);"></div>
-        <div class="bzone" style="background:rgba(232,73,90,.7);position:relative;"><div class="bzone-pointer"></div></div>
+        <div class="bzone" style="background:rgba(232,73,90,.7);position:relative;"><div class="bzone-ptr"></div></div>
       </div>
       <div class="bzone-labels"><span>강력저평가<br>&lt;-2σ</span><span>저평가<br>-2~-1σ</span><span>적정<br>±1σ</span><span>고평가<br>+1~+2σ</span><span style="color:var(--red);font-weight:700;">강력고평가<br>&gt;+2σ</span></div>
       <div class="iblock">
-        <p>버크셔 해서웨이 현금 <strong>$3,800억+ (역대 최대)</strong></p>
-        <div class="note note-r">⚠️ 단기 타이밍 지표 아님. 신규 진입 시 리스크 관리 강화 근거로 활용.</div>
+        <p>버크셔 해서웨이 현금 <strong>$3,800억+ (역대 최대)</strong> — 버핏이 말보다 행동으로 보내는 신호.</p>
+        <div class="note note-r">⚠️ 단기 타이밍 지표 아님. 신규 포지션 진입 시 리스크 관리 강화 근거로 활용.</div>
+        <div class="note note-b">💡 분산 투자·포지션 규모 관리 재검토 권고.</div>
       </div>
       <a class="lbtn" href="https://www.gurufocus.com/stock-market-valuations.php" target="_blank">↗ GuruFocus 실시간</a>
       <a class="lbtn" href="https://www.currentmarketvaluation.com/models/buffett-indicator.php" target="_blank">↗ 장기 시계열</a>
     </div>
   </div>
 
-  <!-- 06: 경제 캘린더 -->
+  <!-- 06 경제 캘린더 -->
   <div>
     <div class="sec-head"><span class="sec-num">06</span><span class="sec-title">경제 캘린더 — 주요 발표 일정 (실시간)</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
     <div class="tv-wrap" style="height:500px;">
@@ -415,11 +379,11 @@
     </div>
   </div>
 
-  <!-- 07: 리스크 -->
+  <!-- 07 리스크 -->
   <div>
     <div class="sec-head"><span class="sec-num">07</span><span class="sec-title">현재 시장 핵심 리스크</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">긴급</span></div>
     <div class="card risk-card">
-      <div class="card-head"><span class="card-title" style="color:var(--red);">🔴 이란 전쟁 (Operation Midnight Hammer, 2026.02.28) — 유가 급등 &amp; 인플레이션 재점화</span><span class="tag tr">진행 중</span></div>
+      <div class="card-head"><span class="card-title" style="color:var(--red);">🔴 이란 전쟁 (2026.02.28) — 유가 급등 &amp; 인플레이션 재점화</span><span class="tag tr">진행 중</span></div>
       <div class="g4">
         <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">WTI 원유</div><div class="sv" style="color:var(--red);">$92.57</div></div>
         <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">브렌트유</div><div class="sv" style="color:var(--red);">$101.09</div></div>
@@ -427,14 +391,15 @@
         <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">호르무즈 봉쇄</div><div class="sv" style="color:var(--amber);">부분 차단</div></div>
       </div>
       <div class="iblock">
-        <p>미·이스라엘 이란 공습 이후 호르무즈 해협 봉쇄 → 원유 공급 차질 → 브렌트유 100달러 돌파. VIX 31.77까지 급등.</p>
+        <p>미·이스라엘 이란 공습 이후 호르무즈 해협 봉쇄 → 원유 공급 차질 → 브렌트유 100달러 돌파.</p>
         <div class="note note-r">⚠️ 연중 100달러/bbl 유지 시 2026년말 CPI → 3.5% 추정. 3~4월 CPI에 반영 예정.</div>
+        <p><strong>일본 영향:</strong> 원유 수입 의존 → 수입비용 급증 → 엔화 추가 약세 → BOJ 딜레마 심화.</p>
         <div class="note note-b">💡 에너지주(XOM·CVX·ENEOS) 수혜 / 항공·운송·화학 비용 압박 / 금·방산주 주목.</div>
       </div>
     </div>
   </div>
 
-  <!-- 08: 요약 -->
+  <!-- 08 요약표 -->
   <div>
     <div class="sec-head"><span class="sec-num">08</span><span class="sec-title">전체 지표 요약 — 빠른 참조</span><div class="sec-line"></div></div>
     <div class="card">
@@ -453,7 +418,7 @@
             <tr><td class="mono">09</td><td>Fear &amp; Greed</td><td class="mono">22</td><td><span class="tag tr">극도 공포</span></td><td>역발상 매수 구간 but 거시 리스크 병행</td><td><a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" style="color:var(--accent);">↗</a></td></tr>
             <tr><td class="mono">10</td><td>FedWatch (9월)</td><td class="mono">43.6%</td><td><span class="tag ta">불확실</span></td><td>연내 1회 인하 시나리오 우세</td><td><a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" style="color:var(--accent);">↗</a></td></tr>
             <tr><td class="mono">11</td><td>버핏 지표</td><td class="mono">217~227%</td><td><span class="tag tr">강력 고평가</span></td><td>중장기 기대수익률 압박 → 리스크 관리</td><td><a href="https://www.gurufocus.com/stock-market-valuations.php" target="_blank" style="color:var(--accent);">↗</a></td></tr>
-            <tr><td class="mono">12</td><td>WTI 원유</td><td class="mono">$92.57</td><td><span class="tag tr">전쟁 급등</span></td><td>에너지주 수혜 / 소비·항공 섹터 압박</td><td><a href="https://www.tradingview.com/symbols/NYMEX-CL1!/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">12</td><td>WTI 원유</td><td class="mono">$92.57</td><td><span class="tag tr">전쟁 급등</span></td><td>에너지주 수혜 / 소비·항공 섹터 압박</td><td><a href="https://finance.yahoo.com/quote/USO/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
           </tbody>
         </table>
       </div>
@@ -464,7 +429,8 @@
 
 <footer>
   <strong>면책고지:</strong> 본 자료는 공개 통계 데이터를 바탕으로 한 정보 제공 목적이며, 특정 종목 또는 자산의 매매를 권유하지 않습니다. 투자 판단 및 손익은 투자자 본인에게 귀속됩니다. |
-  실시간 차트: TradingView | 경제지표: BLS, Census Bureau, CME, CNN, CBOE, GuruFocus, FRED | 최종 수동 업데이트: 2026년 3월 19일
+  실시간 차트: TradingView (ETF 심볼 기준) | 경제지표: BLS, Census Bureau, CME, CNN, CBOE, GuruFocus, FRED |
+  최종 수동 업데이트: 2026년 3월 19일
 </footer>
 </body>
 </html>
