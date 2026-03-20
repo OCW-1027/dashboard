@@ -1,0 +1,32 @@
+name: 대시보드 자동 업데이트
+
+on:
+  schedule:
+    - cron: '30 6 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 대시보드 업데이트 실행
+        run: python update_dashboard.py
+
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name  "Dashboard Bot"
+          git config user.email "bot@dashboard.auto"
+          git add index.html
+          git diff --staged --quiet || git commit -m "📊 자동 업데이트: $(TZ='Asia/Tokyo' date '+%Y-%m-%d %H:%M JST')"
+          git push
