@@ -150,7 +150,196 @@
 
 <div class="page">
 
-  <!-- 01 글로벌 지수 차트 -->
+  <!-- 00 글로벌 주요 지수 현황 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">00</span><span class="sec-title">글로벌 주요 지수 현황</span><div class="sec-line"></div><span class="sec-badge" id="idx-badge">로딩 중...</span></div>
+
+    <!-- 일본 지수 -->
+    <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:8px;">🇯🇵 일본</div>
+    <div class="g4" style="margin-bottom:16px;">
+      <div class="spill" id="idx-nk225">
+        <div class="sl">닛케이 225</div>
+        <div class="sv" id="v-nk225" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-nk225">—</div>
+      </div>
+      <div class="spill" id="idx-topix">
+        <div class="sl">TOPIX</div>
+        <div class="sv" id="v-topix" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-topix">—</div>
+      </div>
+      <div class="spill" id="idx-mothers">
+        <div class="sl">TSE 그로스 (마더스)</div>
+        <div class="sv" id="v-mothers" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-mothers">—</div>
+      </div>
+      <div class="spill" id="idx-jpyusd">
+        <div class="sl">USD/JPY</div>
+        <div class="sv" id="v-jpyusd" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-jpyusd">—</div>
+      </div>
+    </div>
+
+    <!-- 미국 지수 -->
+    <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">🇺🇸 미국</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
+      <div class="spill" id="idx-spx">
+        <div class="sl">S&amp;P 500</div>
+        <div class="sv" id="v-spx" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-spx">—</div>
+      </div>
+      <div class="spill" id="idx-ndx">
+        <div class="sl">나스닥 100</div>
+        <div class="sv" id="v-ndx" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-ndx">—</div>
+      </div>
+      <div class="spill" id="idx-dji">
+        <div class="sl">다우존스</div>
+        <div class="sv" id="v-dji" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-dji">—</div>
+      </div>
+      <div class="spill" id="idx-rut">
+        <div class="sl">러셀 2000</div>
+        <div class="sv" id="v-rut" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-rut">—</div>
+      </div>
+      <div class="spill" id="idx-sox">
+        <div class="sl">필라델피아 반도체</div>
+        <div class="sv" id="v-sox" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-sox">—</div>
+      </div>
+    </div>
+
+    <div style="font-size:.65rem;color:var(--muted);margin-top:8px;" id="idx-timestamp">데이터 로딩 중...</div>
+  </div>
+
+  <script>
+  // ── 지수 설정 ──────────────────────────────────────────────────
+  const IDX_CONFIG = [
+    { id:'nk225',   sym:'^N225',  label:'닛케이 225',        fmt:'JPY' },
+    { id:'topix',   sym:'^TOPX',  label:'TOPIX',             fmt:'JPY' },
+    { id:'mothers', sym:'^MNKX',  label:'TSE 그로스',        fmt:'JPY' },
+    { id:'jpyusd',  sym:'USDJPY=X',label:'USD/JPY',          fmt:'JPY' },
+    { id:'spx',     sym:'^GSPC',  label:'S&P 500',           fmt:'USD' },
+    { id:'ndx',     sym:'^NDX',   label:'나스닥 100',        fmt:'USD' },
+    { id:'dji',     sym:'^DJI',   label:'다우존스',          fmt:'USD' },
+    { id:'rut',     sym:'^RUT',   label:'러셀 2000',         fmt:'USD' },
+    { id:'sox',     sym:'^SOX',   label:'필라델피아 반도체', fmt:'USD' },
+  ];
+
+  // ── 숫자 포맷 ──────────────────────────────────────────────────
+  function fmtNum(v, fmt) {
+    if (v == null) return '—';
+    if (fmt === 'JPY' && v > 100) return v.toLocaleString('ja-JP', {maximumFractionDigits:2});
+    return v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function fmtChg(chg, pct) {
+    if (chg == null) return '—';
+    const sign = chg >= 0 ? '+' : '';
+    const col = chg >= 0 ? 'var(--green)' : 'var(--red)';
+    return `<span style="color:${col};font-weight:600;">${sign}${chg.toFixed(2)} (${sign}${pct.toFixed(2)}%)</span>`;
+  }
+
+  // ── 카드 업데이트 ──────────────────────────────────────────────
+  function setCard(id, price, chg, pct) {
+    const vEl = document.getElementById('v-' + id);
+    const cEl = document.getElementById('c-' + id);
+    const cfg = IDX_CONFIG.find(c => c.id === id);
+    if (vEl) vEl.textContent = fmtNum(price, cfg ? cfg.fmt : 'USD');
+    if (cEl) cEl.innerHTML = fmtChg(chg, pct);
+    // 카드 테두리 색상
+    const card = document.getElementById('idx-' + id);
+    if (card && chg != null) {
+      card.style.borderColor = chg >= 0 ? 'rgba(31,189,138,.35)' : 'rgba(232,73,90,.35)';
+    }
+  }
+
+  // ── Yahoo Finance via allorigins 프록시 ───────────────────────
+  async function fetchYahoo(sym) {
+    const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
+                encodeURIComponent(sym) + '?interval=1d&range=2d';
+    const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      const json = await res.json();
+      const data = JSON.parse(json.contents);
+      const meta = data.chart.result[0].meta;
+      const price = meta.regularMarketPrice;
+      const prev  = meta.chartPreviousClose || meta.previousClose;
+      const chg   = price - prev;
+      const pct   = (chg / prev) * 100;
+      return { price, chg, pct };
+    } catch(e) {
+      return null;
+    }
+  }
+
+  // ── corsproxy.io 백업 프록시 ──────────────────────────────────
+  async function fetchYahooBackup(sym) {
+    const url = 'https://query2.finance.yahoo.com/v8/finance/chart/' +
+                encodeURIComponent(sym) + '?interval=1d&range=2d';
+    const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      const data = await res.json();
+      const meta = data.chart.result[0].meta;
+      const price = meta.regularMarketPrice;
+      const prev  = meta.chartPreviousClose || meta.previousClose;
+      const chg   = price - prev;
+      const pct   = (chg / prev) * 100;
+      return { price, chg, pct };
+    } catch(e) {
+      return null;
+    }
+  }
+
+  // ── 메인 로드 함수 ────────────────────────────────────────────
+  async function loadIndices() {
+    const badge = document.getElementById('idx-badge');
+    const ts    = document.getElementById('idx-timestamp');
+    badge.textContent = '로딩 중...';
+    badge.style.color = 'var(--amber)';
+
+    let successCount = 0;
+
+    await Promise.all(IDX_CONFIG.map(async (cfg) => {
+      // 1차: allorigins 프록시
+      let result = await fetchYahoo(cfg.sym);
+      // 2차: corsproxy.io 백업
+      if (!result) result = await fetchYahooBackup(cfg.sym);
+
+      if (result) {
+        setCard(cfg.id, result.price, result.chg, result.pct);
+        successCount++;
+      }
+    }));
+
+    const now = new Date().toLocaleString('ko-KR', {
+      timeZone: 'Asia/Tokyo',
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit'
+    });
+
+    if (successCount > 0) {
+      badge.textContent = 'LIVE';
+      badge.style.color = 'var(--green)';
+      badge.style.background = 'rgba(31,189,138,.1)';
+      badge.style.borderColor = 'rgba(31,189,138,.2)';
+      ts.textContent = `✅ ${successCount}/${IDX_CONFIG.length}개 실시간 로드 완료 · ${now} JST 기준`;
+    } else {
+      badge.textContent = '종가';
+      badge.style.color = 'var(--muted)';
+      ts.textContent = `⚠️ 실시간 로드 실패 — GitHub Actions 자동 업데이트 종가 표시 중`;
+    }
+  }
+
+  // 페이지 로드 시 실행
+  document.addEventListener('DOMContentLoaded', loadIndices);
+  // 5분마다 자동 갱신
+  setInterval(loadIndices, 5 * 60 * 1000);
+  </script>
+
+  <!-- 01 USD/JPY -->
   <div>
     <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">환율 — 실시간 USD/JPY 차트</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
     <div class="g-tv">
