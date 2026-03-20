@@ -287,7 +287,6 @@
 
       <!-- 탭: AI 투자 분석 -->
       <div class="tab-pane" id="tab-ai">
-        <!-- 분석 설정 -->
         <div style="background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:18px 20px;margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
             <div style="flex:1;min-width:200px;">
@@ -317,17 +316,24 @@
             </div>
             <button id="ai-analyze-btn" onclick="runAIAnalysis()"
               style="padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s;">
-              🤖 AI 분석 실행
+              📋 프롬프트 복사 + Claude 열기
             </button>
           </div>
         </div>
 
-        <!-- 분석 결과 -->
+        <!-- 안내 메시지 -->
         <div id="ai-result-wrap">
-          <div style="text-align:center;padding:48px;color:var(--muted);">
-            <div style="font-size:2rem;margin-bottom:12px;opacity:.4;">🤖</div>
-            <div style="font-size:.82rem;">위 버튼을 눌러 AI 분석을 실행하세요</div>
-            <div style="font-size:.72rem;margin-top:6px;opacity:.7;">펀더멘털 · 테크니컬 · 리스크를 종합해 점수와 투자 판단을 제공합니다</div>
+          <div style="background:rgba(61,142,245,.06);border:1px solid rgba(61,142,245,.2);border-radius:10px;padding:20px 24px;">
+            <div style="font-size:.82rem;font-weight:600;color:var(--accent);margin-bottom:10px;">🤖 Claude AI 분석 사용 방법</div>
+            <div style="font-size:.78rem;color:var(--text);line-height:2;">
+              1. 위 버튼 클릭 → 분석 프롬프트가 <strong style="color:var(--green);">자동 복사</strong>됩니다<br>
+              2. claude.ai가 <strong style="color:var(--green);">새 탭</strong>으로 열립니다<br>
+              3. claude.ai에서 <strong style="color:var(--green);">Ctrl+V</strong> 붙여넣기 후 전송<br>
+              4. 펀더멘털 · 테크니컬 · 리스크 종합 분석 결과를 받습니다
+            </div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:10px;">
+              💡 claude.ai Pro 구독 시 웹 검색 기능으로 최신 정보까지 반영됩니다
+            </div>
           </div>
         </div>
       </div>
@@ -717,110 +723,111 @@ function saveFinance(){
 }
 
 // ═══════════════════════════════════════════════════
-// AI 투자 분석 (Claude API)
+// AI 분석 — 프롬프트 복사 + claude.ai 열기
 // ═══════════════════════════════════════════════════
 
 async function runAIAnalysis(){
   if(!currentStock){ alert('종목을 먼저 선택해주세요.'); return; }
 
-  const btn = document.getElementById('ai-analyze-btn');
-  const wrap = document.getElementById('ai-result-wrap');
   const s = currentStock;
+  const market  = s.market || 'JP';
+  const exchange = market==='JP' ? '도쿄증권거래소(TSE)' : market==='US' ? 'NYSE/NASDAQ' : '한국증권거래소(KRX)';
+  const flag    = market==='US' ? '🇺🇸' : market==='KR' ? '🇰🇷' : '🇯🇵';
+  const horizon = document.getElementById('opt-horizon').value;
 
   const useFundamental = document.getElementById('opt-fundamental').checked;
   const useTechnical   = document.getElementById('opt-technical').checked;
   const useRisk        = document.getElementById('opt-risk').checked;
   const useCatalyst    = document.getElementById('opt-catalyst').checked;
-  const horizon        = document.getElementById('opt-horizon').value;
-
-  // 로딩 상태
-  btn.disabled = true;
-  btn.textContent = '⏳ 분석 중...';
-  btn.style.opacity = '.6';
-  wrap.innerHTML = `
-    <div style="text-align:center;padding:48px;">
-      <div style="font-size:1.8rem;margin-bottom:14px;animation:pulse 1.5s ease-in-out infinite;">🤖</div>
-      <div style="font-size:.85rem;color:var(--text);font-weight:600;">Claude AI가 ${s.name} (${s.code})을 분석하고 있습니다</div>
-      <div style="font-size:.72rem;color:var(--muted);margin-top:8px;">펀더멘털 · 테크니컬 · 리스크 종합 분석 중...</div>
-    </div>`;
 
   const perspectives = [
-    useFundamental && 'PER/PBR 밸류에이션, ROE·ROA 수익성, 매출·영업이익 성장률, 배당수익률, 자기자본비율·부채비율 등 펀더멘털',
-    useTechnical   && 'RSI 과매수·과매도, 이동평균선(골든크로스·데드크로스), MACD, 거래량 변화 등 테크니컬',
-    useRisk        && '사업 리스크, 규제·경쟁·환율·지정학적 리스크',
-    useCatalyst    && '최근 IR 공시, 실적 발표, 신제품·M&A·정책 수혜 등 촉매 요인',
-  ].filter(Boolean).join('\n- ');
+    useFundamental && 'PER/PBR 밸류에이션, ROE·ROA 수익성, 매출·영업이익 성장률, 배당수익률, 자기자본비율·부채비율 등 펀더멘털 분석',
+    useTechnical   && 'RSI 과매수·과매도, 이동평균선(골든크로스·데드크로스), MACD, 거래량 변화 등 테크니컬 분석',
+    useRisk        && '사업 리스크, 규제·경쟁·환율·지정학적 리스크 분석',
+    useCatalyst    && '최근 IR 공시, 실적 발표, 신제품·M&A·정책 수혜 등 촉매 요인 분석',
+  ].filter(Boolean).map(p => `- ${p}`).join('\n');
 
-  const market = s.market || 'JP';
-  const exchange = market==='JP' ? '도쿄증권거래소(TSE)' : market==='US' ? 'NYSE/NASDAQ' : '한국증권거래소(KRX)';
-  const flag = market==='US' ? '🇺🇸' : market==='KR' ? '🇰🇷' : '🇯🇵';
-
-  const prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 아래 종목을 심층 분석해주세요.
+  const prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 아래 종목을 웹 검색을 활용하여 최신 정보 기반으로 심층 분석해주세요.
 
 ## 분석 대상
 - 종목코드/티커: ${s.code}
-- 거래소: ${exchange}
-- 기업명: ${s.name} ${flag}
+- 거래소: ${exchange} ${flag}
+- 기업명: ${s.name}
 - 섹터: ${s.sector}
 - 투자 시계: ${horizon}
 
 ## 분석 항목
-- ${perspectives}
+${perspectives}
 
-## 출력 형식 (반드시 아래 JSON 형식으로만 응답)
-{
-  "summary": "2~3줄 핵심 요약",
-  "verdict": "매수검토" | "보류" | "패스",
-  "verdict_reason": "판단 근거 1~2줄",
-  "scores": {
-    "fundamental": { "score": 0~100, "comment": "펀더멘털 평가 2~3줄" },
-    "technical":   { "score": 0~100, "comment": "테크니컬 평가 2~3줄" },
-    "risk":        { "score": 0~100, "comment": "리스크 평가 2~3줄 (높을수록 리스크 낮음)" },
-    "catalyst":    { "score": 0~100, "comment": "촉매 요인 2~3줄" }
-  },
-  "total_score": 0~100,
-  "strengths": ["강점1", "강점2", "강점3"],
-  "weaknesses": ["약점1", "약점2"],
-  "watch_points": ["주목 포인트1", "주목 포인트2"],
-  "data_note": "분석 데이터 기준 및 주의사항"
-}`;
+## 출력 형식
+### 📊 종합 점수 및 투자 판단
+- **총점**: X / 100점
+- **판단**: 매수검토 / 보류 / 패스
+- **근거**: (1~2줄 핵심 이유)
 
+### 💹 펀더멘털 분석 (X점 / 100)
+(PER·PBR·ROE·매출 성장률·배당 등 구체적 수치와 평가)
+
+### 📈 테크니컬 분석 (X점 / 100)
+(RSI·이동평균·MACD·거래량 등 현재 기술적 상태)
+
+### 🛡 리스크 분석 (X점 / 100, 높을수록 리스크 낮음)
+(주요 리스크 요인과 수준)
+
+### ⚡ 촉매/이슈 (X점 / 100)
+(최근 IR·실적·뉴스·정책 등 주요 촉매)
+
+### ✅ 강점 (3가지)
+### ⚠️ 약점·리스크 (2가지)
+### 👁 주목 포인트 (2가지)
+
+※ 웹 검색으로 최신 주가·실적·뉴스를 반드시 확인 후 분석해주세요.
+※ 본 분석은 투자 참고용이며 최종 투자 판단은 본인 책임입니다.`;
+
+  // 클립보드 복사
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await res.json();
-    // text 블록만 추출
-    const text = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('');
-
-    // JSON 파싱
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if(!jsonMatch) throw new Error('JSON 파싱 실패');
-    const result = JSON.parse(jsonMatch[0]);
-    renderAIResult(result, s);
-
+    await navigator.clipboard.writeText(prompt);
   } catch(e) {
-    wrap.innerHTML = `
-      <div style="padding:24px;background:rgba(232,73,90,.07);border:1px solid rgba(232,73,90,.2);border-radius:10px;color:var(--red);font-size:.8rem;">
-        ⚠️ 분석 중 오류가 발생했습니다: ${e.message}<br>
-        <span style="color:var(--muted);font-size:.72rem;">잠시 후 다시 시도해주세요.</span>
-      </div>`;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🤖 AI 분석 실행';
-    btn.style.opacity = '1';
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
   }
+
+  // 결과창 업데이트
+  document.getElementById('ai-result-wrap').innerHTML = `
+    <div style="background:rgba(31,189,138,.06);border:1px solid rgba(31,189,138,.3);border-radius:10px;padding:20px 24px;">
+      <div style="font-size:.85rem;font-weight:700;color:var(--green);margin-bottom:12px;">✅ 프롬프트가 클립보드에 복사됐습니다!</div>
+      <div style="font-size:.78rem;color:var(--text);line-height:2.2;">
+        <span style="background:rgba(31,189,138,.12);padding:2px 10px;border-radius:4px;font-weight:700;">1</span>
+        &nbsp; claude.ai가 새 탭으로 열립니다 (안 열리면 아래 버튼 클릭)<br>
+        <span style="background:rgba(31,189,138,.12);padding:2px 10px;border-radius:4px;font-weight:700;">2</span>
+        &nbsp; 채팅창에 <strong style="color:var(--green);">Ctrl+V</strong> 붙여넣기<br>
+        <span style="background:rgba(31,189,138,.12);padding:2px 10px;border-radius:4px;font-weight:700;">3</span>
+        &nbsp; 전송하면 <strong style="color:var(--green);">${s.name} (${s.code})</strong> 분석 결과를 받습니다
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="https://claude.ai/new" target="_blank"
+          style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--accent);color:#fff;border-radius:7px;text-decoration:none;font-size:.78rem;font-weight:700;">
+          🤖 claude.ai 열기
+        </a>
+        <button onclick="runAIAnalysis()"
+          style="padding:8px 18px;background:var(--surface2);color:var(--muted);border:1px solid var(--border2);border-radius:7px;font-size:.78rem;cursor:pointer;">
+          🔄 다시 복사
+        </button>
+      </div>
+      <div style="font-size:.65rem;color:var(--muted);margin-top:10px;">
+        분석 대상: ${flag} ${s.name} (${s.code}) · ${exchange} · ${horizon}
+      </div>
+    </div>`;
+
+  // claude.ai 새 탭 열기
+  window.open('https://claude.ai/new', '_blank');
 }
 
 function renderAIResult(r, s){
