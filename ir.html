@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일본 기업 IR 리서치</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--gold:#c9964a;--shadow:0 2px 20px rgba(0,0,0,.6);}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:60px;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
+
+  /* ── 헤더 ── */
+  header{background:linear-gradient(160deg,#0c1220 0%,#0e1828 60%,#080d16 100%);border-bottom:1px solid var(--border);padding:28px 48px 24px;position:relative;overflow:hidden;}
+  header::before{content:'';position:absolute;top:-60px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(61,142,245,.05) 0%,transparent 65%);pointer-events:none;}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(61,142,245,.3),transparent);}
+  .header-inner{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .header-left{display:flex;align-items:center;gap:20px;}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:5px 12px;border-radius:6px;transition:all .2s;}
+  .back-btn:hover{color:var(--text);border-color:var(--accent);background:rgba(61,142,245,.06);}
+  .logo-area h1{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:#e8edf8;line-height:1;}
+  .logo-area h1 span{color:var(--accent);}
+  .header-tags{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .htag{font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid;}
+  .htag-b{color:var(--accent);border-color:rgba(61,142,245,.35);background:rgba(61,142,245,.06);}
+  .htag-g{color:var(--accent2);border-color:rgba(86,204,178,.35);background:rgba(86,204,178,.06);}
+  .htag-a{color:var(--amber);border-color:rgba(232,160,48,.35);background:rgba(232,160,48,.06);}
+
+  /* ── 레이아웃 ── */
+  .page{max-width:1440px;margin:0 auto;padding:28px 32px 80px;display:flex;flex-direction:column;gap:28px;}
+
+  /* ── 섹션 헤더 ── */
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .sec-num{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1px;}
+  .sec-title{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+  .sec-line{flex:1;height:1px;background:var(--border);}
+  .sec-badge{font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:3px;color:var(--green);background:rgba(31,189,138,.1);border:1px solid rgba(31,189,138,.2);}
+
+  /* ── 카드 ── */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow);transition:border-color .25s;animation:fadeUp .5s ease both;}
+  .card:hover{border-color:var(--border2);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .card-title{font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+
+  /* ── 검색 박스 ── */
+  .search-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:24px 28px;}
+  .search-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .search-input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-size:.9rem;color:var(--text);font-family:'DM Mono',monospace;outline:none;transition:border-color .2s;}
+  .search-input:focus{border-color:var(--accent);}
+  .search-input::placeholder{color:var(--muted);}
+  .search-btn{padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:opacity .2s;}
+  .search-btn:hover{opacity:.85;}
+  .search-hint{font-size:.72rem;color:var(--muted);margin-top:10px;}
+
+  /* ── 관심종목 그리드 ── */
+  .watchlist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+  .wstock-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .2s;position:relative;}
+  .wstock-card:hover{border-color:var(--accent);background:rgba(61,142,245,.05);}
+  .wstock-card.active{border-color:var(--accent);background:rgba(61,142,245,.08);}
+  .wstock-code{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-bottom:3px;}
+  .wstock-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:6px;}
+  .wstock-sector{font-size:.62rem;color:var(--muted);padding:2px 6px;border-radius:3px;background:var(--bg);display:inline-block;}
+  .wstock-remove{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:rgba(232,73,90,.15);color:var(--red);border:none;cursor:pointer;font-size:.65rem;display:none;align-items:center;justify-content:center;line-height:1;}
+  .wstock-card:hover .wstock-remove{display:flex;}
+  .add-stock-btn{background:var(--bg);border:1px dashed var(--border2);border-radius:8px;padding:12px 14px;cursor:pointer;text-align:center;color:var(--muted);font-size:.75rem;transition:all .2s;}
+  .add-stock-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* ── 종목 상세 패널 ── */
+  #detail-panel{display:none;}
+  #detail-panel.visible{display:block;}
+  .detail-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+  .detail-code{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);background:var(--bg);padding:3px 10px;border-radius:4px;border:1px solid var(--border);}
+  .detail-name{font-size:1.5rem;font-weight:700;color:var(--text);}
+  .detail-sector-tag{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:3px;color:var(--accent2);background:rgba(86,204,178,.1);border:1px solid rgba(86,204,178,.2);}
+
+  /* ── TV 차트 ── */
+  .tv-wrap{border-radius:10px;overflow:hidden;}
+
+  /* ── 탭 ── */
+  .tab-bar{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap;}
+  .tab-btn{padding:8px 16px;font-size:.72rem;font-weight:600;letter-spacing:.5px;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;margin-bottom:-1px;}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .tab-btn:hover{color:var(--text);}
+  .tab-pane{display:none;}
+  .tab-pane.active{display:block;}
+
+  /* ── 재무 지표 ── */
+  .fin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+  .fin-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center;}
+  .fin-label{font-size:.62rem;color:var(--muted);margin-bottom:4px;letter-spacing:.5px;}
+  .fin-val{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--text);}
+  .fin-val.up{color:var(--green);}
+  .fin-val.dn{color:var(--red);}
+  .fin-sub{font-size:.65rem;color:var(--muted);margin-top:2px;}
+
+  /* ── 링크 버튼 그룹 ── */
+  .link-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .lbtn{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid rgba(61,142,245,.22);padding:6px 13px;border-radius:6px;transition:background .2s;}
+  .lbtn:hover{background:rgba(61,142,245,.08);}
+  .lbtn-g{color:var(--green);border-color:rgba(31,189,138,.25);}
+  .lbtn-g:hover{background:rgba(31,189,138,.07);}
+  .lbtn-a{color:var(--amber);border-color:rgba(232,160,48,.25);}
+  .lbtn-a:hover{background:rgba(232,160,48,.07);}
+  .lbtn-r{color:var(--red);border-color:rgba(232,73,90,.25);}
+  .lbtn-r:hover{background:rgba(232,73,90,.07);}
+
+  /* ── 뉴스 ── */
+  .news-list{display:flex;flex-direction:column;gap:10px;}
+  .news-item{padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;display:flex;gap:12px;align-items:flex-start;transition:border-color .2s;}
+  .news-item:hover{border-color:var(--border2);}
+  .news-src{font-size:.6rem;font-weight:700;letter-spacing:.5px;color:var(--muted);white-space:nowrap;padding-top:2px;min-width:50px;}
+  .news-body a{font-size:.8rem;color:var(--text);text-decoration:none;line-height:1.5;display:block;}
+  .news-body a:hover{color:var(--accent);}
+  .news-date{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:3px;}
+
+  /* ── IR공시 ── */
+  .ir-item{display:flex;align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid rgba(28,35,51,.7);font-size:.79rem;}
+  .ir-item:last-child{border:none;}
+  .ir-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);min-width:70px;}
+  .ir-type{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:3px;min-width:50px;text-align:center;}
+  .ir-type.決算{color:var(--amber);background:rgba(232,160,48,.12);}
+  .ir-type.適時{color:var(--accent);background:rgba(61,142,245,.12);}
+  .ir-type.配当{color:var(--green);background:rgba(31,189,138,.12);}
+  .ir-type.その他{color:var(--muted);background:rgba(107,122,150,.12);}
+  .ir-link{color:var(--text);text-decoration:none;flex:1;line-height:1.4;}
+  .ir-link:hover{color:var(--accent);}
+
+  /* ── 애널리스트 ── */
+  .analyst-row{display:flex;align-items:center;gap:14px;padding:9px 12px;border-bottom:1px solid rgba(28,35,51,.7);font-size:.79rem;flex-wrap:wrap;}
+  .analyst-row:last-child{border:none;}
+  .analyst-firm{font-weight:600;min-width:120px;color:var(--text);}
+  .analyst-rating{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;}
+  .rating-buy{color:var(--green);background:rgba(31,189,138,.12);}
+  .rating-neutral{color:var(--amber);background:rgba(232,160,48,.12);}
+  .rating-sell{color:var(--red);background:rgba(232,73,90,.12);}
+  .analyst-target{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);}
+  .analyst-date{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-left:auto;}
+
+  /* ── 메모 ── */
+  .memo-area{width:100%;min-height:120px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;line-height:1.7;resize:vertical;outline:none;transition:border-color .2s;}
+  .memo-area:focus{border-color:var(--accent);}
+  .memo-save-btn{margin-top:8px;padding:7px 16px;background:rgba(61,142,245,.12);color:var(--accent);border:1px solid rgba(61,142,245,.3);border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;}
+  .memo-save-btn:hover{background:rgba(61,142,245,.2);}
+  .memo-saved{font-size:.68rem;color:var(--green);margin-left:10px;display:none;}
+
+  /* ── 테이블 ── */
+  .dtable{width:100%;border-collapse:collapse;font-size:.79rem;}
+  .dtable th{text-align:left;padding:7px 11px;color:var(--muted);font-size:.64rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+  .dtable td{padding:8px 11px;border-bottom:1px solid rgba(28,35,51,.7);vertical-align:middle;}
+  .dtable tr:last-child td{border-bottom:none;}
+  .dtable tr:hover td{background:rgba(255,255,255,.015);}
+  .mono{font-family:'DM Mono',monospace;}
+
+  /* ── 빈 상태 ── */
+  .empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
+  .empty-state .icon{font-size:2.5rem;margin-bottom:12px;opacity:.4;}
+  .empty-state p{font-size:.82rem;line-height:1.8;}
+
+  /* ── 푸터 ── */
+  footer{max-width:1440px;margin:0 auto;padding:20px 32px 48px;font-size:.68rem;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);}
+
+  /* ── 모달 ── */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;width:420px;max-width:90vw;}
+  .modal h3{font-size:.9rem;font-weight:700;margin-bottom:18px;color:var(--text);}
+  .modal-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;font-size:.85rem;color:var(--text);font-family:'DM Mono',monospace;outline:none;margin-bottom:10px;transition:border-color .2s;}
+  .modal-input:focus{border-color:var(--accent);}
+  .modal-row{display:flex;gap:10px;margin-top:6px;}
+  .modal-btn{flex:1;padding:9px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:opacity .2s;}
+  .modal-btn:hover{opacity:.85;}
+  .modal-btn-primary{background:var(--accent);color:#fff;}
+  .modal-btn-cancel{background:var(--surface2);color:var(--muted);}
+  .modal-hint{font-size:.68rem;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+
+  @media(max-width:768px){
+    header{padding:20px 16px 16px;}
+    .page{padding:16px 12px 60px;}
+    .logo-area h1{font-size:1.4rem;}
+    .search-row{flex-direction:column;}
+    .search-input{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="index.html" class="back-btn">← 메인 대시보드</a>
+      <div class="logo-area">
+        <h1>일본 기업 <span>IR 리서치</span></h1>
+        <div class="header-tags">
+          <span class="htag htag-b">도쿄증권거래소</span>
+          <span class="htag htag-g">IR · 뉴스 · 재무</span>
+          <span class="htag htag-a">애널리스트 리포트</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);text-align:right;line-height:2;">
+      <div>🕐 <span id="clock">--:-- JST</span></div>
+      <div style="font-size:.65rem;">데이터: TradingView · TDnet · 각사 IR</div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- ── 섹션 A: 종목 검색 ── -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">A</span>
+      <span class="sec-title">종목 검색</span>
+      <div class="sec-line"></div>
+      <span class="sec-badge">SEARCH</span>
+    </div>
+    <div class="search-wrap">
+      <div class="search-row">
+        <input class="search-input" id="stock-search" type="text" placeholder="종목코드 또는 기업명 입력 (예: 6594, ニデック, Nidec)" maxlength="30">
+        <button class="search-btn" onclick="searchStock()">🔍 검색</button>
+        <button class="search-btn" style="background:rgba(86,204,178,.2);color:var(--accent2);border:1px solid rgba(86,204,178,.3);" onclick="openAddModal()">＋ 관심종목 추가</button>
+      </div>
+      <div class="search-hint">
+        💡 종목코드(4자리) 입력 시 TradingView 차트, TDnet IR공시, 야후재팬 등 자동 연결 &nbsp;·&nbsp; 관심종목에 추가하면 아래 패널에 고정됩니다
+      </div>
+      <!-- 검색 결과 링크 -->
+      <div id="search-result" style="display:none;margin-top:16px;">
+        <div style="font-size:.7rem;color:var(--muted);margin-bottom:10px;">검색 결과: <span id="search-query-label" style="color:var(--text);font-weight:600;"></span></div>
+        <div class="link-group" id="search-links"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 섹션 B: 관심 종목 ── -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">B</span>
+      <span class="sec-title">관심 종목</span>
+      <div class="sec-line"></div>
+      <span id="watchlist-count" class="sec-badge">0 종목</span>
+    </div>
+    <div id="watchlist-grid" class="watchlist-grid">
+      <div class="empty-state" style="grid-column:1/-1;padding:28px 0;">
+        <div class="icon">📋</div>
+        <p>관심 종목이 없습니다<br>위에서 <strong style="color:var(--accent2);">+ 관심종목 추가</strong> 버튼으로 추가해주세요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 섹션 C: 종목 상세 ── -->
+  <section id="detail-panel">
+    <div class="sec-head">
+      <span class="sec-num">C</span>
+      <span class="sec-title">종목 상세</span>
+      <div class="sec-line"></div>
+      <span id="detail-badge" class="sec-badge">선택된 종목</span>
+    </div>
+
+    <div class="card">
+      <!-- 종목 헤더 -->
+      <div class="detail-header">
+        <span class="detail-code" id="d-code">----</span>
+        <span class="detail-name" id="d-name">기업명</span>
+        <span class="detail-sector-tag" id="d-sector">섹터</span>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;" id="d-quick-links"></div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('chart',this)">📈 주가 차트</button>
+        <button class="tab-btn" onclick="switchTab('finance',this)">💹 재무 지표</button>
+        <button class="tab-btn" onclick="switchTab('ir',this)">📢 IR 공시</button>
+        <button class="tab-btn" onclick="switchTab('news',this)">📰 뉴스</button>
+        <button class="tab-btn" onclick="switchTab('analyst',this)">🔬 애널리스트</button>
+        <button class="tab-btn" onclick="switchTab('memo',this)">📝 메모</button>
+      </div>
+
+      <!-- 탭: 차트 -->
+      <div class="tab-pane active" id="tab-chart">
+        <div class="tv-wrap" id="tv-chart-container" style="height:500px;"></div>
+      </div>
+
+      <!-- 탭: 재무 지표 -->
+      <div class="tab-pane" id="tab-finance">
+        <div class="fin-grid" id="fin-grid"></div>
+        <div style="margin-top:12px;">
+          <div class="link-group" id="fin-links"></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--muted);margin-top:8px;">※ 데이터 출처: 각 링크에서 직접 확인. 자동 수집은 지원되지 않습니다.</div>
+      </div>
+
+      <!-- 탭: IR 공시 -->
+      <div class="tab-pane" id="tab-ir">
+        <div class="link-group">
+          <a id="ir-tdnet-link" href="#" target="_blank" class="lbtn">📋 TDnet IR 공시</a>
+          <a id="ir-official-link" href="#" target="_blank" class="lbtn lbtn-g">🏢 IR 공식 페이지</a>
+          <a id="ir-edinet-link" href="#" target="_blank" class="lbtn lbtn-a">📄 EDINET 유가증권보고서</a>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);padding:12px 0 8px;">최근 IR 공시는 아래 TDnet 링크에서 실시간 확인하세요. 페이지 이동 없이 보려면 아래 임베드를 참고하세요.</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:.78rem;line-height:2;color:var(--muted);">
+          <div id="ir-links-detail"></div>
+        </div>
+      </div>
+
+      <!-- 탭: 뉴스 -->
+      <div class="tab-pane" id="tab-news">
+        <div class="link-group" id="news-links"></div>
+        <div class="news-list" id="news-list">
+          <div class="empty-state">
+            <div class="icon">📰</div>
+            <p>위 링크에서 최신 뉴스를 확인하세요</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 탭: 애널리스트 -->
+      <div class="tab-pane" id="tab-analyst">
+        <div class="link-group" id="analyst-links"></div>
+        <div id="analyst-table-wrap">
+          <table class="dtable">
+            <thead>
+              <tr>
+                <th>증권사</th>
+                <th>레이팅</th>
+                <th>목표주가</th>
+                <th>날짜</th>
+                <th>링크</th>
+              </tr>
+            </thead>
+            <tbody id="analyst-tbody"></tbody>
+          </table>
+          <div style="font-size:.68rem;color:var(--muted);margin-top:12px;">
+            ※ 애널리스트 리포트는 각 증권사 · Minkabu · Kabutan 등에서 직접 확인이 필요합니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- 탭: 메모 -->
+      <div class="tab-pane" id="tab-memo">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:10px;">이 종목에 대한 투자 메모 · 분석 노트를 기록하세요. 브라우저에 저장됩니다.</div>
+        <textarea class="memo-area" id="memo-textarea" placeholder="투자 thesis, 주요 리스크, 밸류에이션 메모 등..."></textarea>
+        <div style="display:flex;align-items:center;">
+          <button class="memo-save-btn" onclick="saveMemo()">💾 저장</button>
+          <span class="memo-saved" id="memo-saved-msg">✅ 저장됨</span>
+        </div>
+      </div>
+    </div><!-- .card -->
+  </section>
+
+</div><!-- .page -->
+
+<!-- 관심종목 추가 모달 -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>관심 종목 추가</h3>
+    <div class="modal-hint">도쿄증권거래소 종목코드(4자리)와 기업명, 섹터를 입력하세요.</div>
+    <input class="modal-input" id="m-code" type="text" placeholder="종목코드 (예: 6594)" maxlength="6">
+    <input class="modal-input" id="m-name" type="text" placeholder="기업명 (예: ニデック / 니덱)" maxlength="40">
+    <input class="modal-input" id="m-sector" type="text" placeholder="섹터 (예: 정밀기기 · ESS · 인도)" maxlength="30">
+    <div class="modal-row">
+      <button class="modal-btn modal-btn-primary" onclick="addStock()">추가</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  일본 기업 IR 리서치 페이지 &nbsp;·&nbsp; 데이터: TradingView · TDnet · Yahoo Finance Japan · Minkabu · Kabutan &nbsp;·&nbsp;
+  <a href="index.html" style="color:var(--accent);text-decoration:none;">← 메인 대시보드로 돌아가기</a>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+// 관심 종목 데이터 (로컬스토리지 저장)
+// ═══════════════════════════════════════════════════
+
+// 기본 관심종목 (처음 실행 시)
+const DEFAULT_WATCHLIST = [
+  {code:'3697', name:'QPS홀딩스',       sector:'위성·우주'},
+  {code:'4689', name:'LINEヤフー',       sector:'IT·플랫폼'},
+  {code:'7013', name:'IHI',              sector:'중공업·항공'},
+  {code:'8136', name:'サンリオ',         sector:'엔터·라이선스'},
+  {code:'6501', name:'日立製作所',       sector:'인프라·IT'},
+  {code:'7201', name:'日産自動車',       sector:'자동차'},
+  {code:'3350', name:'メタプラネット',   sector:'비트코인·투자'},
+];
+
+function loadWatchlist(){
+  const saved = localStorage.getItem('ir_watchlist');
+  if(saved) return JSON.parse(saved);
+  localStorage.setItem('ir_watchlist', JSON.stringify(DEFAULT_WATCHLIST));
+  return DEFAULT_WATCHLIST;
+}
+
+function saveWatchlist(list){
+  localStorage.setItem('ir_watchlist', JSON.stringify(list));
+}
+
+let watchlist = loadWatchlist();
+let currentStock = null;
+
+// ═══════════════════════════════════════════════════
+// 관심종목 렌더링
+// ═══════════════════════════════════════════════════
+
+function renderWatchlist(){
+  const grid = document.getElementById('watchlist-grid');
+  document.getElementById('watchlist-count').textContent = watchlist.length + ' 종목';
+
+  if(watchlist.length === 0){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;padding:28px 0;">
+      <div class="icon">📋</div>
+      <p>관심 종목이 없습니다<br>위에서 <strong style="color:var(--accent2);">+ 관심종목 추가</strong> 버튼으로 추가해주세요</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = watchlist.map((s,i) => `
+    <div class="wstock-card ${currentStock && currentStock.code===s.code?'active':''}"
+         onclick="selectStock(${i})">
+      <div class="wstock-code">TSE: ${s.code}</div>
+      <div class="wstock-name">${s.name}</div>
+      <div class="wstock-sector">${s.sector}</div>
+      <button class="wstock-remove" onclick="event.stopPropagation();removeStock(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeStock(i){
+  if(!confirm(`"${watchlist[i].name}" 을 관심종목에서 제거할까요?`)) return;
+  watchlist.splice(i,1);
+  saveWatchlist(watchlist);
+  if(currentStock && watchlist.findIndex(s=>s.code===currentStock.code)<0){
+    currentStock = null;
+    document.getElementById('detail-panel').classList.remove('visible');
+  }
+  renderWatchlist();
+}
+
+// ═══════════════════════════════════════════════════
+// 종목 선택 → 상세 패널
+// ═══════════════════════════════════════════════════
+
+function selectStock(i){
+  currentStock = watchlist[i];
+  renderWatchlist();
+  showDetail(currentStock);
+}
+
+function showDetail(s){
+  const code = s.code;
+  const name = s.name;
+  const panel = document.getElementById('detail-panel');
+
+  document.getElementById('d-code').textContent = code;
+  document.getElementById('d-name').textContent = name;
+  document.getElementById('d-sector').textContent = s.sector;
+  document.getElementById('detail-badge').textContent = code + ' ' + name;
+
+  // 빠른 링크
+  document.getElementById('d-quick-links').innerHTML = `
+    <a href="https://finance.yahoo.co.jp/quote/${code}.T" target="_blank" class="lbtn" style="font-size:.65rem;padding:4px 10px;">Yahoo JP</a>
+    <a href="https://kabutan.jp/stock/?code=${code}" target="_blank" class="lbtn lbtn-g" style="font-size:.65rem;padding:4px 10px;">Kabutan</a>
+    <a href="https://irbank.net/${code}" target="_blank" class="lbtn lbtn-a" style="font-size:.65rem;padding:4px 10px;">IRBank</a>
+  `;
+
+  // TradingView 차트 새로 로드
+  renderChart(code);
+
+  // 각 탭 링크 업데이트
+  updateTabLinks(s);
+
+  // 메모 로드
+  document.getElementById('memo-textarea').value = localStorage.getItem('memo_'+code) || '';
+
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+
+  // 재무 지표 플레이스홀더
+  renderFinance(s);
+
+  // 애널리스트 플레이스홀더
+  renderAnalyst(s);
+}
+
+// ═══════════════════════════════════════════════════
+// TradingView 차트
+// ═══════════════════════════════════════════════════
+
+function renderChart(code){
+  const container = document.getElementById('tv-chart-container');
+  container.innerHTML = '';
+
+  const div = document.createElement('div');
+  div.className = 'tradingview-widget-container';
+  div.style.height = '500px';
+
+  const inner = document.createElement('div');
+  inner.className = 'tradingview-widget-container__widget';
+  inner.style.height = '100%';
+  div.appendChild(inner);
+
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.text = JSON.stringify({
+    symbol: `TSE:${code}`,
+    interval: 'D',
+    timezone: 'Asia/Tokyo',
+    theme: 'dark',
+    style: '1',
+    locale: 'ja',
+    backgroundColor: 'rgba(8,11,16,1)',
+    gridColor: 'rgba(28,35,51,0.5)',
+    hide_top_toolbar: false,
+    hide_legend: false,
+    save_image: false,
+    height: 500,
+    width: '100%'
+  });
+  div.appendChild(script);
+  container.appendChild(div);
+}
+
+// ═══════════════════════════════════════════════════
+// 탭 링크 업데이트
+// ═══════════════════════════════════════════════════
+
+function updateTabLinks(s){
+  const code = s.code;
+  const nameEnc = encodeURIComponent(s.name);
+
+  // IR 탭
+  document.getElementById('ir-tdnet-link').href =
+    `https://www.release.tdnet.info/inbs/I_main_00.html`;
+  document.getElementById('ir-official-link').href =
+    `https://kabutan.jp/stock/news?code=${code}`;
+  document.getElementById('ir-edinet-link').href =
+    `https://disclosure.edinet-fsa.go.jp/weee0020.aspx`;
+
+  document.getElementById('ir-links-detail').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div>📋 <a href="https://www.release.tdnet.info/inbs/I_main_00.html" target="_blank" style="color:var(--accent);">TDnet 適時開示情報 열람サービス</a> → 企業コード "${code}" 입력</div>
+      <div>📄 <a href="https://disclosure.edinet-fsa.go.jp/weee0020.aspx" target="_blank" style="color:var(--accent);">EDINET</a> → 提出者名 "${s.name}" 검색</div>
+      <div>🏢 <a href="https://kabutan.jp/stock/?code=${code}" target="_blank" style="color:var(--green);">Kabutan IR · 決算情報</a></div>
+      <div>📊 <a href="https://irbank.net/${code}" target="_blank" style="color:var(--amber);">IRBank 財務データ</a> (10년 재무 추이)</div>
+      <div>🔍 <a href="https://scouter.monex.co.jp/report/zaimu/${code}" target="_blank" style="color:var(--accent2);">Monex Scouter 재무분석</a></div>
+    </div>
+  `;
+
+  // 뉴스 탭
+  document.getElementById('news-links').innerHTML = `
+    <a href="https://www.nikkei.com/search/?query=${nameEnc}" target="_blank" class="lbtn">日経新聞</a>
+    <a href="https://jp.reuters.com/search/news?blob=${nameEnc}" target="_blank" class="lbtn lbtn-g">Reuters JP</a>
+    <a href="https://kabutan.jp/stock/news?code=${code}" target="_blank" class="lbtn lbtn-a">Kabutan뉴스</a>
+    <a href="https://minkabu.jp/stock/${code}/news" target="_blank" class="lbtn">Minkabu</a>
+    <a href="https://finance.yahoo.co.jp/quote/${code}.T/news" target="_blank" class="lbtn lbtn-g">Yahoo JP뉴스</a>
+    <a href="https://www.bloomberg.co.jp/quote/${code}:JP" target="_blank" class="lbtn lbtn-r">Bloomberg JP</a>
+  `;
+
+  // 애널리스트 탭
+  document.getElementById('analyst-links').innerHTML = `
+    <a href="https://minkabu.jp/stock/${code}/analyst" target="_blank" class="lbtn">Minkabu 애널리스트</a>
+    <a href="https://kabutan.jp/stock/analyst?code=${code}" target="_blank" class="lbtn lbtn-g">Kabutan 애널리스트</a>
+    <a href="https://jp.tradingview.com/symbols/TSE-${code}/forecast/" target="_blank" class="lbtn lbtn-a">TradingView 전망</a>
+    <a href="https://www.whalewisdom.com/stock/${nameEnc}" target="_blank" class="lbtn">WhaleWisdom 기관</a>
+  `;
+
+  // 재무 링크
+  document.getElementById('fin-links').innerHTML = `
+    <a href="https://irbank.net/${code}" target="_blank" class="lbtn lbtn-a">IRBank 10년 재무</a>
+    <a href="https://scouter.monex.co.jp/report/zaimu/${code}" target="_blank" class="lbtn">Monex Scouter</a>
+    <a href="https://kabutan.jp/stock/finance?code=${code}" target="_blank" class="lbtn lbtn-g">Kabutan 財務</a>
+    <a href="https://finance.yahoo.co.jp/quote/${code}.T/financials" target="_blank" class="lbtn">Yahoo JP 財務</a>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// 재무 지표 플레이스홀더
+// ═══════════════════════════════════════════════════
+
+function renderFinance(s){
+  const grid = document.getElementById('fin-grid');
+  const metrics = [
+    {label:'PER', val:'—', sub:'배'},
+    {label:'PBR', val:'—', sub:'배'},
+    {label:'ROE', val:'—', sub:'%'},
+    {label:'ROA', val:'—', sub:'%'},
+    {label:'영업이익률', val:'—', sub:'%'},
+    {label:'배당수익률', val:'—', sub:'%'},
+    {label:'시가총액', val:'—', sub:'억엔'},
+    {label:'자기자본비율', val:'—', sub:'%'},
+  ];
+  grid.innerHTML = metrics.map(m=>`
+    <div class="fin-card">
+      <div class="fin-label">${m.label}</div>
+      <div class="fin-val" id="fin-${m.label}">${m.val}</div>
+      <div class="fin-sub">${m.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// 애널리스트 테이블 플레이스홀더
+// ═══════════════════════════════════════════════════
+
+function renderAnalyst(s){
+  const tbody = document.getElementById('analyst-tbody');
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="5">
+        <div class="empty-state" style="padding:24px 0;">
+          <div class="icon" style="font-size:1.5rem;">🔬</div>
+          <p style="font-size:.75rem;">위 링크에서 최신 애널리스트 리포트를 확인하세요<br>
+          <a href="https://minkabu.jp/stock/${s.code}/analyst" target="_blank" style="color:var(--accent);">Minkabu 애널리스트 페이지 →</a></p>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// 종목 검색
+// ═══════════════════════════════════════════════════
+
+function searchStock(){
+  const q = document.getElementById('stock-search').value.trim();
+  if(!q) return;
+
+  const resultDiv = document.getElementById('search-result');
+  const linksDiv = document.getElementById('search-links');
+  const label = document.getElementById('search-query-label');
+
+  label.textContent = q;
+  const enc = encodeURIComponent(q);
+  const code = /^\d{4,5}$/.test(q) ? q : '';
+
+  let links = '';
+  if(code){
+    links = `
+      <a href="https://finance.yahoo.co.jp/quote/${code}.T" target="_blank" class="lbtn">Yahoo JP 주가</a>
+      <a href="https://kabutan.jp/stock/?code=${code}" target="_blank" class="lbtn lbtn-g">Kabutan</a>
+      <a href="https://irbank.net/${code}" target="_blank" class="lbtn lbtn-a">IRBank 재무</a>
+      <a href="https://scouter.monex.co.jp/report/zaimu/${code}" target="_blank" class="lbtn">Monex Scouter</a>
+      <a href="https://www.tradingview.com/symbols/TSE-${code}/" target="_blank" class="lbtn lbtn-g">TradingView 차트</a>
+      <a href="https://www.release.tdnet.info/inbs/I_main_00.html" target="_blank" class="lbtn lbtn-a">TDnet IR공시</a>
+      <a href="https://minkabu.jp/stock/${code}" target="_blank" class="lbtn">Minkabu</a>
+      <button class="lbtn" style="background:rgba(86,204,178,.08);color:var(--accent2);border-color:rgba(86,204,178,.3);"
+        onclick="addStockDirect('${code}')">＋ 관심종목 추가</button>
+    `;
+  } else {
+    links = `
+      <a href="https://finance.yahoo.co.jp/search/?query=${enc}" target="_blank" class="lbtn">Yahoo JP 검색</a>
+      <a href="https://kabutan.jp/search/?query=${enc}" target="_blank" class="lbtn lbtn-g">Kabutan 검색</a>
+      <a href="https://minkabu.jp/search?query=${enc}" target="_blank" class="lbtn">Minkabu 검색</a>
+      <a href="https://www.nikkei.com/search/?query=${enc}" target="_blank" class="lbtn lbtn-a">日経 뉴스 검색</a>
+      <a href="https://www.tradingview.com/search/?query=${enc}&type=symbol&lang=ja" target="_blank" class="lbtn lbtn-g">TradingView 검색</a>
+    `;
+  }
+
+  linksDiv.innerHTML = links;
+  resultDiv.style.display = 'block';
+}
+
+// Enter 검색
+document.getElementById('stock-search').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') searchStock();
+});
+
+// 검색창에서 직접 관심종목 추가
+function addStockDirect(code){
+  document.getElementById('m-code').value = code;
+  document.getElementById('m-name').value = '';
+  document.getElementById('m-sector').value = '';
+  openModal();
+  document.getElementById('m-name').focus();
+}
+
+// ═══════════════════════════════════════════════════
+// 모달 (관심종목 추가)
+// ═══════════════════════════════════════════════════
+
+function openModal(){
+  document.getElementById('add-modal').classList.add('open');
+}
+function openAddModal(){
+  document.getElementById('m-code').value='';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-sector').value='';
+  openModal();
+  document.getElementById('m-code').focus();
+}
+function closeModal(){
+  document.getElementById('add-modal').classList.remove('open');
+}
+
+function addStock(){
+  const code   = document.getElementById('m-code').value.trim();
+  const name   = document.getElementById('m-name').value.trim();
+  const sector = document.getElementById('m-sector').value.trim() || '미분류';
+
+  if(!code || !name){
+    alert('종목코드와 기업명을 입력해주세요.');
+    return;
+  }
+  if(watchlist.find(s=>s.code===code)){
+    alert('이미 추가된 종목입니다.');
+    return;
+  }
+
+  watchlist.push({code, name, sector});
+  saveWatchlist(watchlist);
+  renderWatchlist();
+  closeModal();
+}
+
+// 모달 외부 클릭 시 닫기
+document.getElementById('add-modal').addEventListener('click', function(e){
+  if(e.target===this) closeModal();
+});
+
+// ═══════════════════════════════════════════════════
+// 탭 전환
+// ═══════════════════════════════════════════════════
+
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// 메모 저장
+// ═══════════════════════════════════════════════════
+
+function saveMemo(){
+  if(!currentStock) return;
+  const val = document.getElementById('memo-textarea').value;
+  localStorage.setItem('memo_'+currentStock.code, val);
+  const msg = document.getElementById('memo-saved-msg');
+  msg.style.display = 'inline';
+  setTimeout(()=>msg.style.display='none', 2000);
+}
+
+// ═══════════════════════════════════════════════════
+// 시계
+// ═══════════════════════════════════════════════════
+
+function updateClock(){
+  const jst = new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Tokyo'}));
+  const h = String(jst.getHours()).padStart(2,'0');
+  const m = String(jst.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = h+':'+m+' JST';
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+// ═══════════════════════════════════════════════════
+// 초기화
+// ═══════════════════════════════════════════════════
+
+renderWatchlist();
+
+// URL 파라미터로 종목 자동 선택 지원 (?code=6594)
+const urlCode = new URLSearchParams(location.search).get('code');
+if(urlCode){
+  const idx = watchlist.findIndex(s=>s.code===urlCode);
+  if(idx>=0) selectStock(idx);
+  else {
+    document.getElementById('stock-search').value = urlCode;
+    searchStock();
+  }
+}
+</script>
+</body>
+</html>
