@@ -102,7 +102,8 @@ def sub(html, pattern, repl_fn):
     return new_html
 
 def set_text(html, el_id, text):
-    return sub(html, rf'(id="{el_id}"[^>]*>)[^<]*',
+    # [^<]* 대신 .*? 사용 — em dash(—) 등 특수문자도 처리
+    return sub(html, rf'(id="{el_id}"[^>]*>).*?(?=<)',
                lambda m: m.group(1) + text)
 
 def set_border(html, el_id, border):
