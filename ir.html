@@ -279,16 +279,22 @@
 
       <!-- 탭: 차트 -->
       <div class="tab-pane active" id="tab-chart">
-        <div class="tv-wrap" id="tv-chart-container" style="height:500px;"></div>
+        <div id="tv-chart-container"></div>
       </div>
 
       <!-- 탭: 재무 지표 -->
       <div class="tab-pane" id="tab-finance">
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px;">
+          💡 각 링크에서 수치를 확인 후 직접 입력하세요. 입력값은 브라우저에 저장됩니다.
+        </div>
         <div class="fin-grid" id="fin-grid"></div>
-        <div style="margin-top:12px;">
+        <div style="margin-top:16px;display:flex;gap:8px;align-items:center;">
+          <button onclick="saveFinance()" class="memo-save-btn">💾 저장</button>
+          <span class="memo-saved" id="fin-saved-msg">✅ 저장됨</span>
+        </div>
+        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">
           <div class="link-group" id="fin-links"></div>
         </div>
-        <div style="font-size:.68rem;color:var(--muted);margin-top:8px;">※ 데이터 출처: 각 링크에서 직접 확인. 자동 수집은 지원되지 않습니다.</div>
       </div>
 
       <!-- 탭: IR 공시 -->
@@ -491,70 +497,57 @@ function showDetail(s){
 
 function renderChart(code){
   const container = document.getElementById('tv-chart-container');
-  container.innerHTML = '';
-
-  // 외부 임베드 가능한 차트 링크 버튼 모음
-  const linkBar = document.createElement('div');
-  linkBar.className = 'link-group';
-  linkBar.style.marginBottom = '14px';
-  linkBar.innerHTML = `
-    <a href="https://finance.yahoo.co.jp/quote/${code}.T/chart" target="_blank" class="lbtn lbtn-g">📈 Yahoo JP 차트</a>
-    <a href="https://kabutan.jp/stock/chart?code=${code}" target="_blank" class="lbtn">Kabutan 차트</a>
-    <a href="https://minkabu.jp/stock/${code}/chart" target="_blank" class="lbtn lbtn-a">Minkabu 차트</a>
-    <a href="https://www.tradingview.com/symbols/TSE-${code}/" target="_blank" class="lbtn">TradingView</a>
+  container.innerHTML = `
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:24px;">
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:16px;">
+        📊 외부 차트 임베드는 보안 정책상 제한됩니다. 아래 링크에서 직접 확인해주세요.
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+        <a href="https://finance.yahoo.co.jp/quote/${code}.T/chart" target="_blank"
+          style="display:flex;flex-direction:column;gap:6px;padding:16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;text-decoration:none;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:1.1rem;">📈</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--green);">Yahoo Finance Japan</span>
+          <span style="font-size:.68rem;color:var(--muted);">실시간 주가 차트</span>
+        </a>
+        <a href="https://kabutan.jp/stock/chart?code=${code}" target="_blank"
+          style="display:flex;flex-direction:column;gap:6px;padding:16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;text-decoration:none;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:1.1rem;">📉</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--accent);">Kabutan 차트</span>
+          <span style="font-size:.68rem;color:var(--muted);">이동평균 · 거래량</span>
+        </a>
+        <a href="https://minkabu.jp/stock/${code}/chart" target="_blank"
+          style="display:flex;flex-direction:column;gap:6px;padding:16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;text-decoration:none;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:1.1rem;">📊</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--amber);">Minkabu 차트</span>
+          <span style="font-size:.68rem;color:var(--muted);">기술적 분석 · 신호</span>
+        </a>
+        <a href="https://www.tradingview.com/symbols/TSE-${code}/" target="_blank"
+          style="display:flex;flex-direction:column;gap:6px;padding:16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;text-decoration:none;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:1.1rem;">🌐</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--accent2);">TradingView</span>
+          <span style="font-size:.68rem;color:var(--muted);">고급 차트 · 인디케이터</span>
+        </a>
+        <a href="https://stooq.com/q/?s=${code}.jp" target="_blank"
+          style="display:flex;flex-direction:column;gap:6px;padding:16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;text-decoration:none;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--muted)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:1.1rem;">🔢</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">Stooq</span>
+          <span style="font-size:.68rem;color:var(--muted);">장기 이력 차트</span>
+        </a>
+        <a href="https://irbank.net/${code}" target="_blank"
+          style="display:flex;flex-direction:column;gap:6px;padding:16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;text-decoration:none;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:1.1rem;">📋</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--amber);">IRBank</span>
+          <span style="font-size:.68rem;color:var(--muted);">재무 추이 차트</span>
+        </a>
+      </div>
+    </div>
   `;
-  container.appendChild(linkBar);
-
-  // StockCharts / Stooq 임베드 (팝업 없음)
-  const stooqUrl = `https://stooq.com/q/g/?s=${code}.jp&t=d&a=lg&b=0&c=`;
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;';
-
-  // 탭: Stooq / 대체 차트
-  wrap.innerHTML = `
-    <div style="display:flex;gap:4px;padding:10px 12px 0;border-bottom:1px solid var(--border);">
-      <button onclick="setChartType('stooq','${code}',this)" 
-        style="padding:5px 14px;font-size:.7rem;font-weight:600;background:rgba(61,142,245,.12);color:var(--accent);border:1px solid rgba(61,142,245,.3);border-radius:5px;cursor:pointer;">
-        Stooq 1년
-      </button>
-      <button onclick="setChartType('stooq5','${code}',this)"
-        style="padding:5px 14px;font-size:.7rem;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:5px;cursor:pointer;">
-        Stooq 5년
-      </button>
-      <button onclick="setChartType('stooq10','${code}',this)"
-        style="padding:5px 14px;font-size:.7rem;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:5px;cursor:pointer;">
-        Stooq 10년
-      </button>
-    </div>
-    <div id="chart-img-wrap" style="padding:12px;text-align:center;">
-      <img id="chart-img"
-        src="https://stooq.com/q/g/?s=${code}.jp&t=d&a=lg&b=0&c="
-        style="width:100%;max-height:460px;object-fit:contain;border-radius:6px;"
-        onerror="this.parentElement.innerHTML='<div style=\'padding:48px;color:var(--muted);font-size:.8rem;\'>⚠️ 차트를 불러올 수 없습니다. 위 링크에서 직접 확인해주세요.</div>'"
-      />
-    </div>
-    <div style="font-size:.62rem;color:var(--muted);padding:6px 14px 10px;">
-      출처: Stooq.com &nbsp;·&nbsp; 실시간 차트는 위 Yahoo JP / TradingView 링크에서 확인
-    </div>
-  `;
-  container.appendChild(wrap);
-}
-
-function setChartType(type, code, btn){
-  // 버튼 스타일 리셋
-  btn.parentElement.querySelectorAll('button').forEach(b=>{
-    b.style.background='var(--surface2)';
-    b.style.color='var(--muted)';
-    b.style.borderColor='var(--border)';
-  });
-  btn.style.background='rgba(61,142,245,.12)';
-  btn.style.color='var(--accent)';
-  btn.style.borderColor='rgba(61,142,245,.3)';
-
-  const periodMap = {stooq:'d', stooq5:'w', stooq10:'m'};
-  const period = periodMap[type] || 'd';
-  const img = document.getElementById('chart-img');
-  img.src = `https://stooq.com/q/g/?s=${code}.jp&t=${period}&a=lg&b=0&c=&ts=${Date.now()}`;
 }
 
 // ═══════════════════════════════════════════════════
@@ -615,24 +608,52 @@ function updateTabLinks(s){
 // ═══════════════════════════════════════════════════
 
 function renderFinance(s){
-  const grid = document.getElementById('fin-grid');
+  const code = s.code;
+  const saved = JSON.parse(localStorage.getItem('finance_'+code) || '{}');
   const metrics = [
-    {label:'PER', val:'—', sub:'배'},
-    {label:'PBR', val:'—', sub:'배'},
-    {label:'ROE', val:'—', sub:'%'},
-    {label:'ROA', val:'—', sub:'%'},
-    {label:'영업이익률', val:'—', sub:'%'},
-    {label:'배당수익률', val:'—', sub:'%'},
-    {label:'시가총액', val:'—', sub:'억엔'},
-    {label:'자기자본비율', val:'—', sub:'%'},
+    {key:'per',   label:'PER',      unit:'배',   placeholder:'예: 18.5'},
+    {key:'pbr',   label:'PBR',      unit:'배',   placeholder:'예: 1.2'},
+    {key:'roe',   label:'ROE',      unit:'%',    placeholder:'예: 12.3'},
+    {key:'roa',   label:'ROA',      unit:'%',    placeholder:'예: 5.1'},
+    {key:'opm',   label:'영업이익률', unit:'%',   placeholder:'예: 8.4'},
+    {key:'div',   label:'배당수익률', unit:'%',   placeholder:'예: 2.1'},
+    {key:'cap',   label:'시가총액',  unit:'억엔', placeholder:'예: 15,200'},
+    {key:'eq',    label:'자기자본비율',unit:'%',  placeholder:'예: 45.2'},
+    {key:'eps',   label:'EPS',      unit:'엔',   placeholder:'예: 234'},
+    {key:'bps',   label:'BPS',      unit:'엔',   placeholder:'예: 1,850'},
+    {key:'rev',   label:'매출',     unit:'억엔', placeholder:'예: 62,000'},
+    {key:'op',    label:'영업이익', unit:'억엔', placeholder:'예: 5,200'},
   ];
+  const grid = document.getElementById('fin-grid');
   grid.innerHTML = metrics.map(m=>`
-    <div class="fin-card">
-      <div class="fin-label">${m.label}</div>
-      <div class="fin-val" id="fin-${m.label}">${m.val}</div>
-      <div class="fin-sub">${m.sub}</div>
+    <div class="fin-card" style="text-align:left;">
+      <div class="fin-label" style="margin-bottom:6px;">${m.label} <span style="color:var(--border2);font-size:.58rem;">${m.unit}</span></div>
+      <input
+        id="fin-input-${m.key}"
+        type="text"
+        value="${saved[m.key]||''}"
+        placeholder="${m.placeholder}"
+        style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:5px 8px;font-family:'DM Mono',monospace;font-size:.82rem;color:var(--text);outline:none;"
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border2)'"
+        onkeydown="if(event.key==='Enter')saveFinance()"
+      />
     </div>
   `).join('');
+}
+
+function saveFinance(){
+  if(!currentStock) return;
+  const keys = ['per','pbr','roe','roa','opm','div','cap','eq','eps','bps','rev','op'];
+  const data = {};
+  keys.forEach(k=>{
+    const el = document.getElementById('fin-input-'+k);
+    if(el) data[k] = el.value.trim();
+  });
+  localStorage.setItem('finance_'+currentStock.code, JSON.stringify(data));
+  const msg = document.getElementById('fin-saved-msg');
+  msg.style.display = 'inline';
+  setTimeout(()=>msg.style.display='none', 2000);
 }
 
 // ═══════════════════════════════════════════════════
