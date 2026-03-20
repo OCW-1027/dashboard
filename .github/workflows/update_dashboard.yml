@@ -2,8 +2,12 @@ name: 대시보드 자동 업데이트
 
 on:
   schedule:
-    - cron: '30 6 * * 1-5'
-  workflow_dispatch:
+    # 매일 06:30 UTC = 15:30 JST (일본장 마감 30분 후)
+    - cron: '30 6 * * 1-5'   # 평일만 (월~금)
+  workflow_dispatch:           # 수동 실행 버튼 (테스트용)
+  push:
+    branches: [main]
+    paths: ['index.html']      # index.html 푸시 시 자동 실행
 
 jobs:
   update:
