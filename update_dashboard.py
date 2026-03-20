@@ -118,7 +118,7 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_nikkei()
-    topix   = fetch_yahoo("998405.T")
+    topix   = fetch_yahoo("1306.T")
     mothers = fetch_yahoo("2516.T")
     kospi   = fetch_yahoo("^KS11")
     kosdaq  = fetch_yahoo("^KQ11")
