@@ -493,36 +493,68 @@ function renderChart(code){
   const container = document.getElementById('tv-chart-container');
   container.innerHTML = '';
 
-  const div = document.createElement('div');
-  div.className = 'tradingview-widget-container';
-  div.style.height = '500px';
+  // 외부 임베드 가능한 차트 링크 버튼 모음
+  const linkBar = document.createElement('div');
+  linkBar.className = 'link-group';
+  linkBar.style.marginBottom = '14px';
+  linkBar.innerHTML = `
+    <a href="https://finance.yahoo.co.jp/quote/${code}.T/chart" target="_blank" class="lbtn lbtn-g">📈 Yahoo JP 차트</a>
+    <a href="https://kabutan.jp/stock/chart?code=${code}" target="_blank" class="lbtn">Kabutan 차트</a>
+    <a href="https://minkabu.jp/stock/${code}/chart" target="_blank" class="lbtn lbtn-a">Minkabu 차트</a>
+    <a href="https://www.tradingview.com/symbols/TSE-${code}/" target="_blank" class="lbtn">TradingView</a>
+  `;
+  container.appendChild(linkBar);
 
-  const inner = document.createElement('div');
-  inner.className = 'tradingview-widget-container__widget';
-  inner.style.height = '100%';
-  div.appendChild(inner);
+  // StockCharts / Stooq 임베드 (팝업 없음)
+  const stooqUrl = `https://stooq.com/q/g/?s=${code}.jp&t=d&a=lg&b=0&c=`;
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;';
 
-  const script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-  script.async = true;
-  script.text = JSON.stringify({
-    symbol: `TSE:${code}`,
-    interval: 'D',
-    timezone: 'Asia/Tokyo',
-    theme: 'dark',
-    style: '1',
-    locale: 'ja',
-    backgroundColor: 'rgba(8,11,16,1)',
-    gridColor: 'rgba(28,35,51,0.5)',
-    hide_top_toolbar: false,
-    hide_legend: false,
-    save_image: false,
-    height: 500,
-    width: '100%'
+  // 탭: Stooq / 대체 차트
+  wrap.innerHTML = `
+    <div style="display:flex;gap:4px;padding:10px 12px 0;border-bottom:1px solid var(--border);">
+      <button onclick="setChartType('stooq','${code}',this)" 
+        style="padding:5px 14px;font-size:.7rem;font-weight:600;background:rgba(61,142,245,.12);color:var(--accent);border:1px solid rgba(61,142,245,.3);border-radius:5px;cursor:pointer;">
+        Stooq 1년
+      </button>
+      <button onclick="setChartType('stooq5','${code}',this)"
+        style="padding:5px 14px;font-size:.7rem;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:5px;cursor:pointer;">
+        Stooq 5년
+      </button>
+      <button onclick="setChartType('stooq10','${code}',this)"
+        style="padding:5px 14px;font-size:.7rem;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:5px;cursor:pointer;">
+        Stooq 10년
+      </button>
+    </div>
+    <div id="chart-img-wrap" style="padding:12px;text-align:center;">
+      <img id="chart-img"
+        src="https://stooq.com/q/g/?s=${code}.jp&t=d&a=lg&b=0&c="
+        style="width:100%;max-height:460px;object-fit:contain;border-radius:6px;"
+        onerror="this.parentElement.innerHTML='<div style=\'padding:48px;color:var(--muted);font-size:.8rem;\'>⚠️ 차트를 불러올 수 없습니다. 위 링크에서 직접 확인해주세요.</div>'"
+      />
+    </div>
+    <div style="font-size:.62rem;color:var(--muted);padding:6px 14px 10px;">
+      출처: Stooq.com &nbsp;·&nbsp; 실시간 차트는 위 Yahoo JP / TradingView 링크에서 확인
+    </div>
+  `;
+  container.appendChild(wrap);
+}
+
+function setChartType(type, code, btn){
+  // 버튼 스타일 리셋
+  btn.parentElement.querySelectorAll('button').forEach(b=>{
+    b.style.background='var(--surface2)';
+    b.style.color='var(--muted)';
+    b.style.borderColor='var(--border)';
   });
-  div.appendChild(script);
-  container.appendChild(div);
+  btn.style.background='rgba(61,142,245,.12)';
+  btn.style.color='var(--accent)';
+  btn.style.borderColor='rgba(61,142,245,.3)';
+
+  const periodMap = {stooq:'d', stooq5:'w', stooq10:'m'};
+  const period = periodMap[type] || 'd';
+  const img = document.getElementById('chart-img');
+  img.src = `https://stooq.com/q/g/?s=${code}.jp&t=${period}&a=lg&b=0&c=&ts=${Date.now()}`;
 }
 
 // ═══════════════════════════════════════════════════
