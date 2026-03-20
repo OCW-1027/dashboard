@@ -258,44 +258,66 @@
     }
   }
 
-  // ── Yahoo Finance via allorigins 프록시 ───────────────────────
-  async function fetchYahoo(sym) {
+  // ── Yahoo Finance via allorigins — v8 chart API ───────────────
+  async function fetchYahooV8(sym, proxyBase) {
     const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
-                encodeURIComponent(sym) + '?interval=1d&range=2d';
-    const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-    try {
-      const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-      const json = await res.json();
-      const data = JSON.parse(json.contents);
-      const meta = data.chart.result[0].meta;
-      const price = meta.regularMarketPrice;
-      const prev  = meta.chartPreviousClose || meta.previousClose;
-      const chg   = price - prev;
-      const pct   = (chg / prev) * 100;
-      return { price, chg, pct };
-    } catch(e) {
-      return null;
-    }
+                encodeURIComponent(sym) + '?interval=1d&range=5d';
+    const proxy = proxyBase + encodeURIComponent(url);
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const raw = await res.json();
+    const data = proxyBase.includes('allorigins') ? JSON.parse(raw.contents) : raw;
+    const result = data?.chart?.result?.[0];
+    if (!result) return null;
+    const meta  = result.meta;
+    const price = meta.regularMarketPrice;
+    const prev  = meta.chartPreviousClose || meta.previousClose || meta.regularMarketPreviousClose;
+    if (!price || !prev) return null;
+    const chg = price - prev;
+    const pct = (chg / prev) * 100;
+    return { price, chg, pct };
   }
 
-  // ── corsproxy.io 백업 프록시 ──────────────────────────────────
-  async function fetchYahooBackup(sym) {
-    const url = 'https://query2.finance.yahoo.com/v8/finance/chart/' +
-                encodeURIComponent(sym) + '?interval=1d&range=2d';
-    const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
-    try {
-      const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-      const data = await res.json();
-      const meta = data.chart.result[0].meta;
-      const price = meta.regularMarketPrice;
-      const prev  = meta.chartPreviousClose || meta.previousClose;
-      const chg   = price - prev;
-      const pct   = (chg / prev) * 100;
-      return { price, chg, pct };
-    } catch(e) {
-      return null;
-    }
+  // ── Yahoo Finance via allorigins — v7 quote API ───────────────
+  async function fetchYahooV7(sym, proxyBase) {
+    const url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' +
+                encodeURIComponent(sym);
+    const proxy = proxyBase + encodeURIComponent(url);
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const raw = await res.json();
+    const data = proxyBase.includes('allorigins') ? JSON.parse(raw.contents) : raw;
+    const q = data?.quoteResponse?.result?.[0];
+    if (!q) return null;
+    const price = q.regularMarketPrice;
+    const prev  = q.regularMarketPreviousClose;
+    if (!price || !prev) return null;
+    const chg = price - prev;
+    const pct = (chg / prev) * 100;
+    return { price, chg, pct };
   }
+
+  // ── 프록시별 순차 시도 ─────────────────────────────────────────
+  async function fetchYahoo(sym) {
+    const proxies = [
+      'https://api.allorigins.win/get?url=',
+      'https://corsproxy.io/?',
+    ];
+    for (const proxy of proxies) {
+      // v8 먼저
+      try {
+        const r = await fetchYahooV8(sym, proxy);
+        if (r) return r;
+      } catch(e) {}
+      // v7 폴백
+      try {
+        const r = await fetchYahooV7(sym, proxy);
+        if (r) return r;
+      } catch(e) {}
+    }
+    return null;
+  }
+
+  // 백업 함수는 fetchYahoo로 통합 — 아래 제거
+  async function fetchYahooBackup(sym) { return null; }
 
   // ── 메인 로드 함수 ────────────────────────────────────────────
   async function loadIndices() {
