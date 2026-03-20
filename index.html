@@ -105,7 +105,7 @@
 </head>
 <body>
 
-<!-- 티커 테이프: ETF + FX 심볼만 사용 -->
+<!-- 티커 테이프: 환율 + 비트코인 -->
 <div id="ticker-wrap">
   <div class="tradingview-widget-container">
     <div class="tradingview-widget-container__widget"></div>
@@ -114,15 +114,11 @@
       {"proName":"FX:USDJPY","title":"USD/JPY"},
       {"proName":"FX:EURJPY","title":"EUR/JPY"},
       {"proName":"FX:GBPJPY","title":"GBP/JPY"},
-      {"proName":"AMEX:SPY","title":"S&P500"},
-      {"proName":"NASDAQ:QQQ","title":"나스닥100"},
-      {"proName":"AMEX:EWJ","title":"닛케이ETF"},
-      {"proName":"AMEX:USO","title":"WTI유ETF"},
-      {"proName":"AMEX:GLD","title":"금ETF"},
-      {"proName":"NASDAQ:TLT","title":"미국채ETF"},
-      {"proName":"AMEX:UUP","title":"달러인덱스ETF"},
-      {"proName":"AMEX:UVXY","title":"VIX ETF"},
-      {"proName":"BITSTAMP:BTCUSD","title":"BTC"}
+      {"proName":"FX:EURUSD","title":"EUR/USD"},
+      {"proName":"FX:USDKRW","title":"USD/KRW"},
+      {"proName":"AMEX:GLD","title":"금"},
+      {"proName":"BITSTAMP:BTCUSD","title":"BTC"},
+      {"proName":"BITSTAMP:ETHUSD","title":"ETH"}
     ],"showSymbolLogo":true,"isTransparent":false,"displayMode":"adaptive","colorTheme":"dark","locale":"kr"}
     </script>
   </div>
@@ -215,15 +211,15 @@
   <script>
   // ── 지수 설정 ──────────────────────────────────────────────────
   const IDX_CONFIG = [
-    { id:'nk225',   sym:'^N225',  label:'닛케이 225',        fmt:'JPY' },
-    { id:'topix',   sym:'^TOPX',  label:'TOPIX',             fmt:'JPY' },
-    { id:'mothers', sym:'^MNKX',  label:'TSE 그로스',        fmt:'JPY' },
-    { id:'jpyusd',  sym:'USDJPY=X',label:'USD/JPY',          fmt:'JPY' },
-    { id:'spx',     sym:'^GSPC',  label:'S&P 500',           fmt:'USD' },
-    { id:'ndx',     sym:'^NDX',   label:'나스닥 100',        fmt:'USD' },
-    { id:'dji',     sym:'^DJI',   label:'다우존스',          fmt:'USD' },
-    { id:'rut',     sym:'^RUT',   label:'러셀 2000',         fmt:'USD' },
-    { id:'sox',     sym:'^SOX',   label:'필라델피아 반도체', fmt:'USD' },
+    { id:'nk225',   sym:'^N225',    label:'닛케이 225',        fmt:'JPY' },
+    { id:'topix',   sym:'^TPX',     label:'TOPIX',             fmt:'JPY' },
+    { id:'mothers', sym:'^TSEGROWTX', label:'TSE 그로스',      fmt:'JPY' },
+    { id:'jpyusd',  sym:'USDJPY=X', label:'USD/JPY',           fmt:'JPY' },
+    { id:'spx',     sym:'^GSPC',    label:'S&P 500',           fmt:'USD' },
+    { id:'ndx',     sym:'^NDX',     label:'나스닥 100',        fmt:'USD' },
+    { id:'dji',     sym:'^DJI',     label:'다우존스',          fmt:'USD' },
+    { id:'rut',     sym:'^RUT',     label:'러셀 2000',         fmt:'USD' },
+    { id:'sox',     sym:'^SOX',     label:'필라델피아 반도체', fmt:'USD' },
   ];
 
   // ── 숫자 포맷 ──────────────────────────────────────────────────

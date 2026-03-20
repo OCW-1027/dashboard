@@ -118,8 +118,8 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_nikkei()
-    topix   = fetch_yahoo("^TOPX")
-    mothers = fetch_yahoo("^MNKX")
+    topix   = fetch_yahoo("^TPX")
+    mothers = fetch_yahoo("^TSEGROWTX")
     usdjpy  = fetch_yahoo("USDJPY=X")
     spx     = fetch_yahoo("^GSPC")
     ndx     = fetch_yahoo("^NDX")
