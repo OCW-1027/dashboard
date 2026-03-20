@@ -107,9 +107,10 @@ def set_text(html, el_id, text):
                lambda m: m.group(1) + text)
 
 def set_chg(html, el_id, content):
-    """등락 요소 교체 — span 등 HTML 태그 포함. 닫는 </div>까지 통째로 교체"""
-    return sub(html, rf'(<div[^>]*id="{el_id}"[^>]*>).*?(</div>)',
-               lambda m: m.group(1) + content + m.group(2))
+    """등락 요소 교체 — span 등 HTML 태그 포함. 여는태그 이후 닫는</div>까지 통째로 교체"""
+    # 여는 div 태그 이후 모든 내용(중첩 span 포함)을 닫는 </div> 직전까지 교체
+    return sub(html, rf'(<div[^>]*\bid="{el_id}"[^>]*>)(.*?)(</div>)',
+               lambda m: m.group(1) + content + m.group(3))
 
 def set_border(html, el_id, border):
     new_html, n = re.subn(
