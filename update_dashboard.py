@@ -8,21 +8,18 @@ import urllib.request
 import json
 import re
 import os
-import sys
 from datetime import datetime, timezone, timedelta
 
 FRED_API_KEY = "83e6861e8b657ab00872c409fba12af7"
 JST = timezone(timedelta(hours=9))
 
-# ── FRED API ──────────────────────────────────────────────────────
-def fetch_fred(series_id, limit=1):
-    url = (
-        f"https://api.stlouisfed.org/fred/series/observations"
-        f"?series_id={series_id}&api_key={FRED_API_KEY}"
-        f"&file_type=json&sort_order=desc&limit={limit}"
-    )
+def fetch_fred(series_id):
+    url = (f"https://api.stlouisfed.org/fred/series/observations"
+           f"?series_id={series_id}&api_key={FRED_API_KEY}"
+           f"&file_type=json&sort_order=desc&limit=1")
     try:
-        with urllib.request.urlopen(url, timeout=15) as r:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
         obs = [o for o in data["observations"] if o["value"] != "."]
         return float(obs[0]["value"]) if obs else None
@@ -30,7 +27,6 @@ def fetch_fred(series_id, limit=1):
         print(f"  FRED {series_id} 오류: {e}")
         return None
 
-# ── Yahoo Finance ─────────────────────────────────────────────────
 def fetch_yahoo(symbol):
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=5d"
     try:
@@ -39,46 +35,40 @@ def fetch_yahoo(symbol):
             data = json.loads(r.read())
         meta  = data["chart"]["result"][0]["meta"]
         price = meta["regularMarketPrice"]
-        prev  = meta.get("chartPreviousClose") or meta.get("previousClose", price)
+        prev  = meta.get("chartPreviousClose") or meta.get("previousClose") or price
         chg   = price - prev
-        pct   = (chg / prev) * 100 if prev else 0
+        pct   = (chg / prev * 100) if prev else 0
         return {"price": price, "chg": chg, "pct": pct}
     except Exception as e:
         print(f"  Yahoo {symbol} 오류: {e}")
         return None
 
-# ── Stooq — TOPIX 전용 ────────────────────────────────────────────
 def fetch_topix_stooq():
-    url = "https://stooq.com/q/d/l/?s=%5Etpx&i=d"  # TOPIX 일봉 CSV
+    url = "https://stooq.com/q/d/l/?s=%5Etpx&i=d"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=15) as r:
             lines = r.read().decode("utf-8").strip().split("\n")
-        # CSV: Date,Open,High,Low,Close,Volume
-        # 마지막 2줄로 전일/당일 종가 계산
         if len(lines) < 3:
             return None
         latest  = lines[-1].split(",")
         prev    = lines[-2].split(",")
-        price   = float(latest[4])   # Close
+        price   = float(latest[4])
         prev_cl = float(prev[4])
         chg     = price - prev_cl
-        pct     = (chg / prev_cl) * 100 if prev_cl else 0
+        pct     = (chg / prev_cl * 100) if prev_cl else 0
         print(f"  TOPIX (stooq): {price:.2f} ({chg:+.2f} / {pct:+.2f}%)")
         return {"price": price, "chg": chg, "pct": pct}
     except Exception as e:
         print(f"  TOPIX stooq 오류: {e}")
         return None
 
-# ── Nikkei (Yahoo 우선, FRED 폴백) ────────────────────────────────
 def fetch_nikkei():
     r = fetch_yahoo("^N225")
     if r: return r
     price = fetch_fred("NIKKEI225")
-    if price: return {"price": price, "chg": None, "pct": None}
-    return None
+    return {"price": price, "chg": None, "pct": None} if price else None
 
-# ── Fear & Greed ──────────────────────────────────────────────────
 def fetch_fear_greed():
     url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
     try:
@@ -90,11 +80,8 @@ def fetch_fear_greed():
         print(f"  Fear&Greed 오류: {e}")
         return None
 
-# ── 포맷 헬퍼 ─────────────────────────────────────────────────────
 def fmt_num(v, fmt="USD"):
     if v is None: return "—"
-    if fmt in ("JPY", "KRW") and v > 100:
-        return f"{v:,.2f}"
     return f"{v:,.2f}"
 
 def fmt_chg(chg, pct):
@@ -107,53 +94,37 @@ def border_col(chg):
     if chg is None: return "rgba(28,35,51,1)"
     return "rgba(31,189,138,.35)" if chg >= 0 else "rgba(232,73,90,.35)"
 
-# ── HTML 치환 ─────────────────────────────────────────────────────
-def replace(html, pattern, new_val):
-    """new_val을 lambda로 감싸서 HTML 특수문자 충돌 방지"""
-    def repl(m):
-        # \g<1> 등 그룹 참조를 직접 처리
-        result = re.sub(r'\\g<(\d+)>', lambda g: m.group(int(g.group(1))), new_val)
-        return result
-    new_html, n = re.subn(pattern, repl, html, count=1, flags=re.DOTALL)
+# ── 핵심: lambda 방식으로 HTML 특수문자 충돌 완전 방지 ─────────────
+def sub(html, pattern, repl_fn):
+    new_html, n = re.subn(pattern, repl_fn, html, count=1, flags=re.DOTALL)
     if n == 0:
-        print(f"  ⚠️  패턴 미매칭: {pattern[:60]}")
+        print(f"  ⚠️  미매칭: {pattern[:60]}")
     return new_html
 
 def set_text(html, el_id, text):
-    """id 요소의 텍스트 내용만 교체 (HTML 태그 포함 가능)"""
-    pattern = rf'(id="{el_id}"[^>]*>)[^<]*'
-    def repl(m): return m.group(1) + text
-    new_html, n = re.subn(pattern, repl, html, count=1, flags=re.DOTALL)
-    if n == 0:
-        print(f"  ⚠️  패턴 미매칭: id={el_id}")
-    return new_html
+    return sub(html, rf'(id="{el_id}"[^>]*>)[^<]*',
+               lambda m: m.group(1) + text)
 
 def set_border(html, el_id, border):
-    """spill 카드 테두리 색상 업데이트 — style 속성 없어도 동작"""
-    # style 있는 경우
-    pattern1 = rf'(id="idx-{el_id}"[^>]*style=")[^"]*(")'
-    def repl1(m): return m.group(1) + f'border-color:{border};' + m.group(2)
-    new_html, n = re.subn(pattern1, repl1, html, count=1, flags=re.DOTALL)
-    if n == 0:
-        # style 없는 경우 — class="spill" 다음에 style 추가
-        pattern2 = rf'(id="idx-{el_id}")'
-        def repl2(m): return m.group(1) + f' style="border-color:{border};"'
-        new_html, n2 = re.subn(pattern2, repl2, html, count=1)
-        if n2 == 0:
-            print(f"  ⚠️  border 패턴 미매칭: id=idx-{el_id}")
+    new_html, n = re.subn(
+        rf'(id="idx-{el_id}"[^>]*style=")[^"]*(")',
+        lambda m: m.group(1) + f'border-color:{border};' + m.group(2),
+        html, count=1, flags=re.DOTALL)
+    if n > 0:
+        return new_html
+    new_html, n = re.subn(
+        rf'(id="idx-{el_id}")',
+        lambda m: m.group(1) + f' style="border-color:{border};"',
+        html, count=1)
     return new_html
 
 def update_index_card(html, idx_id, data, fmt="USD"):
     if not data: return html
-    price_str = fmt_num(data["price"], fmt)
-    chg_html  = fmt_chg(data.get("chg"), data.get("pct"))
-    border    = border_col(data.get("chg"))
-    html = set_text(html, f"v-{idx_id}", price_str)
-    html = set_text(html, f"c-{idx_id}", chg_html)
-    html = set_border(html, idx_id, border)
+    html = set_text(html, f"v-{idx_id}", fmt_num(data["price"], fmt))
+    html = set_text(html, f"c-{idx_id}", fmt_chg(data.get("chg"), data.get("pct")))
+    html = set_border(html, idx_id, border_col(data.get("chg")))
     return html
 
-# ── 메인 ──────────────────────────────────────────────────────────
 def update_dashboard():
     print("=" * 55)
     print(f"대시보드 업데이트: {datetime.now(JST).strftime('%Y-%m-%d %H:%M JST')}")
@@ -161,7 +132,7 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_nikkei()
-    topix   = fetch_topix_stooq()        # stooq 전용
+    topix   = fetch_topix_stooq()
     mothers = fetch_yahoo("2516.T")
     kospi   = fetch_yahoo("^KS11")
     kosdaq  = fetch_yahoo("^KQ11")
@@ -173,269 +144,24 @@ def update_dashboard():
 
     for name, d in [("NKY",nk225),("TOPIX",topix),("Mothers",mothers),
                     ("KOSPI",kospi),("KOSDAQ",kosdaq),
-                    ("SPX",spx),("NDX",ndx),("DJI",dji),
-                    ("RUT",rut),("SOX",sox)]:
+                    ("SPX",spx),("NDX",ndx),("DJI",dji),("RUT",rut),("SOX",sox)]:
         if d:
-            chg_str = f" ({'+' if d['chg']>=0 else ''}{d['chg']:.2f})" if d.get('chg') is not None else ""
-            print(f"  {name}: {d['price']:,.2f}{chg_str}")
+            s = f" ({'+' if d['chg']>=0 else ''}{d['chg']:.2f})" if d.get("chg") is not None else ""
+            print(f"  {name}: {d['price']:,.2f}{s}")
         else:
             print(f"  {name}: 수집 실패")
 
     print("\n[2] 거시지표 수집...")
-    vix    = fetch_fred("VIXCLS")
-    y10    = fetch_fred("DGS10")
-    y2     = fetch_fred("DGS2")
-    y30    = fetch_fred("DGS30")
-    wti    = fetch_fred("DCOILWTICO")
-    brent  = fetch_fred("DCOILBRENTEU")
-    fg     = fetch_fear_greed()
+    vix   = fetch_fred("VIXCLS")
+    y10   = fetch_fred("DGS10")
+    y2    = fetch_fred("DGS2")
+    y30   = fetch_fred("DGS30")
+    wti   = fetch_fred("DCOILWTICO")
+    brent = fetch_fred("DCOILBRENTEU")
+    fg    = fetch_fear_greed()
     spread = round(y10 - y2, 2) if y10 and y2 else None
-
-    html_path = os.path.join(os.path.dirname(__file__), "index.html")
-    with open(html_path, "r", encoding="utf-8") as f:
-        html = f.read()
-
-    print("\n[3] HTML 업데이트...")
-    today_kr = datetime.now(JST).strftime("%Y년 %m월 %d일")
-    today    = datetime.now(JST).strftime("%Y.%m.%d")
-
-    # ── 지수 카드 ──
-    html = update_index_card(html, "nk225",   nk225,   "JPY")
-    html = update_index_card(html, "topix",   topix,   "JPY")
-    html = update_index_card(html, "mothers", mothers, "JPY")
-    html = update_index_card(html, "kospi",   kospi,   "KRW")
-    html = update_index_card(html, "kosdaq",  kosdaq,  "KRW")
-    html = update_index_card(html, "spx",     spx,     "USD")
-    html = update_index_card(html, "ndx",     ndx,     "USD")
-    html = update_index_card(html, "dji",     dji,     "USD")
-    html = update_index_card(html, "rut",     rut,     "USD")
-    html = update_index_card(html, "sox",     sox,     "USD")
-
-    # ── TOPIX 라벨에 "전일 종가" 배지 표시 ──
-    if topix:
-        html = set_text(html, "idx-topix",
-            '<div class="sl">TOPIX <span style="font-size:.58rem;color:var(--muted);">(전일종가)</span></div>'
-            f'<div class="sv" id="v-topix" style="font-size:1.4rem;">{fmt_num(topix["price"], "JPY")}</div>'
-            f'<div style="font-size:.72rem;margin-top:3px;" id="c-topix">{fmt_chg(topix.get("chg"), topix.get("pct"))}</div>'
-        )
-
-    # ── 타임스탬프 ──
-    ts_str = datetime.now(JST).strftime("%Y.%m.%d %H:%M JST")
-    html = replace(html,
-        r'(id="idx-timestamp"[^>]*>)[^<]*',
-        rf'\g<1>📊 GitHub Actions 자동 업데이트 · {ts_str}')
-
-    # ── VIX ──
-    if vix:
-        html = replace(html,
-            r'(📊 VIX — 공포지수.*?<div class="bval"[^>]+>)[0-9.]+',
-            rf'\g<1>{vix:.2f}')
-        html = replace(html,
-            r'(VIX — 공포지수.*?<div class="blabel">)[^<]+',
-            rf'\g<1>{today} 종가')
-        print(f"  ✅ VIX: {vix:.2f}")
-
-    # ── 수익률 곡선 ──
-    if spread is not None:
-        html = replace(html,
-            r'(📉 미국 수익률 곡선.*?<div class="bval"[^>]+>)[^<]+',
-            rf'\g<1>{spread:+.2f}%p')
-    if y2:
-        html = replace(html, r'(<td>2년</td><td class="mono">)[0-9.]+(%</td>)', rf'\g<1>{y2:.2f}\2')
-    if y10:
-        html = replace(html, r'(<td>10년</td><td class="mono">)[0-9.]+(%</td>)', rf'\g<1>{y10:.2f}\2')
-    if y30:
-        html = replace(html, r'(<td>30년</td><td class="mono">)[0-9.]+(%</td>)', rf'\g<1>{y30:.2f}\2')
-
-    # ── Fear & Greed ──
-    if fg:
-        fg_labels = {(0,24):"EXTREME FEAR",(25,44):"FEAR",(45,55):"NEUTRAL",(56,75):"GREED",(76,100):"EXTREME GREED"}
-        fg_lbl = next(v for (lo,hi),v in fg_labels.items() if lo <= fg <= hi)
-        fg_col = "#e8495a" if fg <= 24 else "#e8a030" if fg <= 44 else "#dde3ee" if fg <= 55 else "#1fbd8a"
-        html = replace(html, r'(gauge-num" style="color:)[^"]+(">[0-9]+)', rf'\g<1>{fg_col}\2')
-        html = replace(html, r'(gauge-num" style="color:[^"]+">)[0-9]+', rf'\g<1>{fg}')
-        html = replace(html, r'(gauge-status" style="color:)[^"]+(">[^<]+)', rf'\g<1>{fg_col}\2')
-        html = replace(html, r'(gauge-status" style="color:[^"]+">)[^<]+', rf'\g<1>{fg_lbl}')
-        html = replace(html, r'(현재 \()\d+/\d+(\))', rf'\g<1>{datetime.now(JST).strftime("%-m/%-d")}\2')
-        html = replace(html, r'(pbar-fill" style="width:)[0-9]+(%";background:var\(--red\))', rf'\g<1>{fg}\2')
-        print(f"  ✅ Fear&Greed: {fg} ({fg_lbl})")
-
-    # ── WTI / 브렌트 ──
-    if wti:
-        html = replace(html, r'(WTI 원유</div><div class="sv"[^>]+>\$)[0-9.]+', rf'\g<1>{wti:.2f}')
-    if brent:
-        html = replace(html, r'(브렌트유</div><div class="sv"[^>]+>\$)[0-9.]+', rf'\g<1>{brent:.0f}')
-
-    # ── 요약표 ──
-    if nk225:  html = replace(html, r'(<td>닛케이225</td><td class="mono">)[0-9,]+', rf'\g<1>{nk225["price"]:,.0f}')
-    if vix:    html = replace(html, r'(<td>VIX 공포지수</td><td class="mono">)[0-9.]+', rf'\g<1>{vix:.2f}')
-    if spread: html = replace(html, r'(<td>수익률 곡선 10Y-2Y</td><td class="mono">)[+\-0-9.]+%p', rf'\g<1>{spread:+.2f}%p')
-    if wti:    html = replace(html, r'(<td>WTI 원유</td><td class="mono">\$)[0-9.]+', rf'\g<1>{wti:.2f}')
-    if brent:  html = replace(html, r'(<td>브렌트유</td><td class="mono">\$)[0-9.]+', rf'\g<1>{brent:.0f}')
-
-    # ── 푸터 ──
-    html = replace(html, r'최종 [자동수동]+ 업데이트: [0-9년월일 ]+', f'최종 자동 업데이트: {today_kr}')
-
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(html)
-
-    print(f"\n✅ 저장 완료: {html_path}")
-    print("=" * 55)
-
-if __name__ == "__main__":
-    update_dashboard()
-
-"""
-글로벌 투자 대시보드 자동 업데이트 스크립트
-매일 15:30 JST (일본장 마감 후) 실행
-"""
-
-import urllib.request
-import json
-import re
-import os
-import sys
-from datetime import datetime, timezone, timedelta
-
-FRED_API_KEY = "83e6861e8b657ab00872c409fba12af7"
-JST = timezone(timedelta(hours=9))
-
-# ── FRED API ──────────────────────────────────────────────────────
-def fetch_fred(series_id, limit=1):
-    url = (
-        f"https://api.stlouisfed.org/fred/series/observations"
-        f"?series_id={series_id}&api_key={FRED_API_KEY}"
-        f"&file_type=json&sort_order=desc&limit={limit}"
-    )
-    try:
-        with urllib.request.urlopen(url, timeout=15) as r:
-            data = json.loads(r.read())
-        obs = [o for o in data["observations"] if o["value"] != "."]
-        return float(obs[0]["value"]) if obs else None
-    except Exception as e:
-        print(f"  FRED {series_id} 오류: {e}")
-        return None
-
-# ── Yahoo Finance ─────────────────────────────────────────────────
-def fetch_yahoo(symbol):
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=2d"
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read())
-        meta  = data["chart"]["result"][0]["meta"]
-        price = meta["regularMarketPrice"]
-        prev  = meta.get("chartPreviousClose") or meta.get("previousClose", price)
-        chg   = price - prev
-        pct   = (chg / prev) * 100 if prev else 0
-        return {"price": price, "chg": chg, "pct": pct}
-    except Exception as e:
-        print(f"  Yahoo {symbol} 오류: {e}")
-        return None
-
-# ── Nikkei (FRED fallback) ────────────────────────────────────────
-def fetch_nikkei():
-    r = fetch_yahoo("^N225")
-    if r: return r
-    price = fetch_fred("NIKKEI225")
-    if price: return {"price": price, "chg": None, "pct": None}
-    return None
-
-# ── Fear & Greed ──────────────────────────────────────────────────
-def fetch_fear_greed():
-    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read())
-        return round(float(data["fear_and_greed"]["score"]))
-    except Exception as e:
-        print(f"  Fear&Greed 오류: {e}")
-        return None
-
-# ── 포맷 헬퍼 ─────────────────────────────────────────────────────
-def fmt_num(v, fmt="USD"):
-    if v is None: return "—"
-    if fmt == "JPY" and v > 100:
-        return f"{v:,.2f}"
-    return f"{v:,.2f}"
-
-def fmt_chg(chg, pct):
-    if chg is None: return "—"
-    sign = "+" if chg >= 0 else ""
-    col = "#1fbd8a" if chg >= 0 else "#e8495a"
-    return f'<span style="color:{col};font-weight:600;">{sign}{chg:.2f} ({sign}{pct:.2f}%)</span>'
-
-def border_col(chg):
-    if chg is None: return "rgba(28,35,51,1)"
-    return "rgba(31,189,138,.35)" if chg >= 0 else "rgba(232,73,90,.35)"
-
-# ── HTML 치환 ─────────────────────────────────────────────────────
-def replace(html, pattern, new_val):
-    new_html, n = re.subn(pattern, new_val, html, count=1, flags=re.DOTALL)
-    if n == 0:
-        print(f"  ⚠️  패턴 미매칭: {pattern[:60]}")
-    return new_html
-
-def update_index_card(html, idx_id, data, fmt="USD"):
-    if not data: return html
-    price_str = fmt_num(data["price"], fmt)
-    chg_html  = fmt_chg(data.get("chg"), data.get("pct"))
-    border    = border_col(data.get("chg"))
-    # 수치 업데이트
-    html = replace(html,
-        rf'(id="v-{idx_id}"[^>]*>)[^<]*',
-        rf'\g<1>{price_str}')
-    # 등락 업데이트
-    html = replace(html,
-        rf'(id="c-{idx_id}"[^>]*>)[^<]*',
-        rf'\g<1>{chg_html}')
-    # 카드 테두리
-    html = replace(html,
-        rf'(id="idx-{idx_id}"[^>]*style=")[^"]*(")',
-        rf'\g<1border-color:{border};\2')
-    return html
-
-# ── 메인 ──────────────────────────────────────────────────────────
-def update_dashboard():
-    print("=" * 55)
-    print(f"대시보드 업데이트: {datetime.now(JST).strftime('%Y-%m-%d %H:%M JST')}")
-    print("=" * 55)
-
-    print("\n[1] 지수 데이터 수집...")
-    nk225   = fetch_nikkei()
-    topix   = fetch_yahoo("1306.T")
-    mothers = fetch_yahoo("2516.T")
-    kospi   = fetch_yahoo("^KS11")
-    kosdaq  = fetch_yahoo("^KQ11")
-    spx     = fetch_yahoo("^GSPC")
-    ndx     = fetch_yahoo("^NDX")
-    dji     = fetch_yahoo("^DJI")
-    rut     = fetch_yahoo("^RUT")
-    sox     = fetch_yahoo("^SOX")
-
-    for name, d in [("NKY",nk225),("TOPIX",topix),("Mothers",mothers),
-                    ("KOSPI",kospi),("KOSDAQ",kosdaq),
-                    ("SPX",spx),("NDX",ndx),
-                    ("DJI",dji),("RUT",rut),("SOX",sox)]:
-        if d:
-            chg_str = f" ({'+' if d['chg']>=0 else ''}{d['chg']:.2f})" if d.get('chg') is not None else ""
-            print(f"  {name}: {d['price']:,.2f}{chg_str}")
-        else:
-            print(f"  {name}: 수집 실패")
-
-    print("\n[2] 거시지표 수집...")
-    vix    = fetch_fred("VIXCLS")
-    y10    = fetch_fred("DGS10")
-    y2     = fetch_fred("DGS2")
-    y30    = fetch_fred("DGS30")
-    wti    = fetch_fred("DCOILWTICO")
-    brent  = fetch_fred("DCOILBRENTEU")
-    fg     = fetch_fear_greed()
-    spread = round(y10 - y2, 2) if y10 and y2 else None
-
     print(f"  VIX:{vix}  10Y:{y10}  2Y:{y2}  30Y:{y30}")
-    print(f"  WTI:${wti}  Brent:${brent}  F&G:{fg}  Spread:{spread:+.2f}" if spread else "")
+    print(f"  WTI:${wti}  Brent:${brent}  F&G:{fg}  Spread:{spread}")
 
     html_path = os.path.join(os.path.dirname(__file__), "index.html")
     with open(html_path, "r", encoding="utf-8") as f:
@@ -444,8 +170,9 @@ def update_dashboard():
     print("\n[3] HTML 업데이트...")
     today_kr = datetime.now(JST).strftime("%Y년 %m월 %d일")
     today    = datetime.now(JST).strftime("%Y.%m.%d")
+    now_str  = datetime.now(JST).strftime("%Y.%m.%d %H:%M JST")
 
-    # ── 지수 카드 업데이트 ──
+    # 지수 카드
     html = update_index_card(html, "nk225",   nk225,   "JPY")
     html = update_index_card(html, "topix",   topix,   "JPY")
     html = update_index_card(html, "mothers", mothers, "JPY")
@@ -456,74 +183,84 @@ def update_dashboard():
     html = update_index_card(html, "dji",     dji,     "USD")
     html = update_index_card(html, "rut",     rut,     "USD")
     html = update_index_card(html, "sox",     sox,     "USD")
+    print("  ✅ 지수 카드 완료")
 
-    # ── 타임스탬프 ──
-    ts_str = datetime.now(JST).strftime("%Y.%m.%d %H:%M JST")
-    html = replace(html,
-        r'(id="idx-timestamp"[^>]*>)[^<]*',
-        rf'\g<1>📊 GitHub Actions 종가 · {ts_str}')
+    # 타임스탬프
+    html = set_text(html, "idx-timestamp",
+        f'📊 GitHub Actions 자동 업데이트 · {now_str}')
 
-    # ── VIX ──
+    # VIX
     if vix:
-        html = replace(html,
-            r'(📊 VIX — 공포지수.*?<div class="bval"[^>]+>)[0-9.]+',
-            rf'\g<1>{vix:.2f}')
-        html = replace(html,
-            r'(VIX — 공포지수.*?<div class="blabel">)[^<]+',
-            rf'\g<1>{today} 종가')
+        html = sub(html, r'(📊 VIX — 공포지수.*?<div class="bval"[^>]+>)[0-9.]+',
+                   lambda m: m.group(1) + f'{vix:.2f}')
+        html = sub(html, r'(VIX — 공포지수.*?<div class="blabel">)[^<]+',
+                   lambda m: m.group(1) + f'{today} 종가')
         print(f"  ✅ VIX: {vix:.2f}")
 
-    # ── 수익률 곡선 ──
+    # 수익률 곡선
     if spread is not None:
-        spread_str = f"{spread:+.2f}%p"
-        html = replace(html,
-            r'(📉 미국 수익률 곡선.*?<div class="bval"[^>]+>)[^<]+',
-            rf'\g<1>{spread_str}')
-        print(f"  ✅ 스프레드: {spread_str}")
-
+        html = sub(html, r'(📉 미국 수익률 곡선.*?<div class="bval"[^>]+>)[^<]+',
+                   lambda m: m.group(1) + f'{spread:+.2f}%p')
     if y2:
-        html = replace(html,
-            r'(<td>2년</td><td class="mono">)[0-9.]+(%</td>)',
-            rf'\g<1>{y2:.2f}\2')
+        html = sub(html, r'(<td>2년</td><td class="mono">)[0-9.]+(%</td>)',
+                   lambda m: m.group(1) + f'{y2:.2f}' + m.group(2))
     if y10:
-        html = replace(html,
-            r'(<td>10년</td><td class="mono">)[0-9.]+(%</td>)',
-            rf'\g<1>{y10:.2f}\2')
+        html = sub(html, r'(<td>10년</td><td class="mono">)[0-9.]+(%</td>)',
+                   lambda m: m.group(1) + f'{y10:.2f}' + m.group(2))
     if y30:
-        html = replace(html,
-            r'(<td>30년</td><td class="mono">)[0-9.]+(%</td>)',
-            rf'\g<1>{y30:.2f}\2')
+        html = sub(html, r'(<td>30년</td><td class="mono">)[0-9.]+(%</td>)',
+                   lambda m: m.group(1) + f'{y30:.2f}' + m.group(2))
 
-    # ── Fear & Greed ──
+    # Fear & Greed
     if fg:
-        fg_labels = {(0,24):"EXTREME FEAR",(25,44):"FEAR",(45,55):"NEUTRAL",(56,75):"GREED",(76,100):"EXTREME GREED"}
-        fg_lbl = next(v for (lo,hi),v in fg_labels.items() if lo <= fg <= hi)
-        fg_col = "#e8495a" if fg <= 24 else "#e8a030" if fg <= 44 else "#dde3ee" if fg <= 55 else "#1fbd8a"
-        html = replace(html, r'(gauge-num" style="color:)[^"]+(">[0-9]+)', rf'\g<1>{fg_col}\2')
-        html = replace(html, r'(gauge-num" style="color:[^"]+">)[0-9]+', rf'\g<1>{fg}')
-        html = replace(html, r'(class="gauge-status" style="color:)[^"]+(">[^<]+)', rf'\g<1>{fg_col}\2')
-        html = replace(html, r'(gauge-status" style="color:[^"]+">)[^<]+', rf'\g<1>{fg_lbl}')
-        html = replace(html, r'(현재 \()\d+/\d+(\))', rf'\g<1>{datetime.now(JST).strftime("%-m/%-d")}\2')
-        html = replace(html, r'(pbar-fill" style="width:)[0-9]+(%";background:var\(--red\))', rf'\g<1>{fg}\2')
+        fg_map = {(0,24):"EXTREME FEAR",(25,44):"FEAR",(45,55):"NEUTRAL",
+                  (56,75):"GREED",(76,100):"EXTREME GREED"}
+        fg_lbl = next(v for (lo,hi),v in fg_map.items() if lo <= fg <= hi)
+        fg_col = "#e8495a" if fg<=24 else "#e8a030" if fg<=44 else "#dde3ee" if fg<=55 else "#1fbd8a"
+        html = sub(html, r'(gauge-num" style="color:)[^"]+',
+                   lambda m: m.group(1) + fg_col)
+        html = sub(html, r'(gauge-num" style="color:[^"]+">)\d+',
+                   lambda m: m.group(1) + str(fg))
+        html = sub(html, r'(gauge-status" style="color:)[^"]+',
+                   lambda m: m.group(1) + fg_col)
+        html = sub(html, r'(gauge-status" style="color:[^"]+">)[^<]+',
+                   lambda m: m.group(1) + fg_lbl)
+        html = sub(html, r'(현재 \()\d+/\d+(\))',
+                   lambda m: m.group(1) + datetime.now(JST).strftime("%-m/%-d") + m.group(2))
+        html = sub(html, r'(pbar-fill" style="width:)\d+(%";background:var\(--red\))',
+                   lambda m: m.group(1) + str(fg) + m.group(2))
         print(f"  ✅ Fear&Greed: {fg} ({fg_lbl})")
 
-    # ── WTI / 브렌트 ──
+    # WTI / 브렌트
     if wti:
-        html = replace(html, r'(WTI 원유</div><div class="sv"[^>]+>\$)[0-9.]+', rf'\g<1>{wti:.2f}')
+        html = sub(html, r'(WTI 원유</div><div class="sv"[^>]+>\$)[0-9.]+',
+                   lambda m: m.group(1) + f'{wti:.2f}')
         print(f"  ✅ WTI: ${wti:.2f}")
     if brent:
-        html = replace(html, r'(브렌트유</div><div class="sv"[^>]+>\$)[0-9.]+', rf'\g<1>{brent:.0f}')
+        html = sub(html, r'(브렌트유</div><div class="sv"[^>]+>\$)[0-9.]+',
+                   lambda m: m.group(1) + f'{brent:.0f}')
         print(f"  ✅ Brent: ${brent:.0f}")
 
-    # ── 요약표 ──
-    if nk225:  html = replace(html, r'(<td>닛케이225</td><td class="mono">)[0-9,]+', rf'\g<1>{nk225["price"]:,.0f}')
-    if vix:    html = replace(html, r'(<td>VIX 공포지수</td><td class="mono">)[0-9.]+', rf'\g<1>{vix:.2f}')
-    if spread: html = replace(html, r'(<td>수익률 곡선 10Y-2Y</td><td class="mono">)[+\-0-9.]+%p', rf'\g<1>{spread:+.2f}%p')
-    if wti:    html = replace(html, r'(<td>WTI 원유</td><td class="mono">\$)[0-9.]+', rf'\g<1>{wti:.2f}')
-    if brent:  html = replace(html, r'(<td>브렌트유</td><td class="mono">\$)[0-9.]+', rf'\g<1>{brent:.0f}')
+    # 요약표
+    if nk225:
+        html = sub(html, r'(<td>닛케이225</td><td class="mono">)[0-9,]+',
+                   lambda m: m.group(1) + f'{nk225["price"]:,.0f}')
+    if vix:
+        html = sub(html, r'(<td>VIX 공포지수</td><td class="mono">)[0-9.]+',
+                   lambda m: m.group(1) + f'{vix:.2f}')
+    if spread:
+        html = sub(html, r'(<td>수익률 곡선 10Y-2Y</td><td class="mono">)[+\-0-9.]+%p',
+                   lambda m: m.group(1) + f'{spread:+.2f}%p')
+    if wti:
+        html = sub(html, r'(<td>WTI 원유</td><td class="mono">\$)[0-9.]+',
+                   lambda m: m.group(1) + f'{wti:.2f}')
+    if brent:
+        html = sub(html, r'(<td>브렌트유</td><td class="mono">\$)[0-9.]+',
+                   lambda m: m.group(1) + f'{brent:.0f}')
 
-    # ── 푸터 ──
-    html = replace(html, r'최종 [자동수동]+ 업데이트: [0-9년월일 ]+', f'최종 자동 업데이트: {today_kr}')
+    # 푸터
+    html = sub(html, r'최종 .{0,5}업데이트: [\d년월일 ]+',
+               lambda m: f'최종 자동 업데이트: {today_kr}')
 
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(html)
