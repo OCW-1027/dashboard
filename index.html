@@ -150,58 +150,64 @@
   <div>
     <div class="sec-head"><span class="sec-num">00</span><span class="sec-title">글로벌 주요 지수 현황</span><div class="sec-line"></div><span class="sec-badge" id="idx-badge">로딩 중...</span></div>
 
-    <!-- 일본 지수 -->
-    <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:8px;">🇯🇵 일본</div>
-    <div class="g4" style="margin-bottom:16px;">
-      <div class="spill" id="idx-nk225">
-        <div class="sl">닛케이 225</div>
-        <div class="sv" id="v-nk225" style="font-size:1.3rem;">—</div>
-        <div style="font-size:.72rem;margin-top:3px;" id="c-nk225">—</div>
-      </div>
-      <div class="spill" id="idx-topix">
-        <div class="sl">TOPIX</div>
-        <div class="sv" id="v-topix" style="font-size:1.3rem;">—</div>
-        <div style="font-size:.72rem;margin-top:3px;" id="c-topix">—</div>
-      </div>
-      <div class="spill" id="idx-mothers">
-        <div class="sl">TSE 그로스 (마더스)</div>
-        <div class="sv" id="v-mothers" style="font-size:1.3rem;">—</div>
-        <div style="font-size:.72rem;margin-top:3px;" id="c-mothers">—</div>
-      </div>
-      <div class="spill" id="idx-jpyusd">
-        <div class="sl">USD/JPY</div>
-        <div class="sv" id="v-jpyusd" style="font-size:1.3rem;">—</div>
-        <div style="font-size:.72rem;margin-top:3px;" id="c-jpyusd">—</div>
-      </div>
-    </div>
 
-    <!-- 미국 지수 -->
+    <!-- 미국 지수 (상단) -->
     <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">🇺🇸 미국</div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:16px;">
       <div class="spill" id="idx-spx">
         <div class="sl">S&amp;P 500</div>
-        <div class="sv" id="v-spx" style="font-size:1.3rem;">—</div>
+        <div class="sv" id="v-spx" style="font-size:1.4rem;">—</div>
         <div style="font-size:.72rem;margin-top:3px;" id="c-spx">—</div>
       </div>
       <div class="spill" id="idx-ndx">
         <div class="sl">나스닥 100</div>
-        <div class="sv" id="v-ndx" style="font-size:1.3rem;">—</div>
+        <div class="sv" id="v-ndx" style="font-size:1.4rem;">—</div>
         <div style="font-size:.72rem;margin-top:3px;" id="c-ndx">—</div>
       </div>
       <div class="spill" id="idx-dji">
         <div class="sl">다우존스</div>
-        <div class="sv" id="v-dji" style="font-size:1.3rem;">—</div>
+        <div class="sv" id="v-dji" style="font-size:1.4rem;">—</div>
         <div style="font-size:.72rem;margin-top:3px;" id="c-dji">—</div>
       </div>
       <div class="spill" id="idx-rut">
         <div class="sl">러셀 2000</div>
-        <div class="sv" id="v-rut" style="font-size:1.3rem;">—</div>
+        <div class="sv" id="v-rut" style="font-size:1.4rem;">—</div>
         <div style="font-size:.72rem;margin-top:3px;" id="c-rut">—</div>
       </div>
       <div class="spill" id="idx-sox">
         <div class="sl">필라델피아 반도체</div>
-        <div class="sv" id="v-sox" style="font-size:1.3rem;">—</div>
+        <div class="sv" id="v-sox" style="font-size:1.4rem;">—</div>
         <div style="font-size:.72rem;margin-top:3px;" id="c-sox">—</div>
+      </div>
+    </div>
+
+    <!-- 일본·한국 지수 (하단 5열) -->
+    <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:8px;">🇯🇵 일본 &nbsp;·&nbsp; 🇰🇷 한국</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
+      <div class="spill" id="idx-nk225">
+        <div class="sl">닛케이 225</div>
+        <div class="sv" id="v-nk225" style="font-size:1.4rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-nk225">—</div>
+      </div>
+      <div class="spill" id="idx-topix">
+        <div class="sl">TOPIX</div>
+        <div class="sv" id="v-topix" style="font-size:1.4rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-topix">—</div>
+      </div>
+      <div class="spill" id="idx-mothers">
+        <div class="sl">東証グロース250 ETF</div>
+        <div class="sv" id="v-mothers" style="font-size:1.4rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-mothers">—</div>
+      </div>
+      <div class="spill" id="idx-kospi">
+        <div class="sl">코스피 (KOSPI)</div>
+        <div class="sv" id="v-kospi" style="font-size:1.4rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-kospi">—</div>
+      </div>
+      <div class="spill" id="idx-kosdaq">
+        <div class="sl">코스닥 (KOSDAQ)</div>
+        <div class="sv" id="v-kosdaq" style="font-size:1.4rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-kosdaq">—</div>
       </div>
     </div>
 
@@ -211,20 +217,22 @@
   <script>
   // ── 지수 설정 ──────────────────────────────────────────────────
   const IDX_CONFIG = [
-    { id:'nk225',   sym:'^N225',    label:'닛케이 225',        fmt:'JPY' },
-    { id:'topix',   sym:'^TPX',     label:'TOPIX',             fmt:'JPY' },
-    { id:'mothers', sym:'^TSEGROWTX', label:'TSE 그로스',      fmt:'JPY' },
-    { id:'jpyusd',  sym:'USDJPY=X', label:'USD/JPY',           fmt:'JPY' },
-    { id:'spx',     sym:'^GSPC',    label:'S&P 500',           fmt:'USD' },
-    { id:'ndx',     sym:'^NDX',     label:'나스닥 100',        fmt:'USD' },
-    { id:'dji',     sym:'^DJI',     label:'다우존스',          fmt:'USD' },
-    { id:'rut',     sym:'^RUT',     label:'러셀 2000',         fmt:'USD' },
-    { id:'sox',     sym:'^SOX',     label:'필라델피아 반도체', fmt:'USD' },
+    { id:'nk225',   sym:'^N225',    label:'닛케이 225',          fmt:'JPY' },
+    { id:'topix',   sym:'998405.T', label:'TOPIX',               fmt:'JPY' },
+    { id:'mothers', sym:'2516.T',   label:'東証グロース250 ETF', fmt:'JPY' },
+    { id:'kospi',   sym:'^KS11',    label:'코스피',              fmt:'KRW' },
+    { id:'kosdaq',  sym:'^KQ11',    label:'코스닥',              fmt:'KRW' },
+    { id:'spx',     sym:'^GSPC',    label:'S&P 500',             fmt:'USD' },
+    { id:'ndx',     sym:'^NDX',     label:'나스닥 100',          fmt:'USD' },
+    { id:'dji',     sym:'^DJI',     label:'다우존스',            fmt:'USD' },
+    { id:'rut',     sym:'^RUT',     label:'러셀 2000',           fmt:'USD' },
+    { id:'sox',     sym:'^SOX',     label:'필라델피아 반도체',   fmt:'USD' },
   ];
 
   // ── 숫자 포맷 ──────────────────────────────────────────────────
   function fmtNum(v, fmt) {
     if (v == null) return '—';
+    if (fmt === 'KRW') return v.toLocaleString('ko-KR', {maximumFractionDigits:2});
     if (fmt === 'JPY' && v > 100) return v.toLocaleString('ja-JP', {maximumFractionDigits:2});
     return v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
   }

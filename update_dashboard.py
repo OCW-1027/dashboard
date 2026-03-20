@@ -118,8 +118,10 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_nikkei()
-    topix   = fetch_yahoo("^TOPIX")
-    mothers = fetch_yahoo("^TDGRTH")
+    topix   = fetch_yahoo("998405.T")
+    mothers = fetch_yahoo("2516.T")
+    kospi   = fetch_yahoo("^KS11")
+    kosdaq  = fetch_yahoo("^KQ11")
     spx     = fetch_yahoo("^GSPC")
     ndx     = fetch_yahoo("^NDX")
     dji     = fetch_yahoo("^DJI")
@@ -127,6 +129,7 @@ def update_dashboard():
     sox     = fetch_yahoo("^SOX")
 
     for name, d in [("NKY",nk225),("TOPIX",topix),("Mothers",mothers),
+                    ("KOSPI",kospi),("KOSDAQ",kosdaq),
                     ("SPX",spx),("NDX",ndx),
                     ("DJI",dji),("RUT",rut),("SOX",sox)]:
         if d:
@@ -160,6 +163,8 @@ def update_dashboard():
     html = update_index_card(html, "nk225",   nk225,   "JPY")
     html = update_index_card(html, "topix",   topix,   "JPY")
     html = update_index_card(html, "mothers", mothers, "JPY")
+    html = update_index_card(html, "kospi",   kospi,   "KRW")
+    html = update_index_card(html, "kosdaq",  kosdaq,  "KRW")
     html = update_index_card(html, "spx",     spx,     "USD")
     html = update_index_card(html, "ndx",     ndx,     "USD")
     html = update_index_card(html, "dji",     dji,     "USD")
