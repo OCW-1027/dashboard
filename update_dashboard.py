@@ -109,9 +109,38 @@ def border_col(chg):
 
 # ── HTML 치환 ─────────────────────────────────────────────────────
 def replace(html, pattern, new_val):
-    new_html, n = re.subn(pattern, new_val, html, count=1, flags=re.DOTALL)
+    """new_val을 lambda로 감싸서 HTML 특수문자 충돌 방지"""
+    def repl(m):
+        # \g<1> 등 그룹 참조를 직접 처리
+        result = re.sub(r'\\g<(\d+)>', lambda g: m.group(int(g.group(1))), new_val)
+        return result
+    new_html, n = re.subn(pattern, repl, html, count=1, flags=re.DOTALL)
     if n == 0:
         print(f"  ⚠️  패턴 미매칭: {pattern[:60]}")
+    return new_html
+
+def set_text(html, el_id, text):
+    """id 요소의 텍스트 내용만 교체 (HTML 태그 포함 가능)"""
+    pattern = rf'(id="{el_id}"[^>]*>)[^<]*'
+    def repl(m): return m.group(1) + text
+    new_html, n = re.subn(pattern, repl, html, count=1, flags=re.DOTALL)
+    if n == 0:
+        print(f"  ⚠️  패턴 미매칭: id={el_id}")
+    return new_html
+
+def set_border(html, el_id, border):
+    """spill 카드 테두리 색상 업데이트 — style 속성 없어도 동작"""
+    # style 있는 경우
+    pattern1 = rf'(id="idx-{el_id}"[^>]*style=")[^"]*(")'
+    def repl1(m): return m.group(1) + f'border-color:{border};' + m.group(2)
+    new_html, n = re.subn(pattern1, repl1, html, count=1, flags=re.DOTALL)
+    if n == 0:
+        # style 없는 경우 — class="spill" 다음에 style 추가
+        pattern2 = rf'(id="idx-{el_id}")'
+        def repl2(m): return m.group(1) + f' style="border-color:{border};"'
+        new_html, n2 = re.subn(pattern2, repl2, html, count=1)
+        if n2 == 0:
+            print(f"  ⚠️  border 패턴 미매칭: id=idx-{el_id}")
     return new_html
 
 def update_index_card(html, idx_id, data, fmt="USD"):
@@ -119,15 +148,9 @@ def update_index_card(html, idx_id, data, fmt="USD"):
     price_str = fmt_num(data["price"], fmt)
     chg_html  = fmt_chg(data.get("chg"), data.get("pct"))
     border    = border_col(data.get("chg"))
-    html = replace(html,
-        rf'(id="v-{idx_id}"[^>]*>)[^<]*',
-        rf'\g<1>{price_str}')
-    html = replace(html,
-        rf'(id="c-{idx_id}"[^>]*>)[^<]*',
-        rf'\g<1>{chg_html}')
-    html = replace(html,
-        rf'(id="idx-{idx_id}"[^>]*style=")[^"]*(")',
-        rf'\g<1>border-color:{border};\2')
+    html = set_text(html, f"v-{idx_id}", price_str)
+    html = set_text(html, f"c-{idx_id}", chg_html)
+    html = set_border(html, idx_id, border)
     return html
 
 # ── 메인 ──────────────────────────────────────────────────────────
@@ -190,9 +213,11 @@ def update_dashboard():
 
     # ── TOPIX 라벨에 "전일 종가" 배지 표시 ──
     if topix:
-        html = replace(html,
-            r'(id="idx-topix"[^>]*>.*?class="sl">)[^<]+',
-            r'\g<1>TOPIX <span style="font-size:.58rem;color:var(--muted);">(전일종가)</span>')
+        html = set_text(html, "idx-topix",
+            '<div class="sl">TOPIX <span style="font-size:.58rem;color:var(--muted);">(전일종가)</span></div>'
+            f'<div class="sv" id="v-topix" style="font-size:1.4rem;">{fmt_num(topix["price"], "JPY")}</div>'
+            f'<div style="font-size:.72rem;margin-top:3px;" id="c-topix">{fmt_chg(topix.get("chg"), topix.get("pct"))}</div>'
+        )
 
     # ── 타임스탬프 ──
     ts_str = datetime.now(JST).strftime("%Y.%m.%d %H:%M JST")
