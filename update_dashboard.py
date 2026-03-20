@@ -118,9 +118,8 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_nikkei()
-    topix   = fetch_yahoo("^TPX")
-    mothers = fetch_yahoo("^TSEGROWTX")
-    usdjpy  = fetch_yahoo("USDJPY=X")
+    topix   = fetch_yahoo("^TOPIX")
+    mothers = fetch_yahoo("^TDGRTH")
     spx     = fetch_yahoo("^GSPC")
     ndx     = fetch_yahoo("^NDX")
     dji     = fetch_yahoo("^DJI")
@@ -128,7 +127,7 @@ def update_dashboard():
     sox     = fetch_yahoo("^SOX")
 
     for name, d in [("NKY",nk225),("TOPIX",topix),("Mothers",mothers),
-                    ("USD/JPY",usdjpy),("SPX",spx),("NDX",ndx),
+                    ("SPX",spx),("NDX",ndx),
                     ("DJI",dji),("RUT",rut),("SOX",sox)]:
         if d:
             chg_str = f" ({'+' if d['chg']>=0 else ''}{d['chg']:.2f})" if d.get('chg') is not None else ""
@@ -161,7 +160,6 @@ def update_dashboard():
     html = update_index_card(html, "nk225",   nk225,   "JPY")
     html = update_index_card(html, "topix",   topix,   "JPY")
     html = update_index_card(html, "mothers", mothers, "JPY")
-    html = update_index_card(html, "jpyusd",  usdjpy,  "JPY")
     html = update_index_card(html, "spx",     spx,     "USD")
     html = update_index_card(html, "ndx",     ndx,     "USD")
     html = update_index_card(html, "dji",     dji,     "USD")
@@ -227,7 +225,6 @@ def update_dashboard():
         print(f"  ✅ Brent: ${brent:.0f}")
 
     # ── 요약표 ──
-    if usdjpy: html = replace(html, r'(<td>USD/JPY</td><td class="mono">¥)[0-9~.]+', rf'\g<1>{usdjpy["price"]:.2f}')
     if nk225:  html = replace(html, r'(<td>닛케이225</td><td class="mono">)[0-9,]+', rf'\g<1>{nk225["price"]:,.0f}')
     if vix:    html = replace(html, r'(<td>VIX 공포지수</td><td class="mono">)[0-9.]+', rf'\g<1>{vix:.2f}')
     if spread: html = replace(html, r'(<td>수익률 곡선 10Y-2Y</td><td class="mono">)[+\-0-9.]+%p', rf'\g<1>{spread:+.2f}%p')

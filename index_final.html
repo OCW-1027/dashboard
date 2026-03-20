@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>글로벌 투자 핵심 지표 대시보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--gold:#c9964a;--shadow:0 2px 20px rgba(0,0,0,.6);}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
+  #ticker-wrap{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.5);}
+  #ticker-wrap .tradingview-widget-container{height:46px;}
+  header{background:linear-gradient(160deg,#0c1220 0%,#0e1828 60%,#080d16 100%);border-bottom:1px solid var(--border);padding:36px 48px 30px;position:relative;overflow:hidden;}
+  header::before{content:'';position:absolute;top:-60px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(61,142,245,.05) 0%,transparent 65%);pointer-events:none;}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(61,142,245,.3),transparent);}
+  .header-inner{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+  .logo-area h1{font-family:'Cormorant Garamond',serif;font-size:2.1rem;font-weight:700;color:#e8edf8;line-height:1;margin-bottom:8px;}
+  .logo-area h1 span{color:var(--accent);}
+  .header-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .htag{font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid;}
+  .htag-b{color:var(--accent);border-color:rgba(61,142,245,.35);background:rgba(61,142,245,.06);}
+  .htag-g{color:var(--accent2);border-color:rgba(86,204,178,.35);background:rgba(86,204,178,.06);}
+  .htag-a{color:var(--amber);border-color:rgba(232,160,48,.35);background:rgba(232,160,48,.06);}
+  .htag-r{color:var(--red);border-color:rgba(232,73,90,.35);background:rgba(232,73,90,.06);}
+  .header-right{text-align:right;font-size:.75rem;color:var(--muted);line-height:2;}
+  .header-right .date{font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);font-weight:500;}
+  .live-dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px;animation:pulse 2s ease-in-out infinite;vertical-align:middle;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
+  .page{max-width:1440px;margin:0 auto;padding:32px 32px 80px;display:flex;flex-direction:column;gap:32px;}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .sec-num{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1px;}
+  .sec-title{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+  .sec-line{flex:1;height:1px;background:var(--border);}
+  .sec-badge{font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:3px;color:var(--green);background:rgba(31,189,138,.1);border:1px solid rgba(31,189,138,.2);}
+  .sec-badge-new{color:var(--red);background:rgba(232,73,90,.1);border-color:rgba(232,73,90,.2);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow);transition:border-color .25s;animation:fadeUp .5s ease both;}
+  .card:hover{border-color:var(--border2);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+  .card-title{font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+  .card-src{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);opacity:.6;}
+  .card-src a{color:inherit;text-decoration:none;}
+  .card-src a:hover{color:var(--accent);opacity:1;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .g-tv{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
+  .bval{font-family:'DM Mono',monospace;font-size:2.4rem;font-weight:400;letter-spacing:-1px;line-height:1;margin-bottom:5px;}
+  .blabel{font-size:.75rem;color:var(--muted);margin-bottom:12px;}
+  .delta{display:inline-flex;align-items:center;gap:3px;font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;padding:2px 7px;border-radius:4px;}
+  .up{color:var(--green);background:rgba(31,189,138,.1);}
+  .dn{color:var(--red);background:rgba(232,73,90,.1);}
+  .neu{color:var(--amber);background:rgba(232,160,48,.1);}
+  .tag{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 7px;border-radius:3px;}
+  .tg{color:var(--green);background:rgba(31,189,138,.12);}
+  .tr{color:var(--red);background:rgba(232,73,90,.12);}
+  .ta{color:var(--amber);background:rgba(232,160,48,.12);}
+  .tb{color:var(--accent);background:rgba(61,142,245,.12);}
+  .iblock{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
+  .iblock p{font-size:.8rem;color:var(--text);line-height:1.7;}
+  .note{padding:9px 13px;border-radius:0 6px 6px 0;font-size:.79rem;line-height:1.65;}
+  .note-b{border-left:3px solid var(--accent);background:rgba(61,142,245,.07);}
+  .note-a{border-left:3px solid var(--amber);background:rgba(232,160,48,.07);}
+  .note-r{border-left:3px solid var(--red);background:rgba(232,73,90,.07);}
+  .note-g{border-left:3px solid var(--green);background:rgba(31,189,138,.07);}
+  .spill{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;}
+  .spill .sl{font-size:.65rem;color:var(--muted);margin-bottom:3px;}
+  .spill .sv{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;}
+  .pbar-wrap{margin:14px 0 4px;}
+  .pbar-track{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;}
+  .pbar-fill{height:100%;border-radius:99px;}
+  .pbar-labels{display:flex;justify-content:space-between;font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:5px;}
+  .dtable{width:100%;border-collapse:collapse;font-size:.79rem;margin-top:12px;}
+  .dtable th{text-align:left;padding:7px 11px;color:var(--muted);font-size:.64rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+  .dtable td{padding:8px 11px;border-bottom:1px solid rgba(28,35,51,.7);vertical-align:middle;}
+  .dtable tr:last-child td{border-bottom:none;}
+  .dtable tr:hover td{background:rgba(255,255,255,.015);}
+  .mono{font-family:'DM Mono',monospace;}
+  .lbtn{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid rgba(61,142,245,.22);padding:4px 11px;border-radius:5px;margin-top:12px;margin-right:6px;transition:background .2s;}
+  .lbtn:hover{background:rgba(61,142,245,.08);}
+  .tv-wrap{border-radius:10px;overflow:hidden;}
+  .gauge-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+  .gauge-num{font-family:'DM Mono',monospace;font-size:4.5rem;font-weight:300;line-height:1;}
+  .gauge-status{font-size:.95rem;font-weight:700;margin-bottom:10px;}
+  .gauge-item{display:flex;justify-content:space-between;font-size:.76rem;padding:5px 0;border-bottom:1px solid var(--border);gap:20px;}
+  .gauge-item:last-child{border:none;}
+  .gauge-item span:first-child{color:var(--muted);}
+  .gauge-item span:last-child{font-family:'DM Mono',monospace;font-weight:500;}
+  .fw-bar{display:flex;height:32px;border-radius:6px;overflow:hidden;margin:14px 0 8px;gap:2px;}
+  .fw-seg{display:flex;align-items:center;justify-content:center;font-size:.7rem;font-family:'DM Mono',monospace;font-weight:600;}
+  .bzone-bar{display:flex;height:16px;border-radius:6px;overflow:hidden;margin:16px 0 6px;gap:2px;}
+  .bzone{flex:1;position:relative;}
+  .bzone-ptr{position:absolute;top:-8px;width:2px;height:32px;background:#fff;border-radius:2px;left:92%;transform:translateX(-50%);}
+  .bzone-ptr::before{content:'▼ 227%';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:.65rem;color:#fff;white-space:nowrap;font-weight:600;}
+  .bzone-labels{display:flex;font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);text-align:center;gap:2px;}
+  .bzone-labels span{flex:1;line-height:1.4;}
+  .risk-card{border-color:rgba(232,73,90,.25)!important;background:linear-gradient(135deg,#0e1218 0%,#140d10 100%)!important;}
+  .tbl-scroll{overflow-x:auto;}
+  footer{max-width:1440px;margin:0 auto;padding:20px 32px 48px;font-size:.68rem;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);}
+  @media(max-width:1024px){.g4{grid-template-columns:repeat(2,1fr);}.g-tv{grid-template-columns:1fr;}}
+  @media(max-width:768px){.g2,.g3,.g4{grid-template-columns:1fr;}header{padding:24px 20px 20px;}.page{padding:20px 14px 60px;}.logo-area h1{font-size:1.5rem;}.bval{font-size:1.9rem;}.gauge-num{font-size:3rem;}}
+</style>
+</head>
+<body>
+
+<!-- 티커 테이프: 환율 + 비트코인 -->
+<div id="ticker-wrap">
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+    {"symbols":[
+      {"proName":"FX:USDJPY","title":"USD/JPY"},
+      {"proName":"FX:EURJPY","title":"EUR/JPY"},
+      {"proName":"FX:GBPJPY","title":"GBP/JPY"},
+      {"proName":"FX:EURUSD","title":"EUR/USD"},
+      {"proName":"FX:USDKRW","title":"USD/KRW"},
+      {"proName":"AMEX:GLD","title":"금"},
+      {"proName":"BITSTAMP:BTCUSD","title":"BTC"},
+      {"proName":"BITSTAMP:ETHUSD","title":"ETH"}
+    ],"showSymbolLogo":true,"isTransparent":false,"displayMode":"adaptive","colorTheme":"dark","locale":"kr"}
+    </script>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-area">
+      <h1>글로벌 투자 <span>핵심 지표</span> 대시보드</h1>
+      <div class="header-tags">
+        <span class="htag htag-b">미국 거시경제</span>
+        <span class="htag htag-g">일본 금융정책</span>
+        <span class="htag htag-a">실시간 TradingView</span>
+        <span class="htag htag-b">투자심리 지표</span>
+        <span class="htag htag-r">이란 전쟁 리스크</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div><span class="live-dot"></span>환율·ETF·VIX 실시간 업데이트</div>
+      <div>경제지표 최신: <span class="date">2026년 3월 기준</span></div>
+      <div>제작: <span class="date">ocw-1027</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- 00 글로벌 주요 지수 현황 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">00</span><span class="sec-title">글로벌 주요 지수 현황</span><div class="sec-line"></div><span class="sec-badge" id="idx-badge">로딩 중...</span></div>
+
+    <!-- 일본 지수 -->
+    <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:8px;">🇯🇵 일본</div>
+    <div class="g3" style="margin-bottom:16px;">
+      <div class="spill" id="idx-nk225">
+        <div class="sl">닛케이 225</div>
+        <div class="sv" id="v-nk225" style="font-size:1.4rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-nk225">—</div>
+      </div>
+      <div class="spill" id="idx-topix">
+        <div class="sl">TOPIX</div>
+        <div class="sv" id="v-topix" style="font-size:1.4rem;">3,609</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-topix">—</div>
+      </div>
+      <div class="spill" id="idx-mothers">
+        <div class="sl">東証グロース250</div>
+        <div class="sv" id="v-mothers" style="font-size:1.4rem;">744</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-mothers">—</div>
+      </div>
+    </div>
+
+    <!-- 미국 지수 -->
+    <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">🇺🇸 미국</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
+      <div class="spill" id="idx-spx">
+        <div class="sl">S&amp;P 500</div>
+        <div class="sv" id="v-spx" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-spx">—</div>
+      </div>
+      <div class="spill" id="idx-ndx">
+        <div class="sl">나스닥 100</div>
+        <div class="sv" id="v-ndx" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-ndx">—</div>
+      </div>
+      <div class="spill" id="idx-dji">
+        <div class="sl">다우존스</div>
+        <div class="sv" id="v-dji" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-dji">—</div>
+      </div>
+      <div class="spill" id="idx-rut">
+        <div class="sl">러셀 2000</div>
+        <div class="sv" id="v-rut" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-rut">—</div>
+      </div>
+      <div class="spill" id="idx-sox">
+        <div class="sl">필라델피아 반도체</div>
+        <div class="sv" id="v-sox" style="font-size:1.3rem;">—</div>
+        <div style="font-size:.72rem;margin-top:3px;" id="c-sox">—</div>
+      </div>
+    </div>
+
+    <div style="font-size:.65rem;color:var(--muted);margin-top:8px;" id="idx-timestamp">데이터 로딩 중...</div>
+  </div>
+
+  <script>
+  // ── 지수 설정 ──────────────────────────────────────────────────
+  const IDX_CONFIG = [
+    { id:'nk225',   sym:'^N225',    label:'닛케이 225',          fmt:'JPY' },
+    { id:'topix',   sym:'^TOPIX',   label:'TOPIX',               fmt:'JPY' },
+    { id:'mothers', sym:'^TDGRTH',  label:'東証グロース250',      fmt:'JPY' },
+    { id:'spx',     sym:'^GSPC',    label:'S&P 500',             fmt:'USD' },
+    { id:'ndx',     sym:'^NDX',     label:'나스닥 100',          fmt:'USD' },
+    { id:'dji',     sym:'^DJI',     label:'다우존스',            fmt:'USD' },
+    { id:'rut',     sym:'^RUT',     label:'러셀 2000',           fmt:'USD' },
+    { id:'sox',     sym:'^SOX',     label:'필라델피아 반도체',   fmt:'USD' },
+  ];
+
+  // ── 숫자 포맷 ──────────────────────────────────────────────────
+  function fmtNum(v, fmt) {
+    if (v == null) return '—';
+    if (fmt === 'JPY' && v > 100) return v.toLocaleString('ja-JP', {maximumFractionDigits:2});
+    return v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function fmtChg(chg, pct) {
+    if (chg == null) return '—';
+    const sign = chg >= 0 ? '+' : '';
+    const col = chg >= 0 ? 'var(--green)' : 'var(--red)';
+    return `<span style="color:${col};font-weight:600;">${sign}${chg.toFixed(2)} (${sign}${pct.toFixed(2)}%)</span>`;
+  }
+
+  // ── 카드 업데이트 ──────────────────────────────────────────────
+  function setCard(id, price, chg, pct) {
+    const vEl = document.getElementById('v-' + id);
+    const cEl = document.getElementById('c-' + id);
+    const cfg = IDX_CONFIG.find(c => c.id === id);
+    if (vEl) vEl.textContent = fmtNum(price, cfg ? cfg.fmt : 'USD');
+    if (cEl) cEl.innerHTML = fmtChg(chg, pct);
+    // 카드 테두리 색상
+    const card = document.getElementById('idx-' + id);
+    if (card && chg != null) {
+      card.style.borderColor = chg >= 0 ? 'rgba(31,189,138,.35)' : 'rgba(232,73,90,.35)';
+    }
+  }
+
+  // ── Yahoo Finance via allorigins 프록시 ───────────────────────
+  async function fetchYahoo(sym) {
+    const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
+                encodeURIComponent(sym) + '?interval=1d&range=2d';
+    const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      const json = await res.json();
+      const data = JSON.parse(json.contents);
+      const meta = data.chart.result[0].meta;
+      const price = meta.regularMarketPrice;
+      const prev  = meta.chartPreviousClose || meta.previousClose;
+      const chg   = price - prev;
+      const pct   = (chg / prev) * 100;
+      return { price, chg, pct };
+    } catch(e) {
+      return null;
+    }
+  }
+
+  // ── corsproxy.io 백업 프록시 ──────────────────────────────────
+  async function fetchYahooBackup(sym) {
+    const url = 'https://query2.finance.yahoo.com/v8/finance/chart/' +
+                encodeURIComponent(sym) + '?interval=1d&range=2d';
+    const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      const data = await res.json();
+      const meta = data.chart.result[0].meta;
+      const price = meta.regularMarketPrice;
+      const prev  = meta.chartPreviousClose || meta.previousClose;
+      const chg   = price - prev;
+      const pct   = (chg / prev) * 100;
+      return { price, chg, pct };
+    } catch(e) {
+      return null;
+    }
+  }
+
+  // ── 메인 로드 함수 ────────────────────────────────────────────
+  async function loadIndices() {
+    const badge = document.getElementById('idx-badge');
+    const ts    = document.getElementById('idx-timestamp');
+    badge.textContent = '로딩 중...';
+    badge.style.color = 'var(--amber)';
+
+    let successCount = 0;
+
+    await Promise.all(IDX_CONFIG.map(async (cfg) => {
+      // 1차: allorigins 프록시
+      let result = await fetchYahoo(cfg.sym);
+      // 2차: corsproxy.io 백업
+      if (!result) result = await fetchYahooBackup(cfg.sym);
+
+      if (result) {
+        setCard(cfg.id, result.price, result.chg, result.pct);
+        successCount++;
+      }
+    }));
+
+    const now = new Date().toLocaleString('ko-KR', {
+      timeZone: 'Asia/Tokyo',
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit'
+    });
+
+    if (successCount > 0) {
+      badge.textContent = 'LIVE';
+      badge.style.color = 'var(--green)';
+      badge.style.background = 'rgba(31,189,138,.1)';
+      badge.style.borderColor = 'rgba(31,189,138,.2)';
+      ts.textContent = `✅ ${successCount}/${IDX_CONFIG.length}개 실시간 로드 완료 · ${now} JST 기준`;
+    } else {
+      badge.textContent = '종가';
+      badge.style.color = 'var(--muted)';
+      ts.textContent = `⚠️ 실시간 로드 실패 — GitHub Actions 자동 업데이트 종가 표시 중`;
+    }
+  }
+
+  // 페이지 로드 시 실행
+  document.addEventListener('DOMContentLoaded', loadIndices);
+  // 5분마다 자동 갱신
+  setInterval(loadIndices, 5 * 60 * 1000);
+  </script>
+
+  <!-- 01 USD/JPY -->
+  <div>
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">환율 — 실시간 USD/JPY 차트</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
+    <div class="g-tv">
+      <div class="tv-wrap" style="height:480px;">
+        <div class="tradingview-widget-container" style="height:100%;">
+          <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+          {"autosize":true,"symbol":"FX:USDJPY","interval":"D","timezone":"Asia/Tokyo","theme":"dark","style":"1","locale":"kr","backgroundColor":"rgba(13,18,28,1)","gridColor":"rgba(28,35,51,0.8)","withdateranges":true,"range":"6M","hide_side_toolbar":true,"allow_symbol_change":true,"details":true,"hotlist":false,"studies":["STD;BB","STD;RSI","STD;MACD"],"show_popup_button":true,"popup_width":"1000","popup_height":"650"}
+          </script>
+        </div>
+      </div>
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head"><span class="card-title">🏦 BOJ 정책금리 현황</span></div>
+        <div class="bval" style="color:var(--amber);">0.75%</div>
+        <div class="blabel">현행 정책금리 (30년 최고)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><span class="delta neu">2025.12 인상</span><span class="delta neu">2026.01·03 동결</span></div>
+        <table class="dtable">
+          <tr><td style="color:var(--muted);font-size:.72rem;">다음 회의</td><td class="mono" style="text-align:right;">2026.05.01</td></tr>
+          <tr><td style="color:var(--muted);font-size:.72rem;">인상 전망</td><td class="mono" style="text-align:right;color:var(--amber);">중반 → 1.0%</td></tr>
+          <tr><td style="color:var(--muted);font-size:.72rem;">일본 CPI (2월)</td><td class="mono" style="text-align:right;color:var(--amber);">2.9% YoY</td></tr>
+          <tr><td style="color:var(--muted);font-size:.72rem;">개입 경계선</td><td class="mono" style="text-align:right;color:var(--red);">¥160.00</td></tr>
+        </table>
+        <div class="iblock">
+          <div class="note note-a">⚡ 160엔 돌파 시 재무성 실개입 가능. 52주 고점 ¥159.76 근접 경계.</div>
+          <div class="note note-b">💡 BOJ 점진 인상 → 엔화 지지. 이란 전쟁 유가 급등으로 인플레 명분 강화.</div>
+        </div>
+        <a class="lbtn" href="https://www.boj.or.jp/en/" target="_blank">↗ BOJ 공식</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02-A 미국 경제지표 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">02-A</span><span class="sec-title">미국 추가 경제지표 — 실시간 미니 차트</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
+    <div class="g3">
+      <!-- PCE 물가지수 -->
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head">
+          <span class="card-title">PCE 물가지수</span>
+          <span class="card-src"><a href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank">FRED / BEA</a></span>
+        </div>
+        <div class="bval" style="color:var(--red);">3.1%</div>
+        <div class="blabel">코어 PCE (1월 YoY) — 약 2년래 최고치</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta dn">↑ 전월 3.0%에서 상승</span>
+          <span class="tag tr">FED 목표 2.0% 크게 상회</span>
+        </div>
+        <table class="dtable">
+          <thead><tr><th>항목</th><th>수치</th><th>전월</th></tr></thead>
+          <tbody>
+            <tr><td>코어 PCE (YoY)</td><td class="mono" style="color:var(--red);">3.1%</td><td class="mono">3.0%</td></tr>
+            <tr><td>헤드라인 PCE (YoY)</td><td class="mono" style="color:var(--amber);">2.8%</td><td class="mono">2.9%</td></tr>
+            <tr><td>전월 대비 (MoM)</td><td class="mono" style="color:var(--red);">+0.4%</td><td class="mono">+0.3%</td></tr>
+            <tr><td>서비스 물가</td><td class="mono" style="color:var(--red);">+3.5%</td><td class="mono">+3.4%</td></tr>
+            <tr><td>개인 저축률</td><td class="mono" style="color:var(--amber);">4.5%</td><td class="mono">4.0%</td></tr>
+          </tbody>
+        </table>
+        <div class="iblock">
+          <div class="note note-b">💡 FED 공식 인플레 지표. 3.1%로 2024년 봄 이후 최고치. 이란 전쟁발 유가 급등 미반영 — 2~3월 수치 더 오를 가능성 높음.</div>
+          <div class="note note-a">⚡ 다음 발표: 2026.03.27 (2월 PCE). 유가 급등 반영 여부 주목.</div>
+        </div>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank">↗ FRED PCE</a>
+        <a class="lbtn" href="https://tradingeconomics.com/united-states/core-pce-price-index" target="_blank">↗ 추이 차트</a>
+      </div>
+      <!-- ISM 제조업 PMI -->
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head">
+          <span class="card-title">ISM 제조업 PMI</span>
+          <span class="card-src"><a href="https://www.ismworld.org/" target="_blank">ISM</a></span>
+        </div>
+        <div class="bval" style="color:var(--green);">52.4</div>
+        <div class="blabel">2026년 2월 — 2연속 확장 (50 이상)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <span class="delta up">✅ 확장 전환</span>
+          <span class="tag tg">40개월 만에 2연속 확장</span>
+        </div>
+        <table class="dtable">
+          <thead><tr><th>세부 항목</th><th>수치</th><th>전월</th></tr></thead>
+          <tbody>
+            <tr><td>신규 주문</td><td class="mono" style="color:var(--green);">55.8</td><td class="mono">57.1</td></tr>
+            <tr><td>생산</td><td class="mono" style="color:var(--green);">53.5</td><td class="mono">55.9</td></tr>
+            <tr><td>고용</td><td class="mono" style="color:var(--red);">48.8</td><td class="mono">48.1</td></tr>
+            <tr><td>가격</td><td class="mono" style="color:var(--red);">70.5</td><td class="mono">59.0</td></tr>
+          </tbody>
+        </table>
+        <div class="iblock">
+          <div class="note note-g">✅ 50 이상 2연속 확장 — 제조업 회복 신호. 단, 가격지수 70.5로 2022년 6월 이후 최고치 → 생산비 인플레 압박.</div>
+          <div class="note note-a">⚡ 다음 발표: 2026.04.01 (3월 PMI). 확장 지속 여부 주목.</div>
+        </div>
+        <a class="lbtn" href="https://www.ismworld.org/" target="_blank">↗ ISM 공식</a>
+        <a class="lbtn" href="https://tradingeconomics.com/united-states/business-confidence" target="_blank">↗ 추이 차트</a>
+      </div>
+      <!-- 미시간 소비자신뢰지수 -->
+      <div class="card" style="animation-delay:.15s;">
+        <div class="card-head">
+          <span class="card-title">미시간 소비자신뢰지수</span>
+          <span class="card-src"><a href="https://fred.stlouisfed.org/series/UMCSENT" target="_blank">FRED / Umich</a></span>
+        </div>
+        <div class="bval" style="color:var(--red);">55.5</div>
+        <div class="blabel">3월 예비치 — 전월 56.6에서 하락</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta dn">↓ 전월比 -1.1</span>
+          <span class="tag tr">소비 선행 지표</span>
+        </div>
+        <table class="dtable">
+          <thead><tr><th>항목</th><th>수치</th><th>전월</th></tr></thead>
+          <tbody>
+            <tr><td>종합 지수</td><td class="mono" style="color:var(--red);">55.5</td><td class="mono">56.6</td></tr>
+            <tr><td>현재 상황</td><td class="mono" style="color:var(--red);">62.5</td><td class="mono">63.5</td></tr>
+            <tr><td>기대 지수</td><td class="mono" style="color:var(--red);">51.0</td><td class="mono">52.6</td></tr>
+            <tr><td>1년 인플레 기대</td><td class="mono" style="color:var(--red);">3.4%</td><td class="mono">3.4%</td></tr>
+            <tr><td>장기 인플레 기대</td><td class="mono" style="color:var(--amber);">3.2%</td><td class="mono">3.3%</td></tr>
+          </tbody>
+        </table>
+        <div class="iblock">
+          <div class="note note-a">⚡ 이란 전쟁(2.28) 이후 급격 위축. 인터뷰 절반이 개전 후 진행 → 소비 심리 직격. 1년 인플레 기대 3.4%로 6개월 연속 하락 중단.</div>
+          <div class="note note-b">💡 소비는 미국 GDP의 70%. 하락 지속 시 경기 침체 선행 신호.</div>
+        </div>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/UMCSENT" target="_blank">↗ FRED 미시간</a>
+        <a class="lbtn" href="https://www.sca.isr.umich.edu/" target="_blank">↗ Umich 공식</a>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-top:20px;">
+      <!-- Shiller CAPE -->
+      <div class="card" style="animation-delay:.2s;">
+        <div class="card-head">
+          <span class="card-title">Shiller CAPE (P/E10)</span>
+          <span class="card-src"><a href="https://www.gurufocus.com/shiller-PE.php" target="_blank">GuruFocus / Multpl</a></span>
+        </div>
+        <div class="bval" style="color:var(--red);">38.3</div>
+        <div class="blabel">2026.03.18 기준 — 20년 평균(27.5) 대비 +39%</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span class="delta dn">역사적 2번째 고점권</span>
+          <span class="tag tr">강력 고평가</span>
+        </div>
+        <div class="tv-wrap" style="height:140px;">
+          <div class="tradingview-widget-container" style="height:100%;">
+            <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {"symbol":"MULTPL:SHILLER_PE_RATIO_MONTH","width":"100%","height":"100%","locale":"kr","dateRange":"10Y","colorTheme":"dark","trendLineColor":"rgba(232,73,90,1)","underLineColor":"rgba(232,73,90,0.1)","underLineBottomColor":"rgba(0,0,0,0)","isTransparent":false,"autosize":true}
+            </script>
+          </div>
+        </div>
+        <div class="iblock">
+          <p><strong>Shiller CAPE란?</strong> 10년 물가조정 평균이익 기준 PER. 단기 이익 변동을 제거해 장기 밸류에이션 측정. 버핏 지표와 함께 미국 주식 고평가 여부 판단에 활용.</p>
+          <div class="note note-r">⚠️ 현재 38.3은 1929년 대공황 직전(32.6), 2000년 닷컴 버블(44.2) 사이 수준. 역사적으로 CAPE 30+ 구간에서 향후 10년 기대수익률은 낮게 나타남.</div>
+          <div class="note note-b">💡 내재 미래 연수익률 추정 약 2.5% — 장기 투자자에게 기대수익률 하향 조정 신호.</div>
+        </div>
+        <a class="lbtn" href="https://www.gurufocus.com/shiller-PE.php" target="_blank">↗ GuruFocus CAPE</a>
+        <a class="lbtn" href="https://www.multpl.com/shiller-pe" target="_blank">↗ Multpl 실시간</a>
+      </div>
+      <!-- 뉴스 링크 모음 -->
+      <div class="card" style="animation-delay:.25s;">
+        <div class="card-head">
+          <span class="card-title">📰 금융 뉴스 — 원클릭 바로가기</span>
+          <span class="card-src">일본어 · 한국어 · 영어</span>
+        </div>
+
+        <!-- 일본어 뉴스 -->
+        <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:7px;">🇯🇵 일본어</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">
+          <a href="https://finance.yahoo.co.jp/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">야후재팬 파이낸스 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">株価·決算情報</div>
+            </div>
+          </a>
+          <a href="https://www.nikkei.com/markets/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">닛케이 마켓 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">日経平均·為替·債券</div>
+            </div>
+          </a>
+          <a href="https://www.bloomberg.co.jp/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">블룸버그 재팬 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">글로벌 금융 일본어판</div>
+            </div>
+          </a>
+          <a href="https://jp.reuters.com/markets/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">로이터 재팬 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">외환·채권·주식</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- 한국어 뉴스 -->
+        <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:7px;">🇰🇷 한국어</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">
+          <a href="https://finance.naver.com/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">네이버 금융 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">증시·환율·뉴스 종합</div>
+            </div>
+          </a>
+          <a href="https://www.hankyung.com/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">한국경제 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">글로벌 투자·경제 분석</div>
+            </div>
+          </a>
+          <a href="https://www.mk.co.kr/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">매일경제 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">국내외 금융·투자</div>
+            </div>
+          </a>
+          <a href="https://www.sedaily.com/NewsVIew/Finance" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">서울경제 ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">증권·금융·산업</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- 영어 뉴스 -->
+        <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:7px;">🌐 영어 (글로벌)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+          <a href="https://finance.yahoo.com/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Yahoo Finance ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">미국 증시·실적 종합</div>
+            </div>
+          </a>
+          <a href="https://www.cnbc.com/markets/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">CNBC Markets ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">시황·FED·기업 뉴스</div>
+            </div>
+          </a>
+          <a href="https://www.reuters.com/markets/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Reuters Markets ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">글로벌·에너지·정책</div>
+            </div>
+          </a>
+          <a href="https://seekingalpha.com/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Seeking Alpha ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">종목 분석·리서치</div>
+            </div>
+          </a>
+          <a href="https://tradingeconomics.com/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Trading Economics ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">전 세계 경제지표 DB</div>
+            </div>
+          </a>
+          <a href="https://www.bloomberg.com/markets" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Bloomberg ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">글로벌 금융 미디어</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02-B 일본 지표 바로가기 패널 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">02-B</span><span class="sec-title">일본 지표 — 원클릭 바로가기</span><div class="sec-line"></div><span class="sec-badge" style="color:var(--accent);background:rgba(61,142,245,.1);border-color:rgba(61,142,245,.2);">링크</span></div>
+    <div class="g2">
+      <!-- 닛케이 관련 지표 -->
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head">
+          <span class="card-title">📊 닛케이 밸류에이션 &amp; 기술 지표</span>
+          <span class="card-src"><a href="https://nikkei225jp.com/" target="_blank">nikkei225jp.com</a></span>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">일별 업데이트 — 버튼 클릭 시 해당 페이지로 바로 이동</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <a href="https://nikkei225jp.com/data/per.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">닛케이 PER</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">일본 주식 밸류에이션</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/touraku.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">등락레시오 (騰落レシオ)</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">과열·과매도 신호</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/karauri.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">공매도 비율 (空売り比率)</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">하락 베팅 강도</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/nt.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">NT배율</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--accent);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">닛케이 / TOPIX 비율</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/shutai.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">투자주체별 동향</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--amber);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">외국인·개인·기관 (주 1회)</div>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/sinyou.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.65rem;color:var(--muted);margin-bottom:4px;">신용평가손익률</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--amber);">→ nikkei225jp ↗</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">강제청산 리스크 측정</div>
+            </div>
+          </a>
+        </div>
+        <div class="iblock">
+          <div class="note note-b">💡 <strong>투자주체별 동향</strong>이 가장 중요. 외국인 순매수 ↑ = 닛케이 상승 압력 / 순매도 전환 = 하락 선행 신호.</div>
+        </div>
+      </div>
+      <!-- ADR + 기타 일본 지표 -->
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head">
+          <span class="card-title">🌐 ADR &amp; 추가 일본 데이터</span>
+          <span class="card-src">nikkei225jp / kabutan / Yahoo</span>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">ADR은 다음날 닛케이 방향 예측에 직접 활용 가능</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <a href="https://nikkei225jp.com/adr/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">ADR 전 종목</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">미국 상장 일본기업 전일 동향 → 다음날 닛케이 예측</div></div>
+              <span style="color:var(--green);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/adr/japan.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">ADR 주요 종목</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">소니·토요타·닌텐도 등 주요 ADR 가격</div></div>
+              <span style="color:var(--green);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/dollar.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">달러 환산 닛케이</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">외국인 투자자 시각의 닛케이 수익률</div></div>
+              <span style="color:var(--accent);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/schedule/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">경제 스케줄</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">일본·미국 주요 경제지표 발표 일정</div></div>
+              <span style="color:var(--amber);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+          <a href="https://nikkei225jp.com/data/vix.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div><div style="font-size:.78rem;font-weight:500;color:var(--text);">공포지수 VIX (일본판)</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px;">닛케이 기준 변동성 지수</div></div>
+              <span style="color:var(--red);font-size:.75rem;font-weight:600;">↗ 열기</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02-C WhaleWisdom 13F 기관 투자자 동향 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">02-C</span><span class="sec-title">13F — 기관 투자자 포지션 추적</span><div class="sec-line"></div><span class="sec-badge" style="color:var(--amber);background:rgba(232,160,48,.1);border-color:rgba(232,160,48,.2);">분기 업데이트</span></div>
+    <div class="g2">
+      <!-- WhaleWisdom 메인 -->
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head">
+          <span class="card-title">🐋 WhaleWisdom — 헤지펀드 13F 추적</span>
+          <span class="card-src"><a href="https://whalewisdom.com/" target="_blank">whalewisdom.com</a></span>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">SEC 13F 공시 기반 — 분기별 기관 포지션 변동 추적 (45일 지연)</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <a href="https://whalewisdom.com/filer/berkshire-hathaway-inc" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-size:.8rem;font-weight:500;color:var(--text);">버크셔 해서웨이 (버핏)</div>
+                <div style="font-size:.67rem;color:var(--muted);margin-top:2px;">현금 $3,800억+ 역대 최대 — 포지션 변화 주목</div>
+              </div>
+              <span style="font-size:.72rem;color:var(--amber);font-weight:600;">↗</span>
+            </div>
+          </a>
+          <a href="https://whalewisdom.com/filer/bridgewater-associates-lp" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-size:.8rem;font-weight:500;color:var(--text);">브리지워터 (레이 달리오)</div>
+                <div style="font-size:.67rem;color:var(--muted);margin-top:2px;">올웨더 전략 — 인플레 헤지 포지션</div>
+              </div>
+              <span style="font-size:.72rem;color:var(--amber);font-weight:600;">↗</span>
+            </div>
+          </a>
+          <a href="https://whalewisdom.com/filer/renaissance-technologies-llc" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-size:.8rem;font-weight:500;color:var(--text);">르네상스 테크놀로지</div>
+                <div style="font-size:.67rem;color:var(--muted);margin-top:2px;">퀀트 펀드 포지션 — 시장 방향 선행 신호</div>
+              </div>
+              <span style="font-size:.72rem;color:var(--amber);font-weight:600;">↗</span>
+            </div>
+          </a>
+          <a href="https://whalewisdom.com/filer/oasis-management-co-ltd" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-size:.8rem;font-weight:500;color:var(--text);">오아시스 매니지먼트 (일본 행동주의)</div>
+                <div style="font-size:.67rem;color:var(--muted);margin-top:2px;">일본 기업 거버넌스 개선 전략</div>
+              </div>
+              <span style="font-size:.72rem;color:var(--accent);font-weight:600;">↗</span>
+            </div>
+          </a>
+          <a href="https://whalewisdom.com/filer/valueact-capital-management-l-p" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-size:.8rem;font-weight:500;color:var(--text);">밸류액트 캐피탈 (행동주의)</div>
+                <div style="font-size:.67rem;color:var(--muted);margin-top:2px;">기업가치 개선 요구 투자 전략</div>
+              </div>
+              <span style="font-size:.72rem;color:var(--accent);font-weight:600;">↗</span>
+            </div>
+          </a>
+          <a href="https://whalewisdom.com/stock_search" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-size:.8rem;font-weight:500;color:var(--text);">종목별 보유 기관 검색</div>
+                <div style="font-size:.67rem;color:var(--muted);margin-top:2px;">특정 종목을 보유한 기관투자자 전체 조회</div>
+              </div>
+              <span style="font-size:.72rem;color:var(--green);font-weight:600;">↗</span>
+            </div>
+          </a>
+        </div>
+        <div class="iblock">
+          <div class="note note-b">💡 13F는 분기 말 기준 45일 후 공시 — 실시간 포지션이 아님. 방향성·집중도 파악 용도로 활용. 신규 매수·매도 컬럼을 우선 확인.</div>
+        </div>
+      </div>
+
+      <!-- 13F 활용법 + 추가 사이트 -->
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head">
+          <span class="card-title">📋 13F 공시 활용법 &amp; 추가 사이트</span>
+          <span class="card-src">SEC EDGAR / 13F 분기 공시</span>
+        </div>
+        <div style="font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">🔍 추가 13F 조회 사이트</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px;">
+          <a href="https://www.dataroma.com/m/home.php" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Dataroma ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">슈퍼인베스터 포지션</div>
+            </div>
+          </a>
+          <a href="https://fintel.io/i/13f" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">Fintel ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">기관 집중도 분석</div>
+            </div>
+          </a>
+          <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&type=13F&dateb=&owner=include&count=40" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">SEC EDGAR ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">13F 원본 공시</div>
+            </div>
+          </a>
+          <a href="https://hedgefollow.com/" target="_blank" style="text-decoration:none;">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="font-size:.75rem;font-weight:500;color:var(--text);">HedgeFollow ↗</div>
+              <div style="font-size:.63rem;color:var(--muted);margin-top:2px;">헤지펀드 동향 요약</div>
+            </div>
+          </a>
+        </div>
+
+        <div style="font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:8px;">📌 13F 분석 체크포인트</div>
+        <table class="dtable">
+          <tbody>
+            <tr><td style="color:var(--muted);">공시 대상</td><td class="mono">$1억+ 운용 기관</td></tr>
+            <tr><td style="color:var(--muted);">공시 시기</td><td class="mono">분기 종료 후 45일 이내</td></tr>
+            <tr><td style="color:var(--muted);">다음 공시</td><td class="mono" style="color:var(--amber);">2026.05 중순 (Q1)</td></tr>
+            <tr><td style="color:var(--muted);">포함 내용</td><td class="mono">주식·ETF·콜옵션</td></tr>
+            <tr><td style="color:var(--muted);">미포함</td><td class="mono" style="color:var(--red);">공매도·채권·현금·선물</td></tr>
+          </tbody>
+        </table>
+        <div class="iblock">
+          <div class="note note-r">⚠️ 13F는 롱 포지션만 공시 — 공매도 헤지가 있을 수 있어 실제 뷰와 다를 수 있음.</div>
+          <div class="note note-g">✅ 신규 매수(New) · 추가 매수(Add) · 매도(Sold) 컬럼이 핵심. 집중도 상위 종목 = 강한 확신.</div>
+        </div>
+        <a class="lbtn" href="https://whalewisdom.com/" target="_blank">↗ WhaleWisdom 홈</a>
+        <a class="lbtn" href="https://whalewisdom.com/whalescore" target="_blank">↗ Whale Score 랭킹</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02-D 종목 검색 도구 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">02-D</span><span class="sec-title">종목 검색 — 원클릭 멀티사이트</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">신규</span></div>
+    <div class="card" style="animation-delay:.05s;">
+      <div class="card-head">
+        <span class="card-title">🔍 종목 코드 입력 → 전체 사이트 동시 열기</span>
+        <span class="card-src">kabutan · 스카우터 · 야후재팬 · TradingView · IR Bank</span>
+      </div>
+      <!-- 검색 입력 -->
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+        <input type="text" id="stockCode" placeholder="종목 코드 입력 (예: 6594)" maxlength="6"
+          style="font-family:'DM Mono',monospace;font-size:1rem;padding:10px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);width:240px;outline:none;"
+          onkeydown="if(event.key==='Enter')searchAll()"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border2)'"
+        />
+        <button onclick="searchAll()"
+          style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;padding:10px 20px;background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;transition:opacity .2s;"
+          onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          🔍 검색
+        </button>
+        <span style="font-size:.72rem;color:var(--muted);">Enter 키 또는 버튼 클릭 → 각 사이트 새 탭으로 열림</span>
+      </div>
+      <!-- 사이트 버튼들 -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;" id="searchButtons">
+        <div onclick="openSite('scouter')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">재무분석 · 10년업적</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">📊 銘柄スカウター</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">scouter.monex.co.jp</div>
+        </div>
+        <div onclick="openSite('kabutan')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">종합정보 · 뉴스</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">📈 kabutan (株探)</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">kabutan.jp</div>
+        </div>
+        <div onclick="openSite('yahoo')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">주가 · 주주 · 뉴스</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">🗾 야후 재팬</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">finance.yahoo.co.jp</div>
+        </div>
+        <div onclick="openSite('tradingview')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">실시간 차트</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--accent);">📉 TradingView</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">tradingview.com</div>
+        </div>
+        <div onclick="openSite('irbank')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">장기 재무 데이터</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--amber);">🏦 IR Bank</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">irbank.net</div>
+        </div>
+        <div onclick="openSite('tdnet')"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;cursor:pointer;transition:border-color .2s;"
+          onmouseover="this.style.borderColor='var(--amber)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;">공시 원문 PDF</div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--amber);">📋 적시공시 (TDnet)</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">開示情報 검색</div>
+        </div>
+      </div>
+      <!-- 전체 열기 버튼 -->
+      <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button onclick="openAll()"
+          style="font-size:.78rem;font-weight:700;padding:9px 18px;background:transparent;border:1px solid var(--accent);border-radius:8px;color:var(--accent);cursor:pointer;transition:background .2s;"
+          onmouseover="this.style.background='rgba(61,142,245,.1)'" onmouseout="this.style.background='transparent'">
+          ↗ 전체 사이트 동시 열기
+        </button>
+        <span style="font-size:.7rem;color:var(--muted);">* 팝업 차단 해제 필요할 수 있음</span>
+      </div>
+      <div class="iblock">
+        <div class="note note-b">💡 <strong>추천 조합:</strong> 銘柄スカウター(10년 업적) + kabutan(뉴스) + TradingView(차트) 3개를 함께 열면 종목 분석의 80%가 커버됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function getCode() {
+    var code = document.getElementById('stockCode').value.trim();
+    if (!code) { alert('종목 코드를 입력해주세요 (예: 6594)'); return null; }
+    return code;
+  }
+  function openSite(site) {
+    var code = getCode(); if (!code) return;
+    var urls = {
+      'scouter':     'https://scouter.monex.co.jp/report/zaimu/' + code,
+      'kabutan':     'https://kabutan.jp/stock/?code=' + code,
+      'yahoo':       'https://finance.yahoo.co.jp/quote/' + code + '.T',
+      'tradingview': 'https://www.tradingview.com/symbols/TSE-' + code + '/',
+      'irbank':      'https://irbank.net/' + code,
+      'tdnet':       'https://www.release.tdnet.info/inbs/I_main_00.html'
+    };
+    if (urls[site]) window.open(urls[site], '_blank');
+  }
+  function openAll() {
+    var code = getCode(); if (!code) return;
+    var sites = ['scouter','kabutan','yahoo','tradingview','irbank'];
+    sites.forEach(function(s){ openSite(s); });
+  }
+  function searchAll() { openAll(); }
+  </script>
+
+  <!-- 03 VIX + 수익률 곡선 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">시장 공포·경기 침체 경보 지표</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">신규</span></div>
+    <div class="g2">
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head"><span class="card-title">📊 VIX — 공포지수</span><span class="card-src"><a href="https://www.cboe.com/us/indices/dashboard/vix/" target="_blank">CBOE</a></span></div>
+        <div class="bval" style="color:var(--red);">25.09</div>
+        <div class="blabel">2026.03.19 종가 — 25+ 고변동 레짐 지속</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"><span class="delta dn">3/9 고점 31.77</span><span class="delta neu">연저점 13.38 (2025.12)</span></div>
+        <div style="height:8px;background:linear-gradient(90deg,var(--green) 0%,#8bc34a 25%,var(--amber) 50%,#ff9800 70%,var(--red) 100%);border-radius:99px;position:relative;margin-bottom:6px;">
+          <div style="position:absolute;top:-4px;left:34%;width:3px;height:16px;background:white;border-radius:2px;transform:translateX(-50%);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:14px;"><span>안정&lt;15</span><span>주의15~20</span><span style="color:var(--amber);font-weight:700;">▲25</span><span>경계20~30</span><span>패닉40+</span></div>
+        <div class="iblock">
+          <p><strong>VIX 해석:</strong> <span style="color:var(--green);">15 이하</span> 안정 / <span style="color:var(--amber);">20~30</span> 경계 / <span style="color:var(--red);">30+</span> 패닉 / <span style="color:var(--red);">40+</span> 위기</p>
+          <div class="note note-a">⚡ 이란 전쟁 확전으로 31.77 급등 후 진정. 20 이상 지속 시 밸류에이션 재조정 신호.</div>
+          <div class="note note-g">💡 VIX 30+ = 공포 절정 → 역발상 매수 기회. Fear & Greed Index와 교차 확인.</div>
+        </div>
+        <a class="lbtn" href="https://www.cboe.com/us/indices/dashboard/vix/" target="_blank">↗ CBOE VIX</a>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/VIXCLS" target="_blank">↗ FRED 장기차트</a>
+      </div>
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head"><span class="card-title">📉 미국 수익률 곡선 (Yield Curve)</span><span class="card-src"><a href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank">FRED</a></span></div>
+        <div class="bval" style="font-size:1.9rem;color:var(--green);">+0.48%p</div>
+        <div class="blabel">10Y - 2Y 스프레드 — 스티프닝 가속</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"><span class="delta up">✅ 역전 해소 유지</span><span class="delta dn">장기금리↑ 인플레 반영</span></div>
+        <table class="dtable">
+          <thead><tr><th>만기</th><th>금리</th><th>전월比</th></tr></thead>
+          <tbody>
+            <tr><td>2년</td><td class="mono">3.80%</td><td><span class="delta dn">-0.17</span></td></tr>
+            <tr><td>5년</td><td class="mono">3.88%</td><td><span class="delta dn">-0.19</span></td></tr>
+            <tr><td>10년</td><td class="mono">4.28%</td><td><span class="delta dn">-0.04</span></td></tr>
+            <tr><td>30년</td><td class="mono">4.84%</td><td><span class="delta dn">+0.16</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin:14px 0 6px;font-size:.68rem;color:var(--muted);">수익률 곡선 형태 (현재: 우상향 정상)</div>
+        <div style="display:flex;align-items:flex-end;gap:4px;height:48px;">
+          <div style="flex:1;background:rgba(31,189,138,.5);border-radius:3px 3px 0 0;height:38%;"></div>
+          <div style="flex:1;background:rgba(31,189,138,.65);border-radius:3px 3px 0 0;height:54%;"></div>
+          <div style="flex:1;background:rgba(31,189,138,.82);border-radius:3px 3px 0 0;height:70%;"></div>
+          <div style="flex:1;background:rgba(31,189,138,1);border-radius:3px 3px 0 0;height:88%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:4px;margin-bottom:14px;"><span>2Y</span><span>5Y</span><span>10Y</span><span>30Y</span></div>
+        <div class="iblock">
+          <div class="note note-g">✅ 역전 해소 유지. 그러나 장기금리↑ + 단기금리↓ = 스티프닝 가속. 스프레드 +0.48%p.</div>
+          <div class="note note-a">⚡ 스티프닝 + 실업률 상승 + 유가 급등 = 스태그플레이션 패턴 경계. FED 3/19 동결 결정.</div>
+        </div>
+        <a class="lbtn" href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank">↗ FRED 10Y-2Y</a>
+        <a class="lbtn" href="https://www.newyorkfed.org/research/capital_markets/ycfaq" target="_blank">↗ NY연준 침체 확률</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 3대 경제지표 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">초심자 필수 — 미국 3대 경제지표</span><div class="sec-line"></div></div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-head"><span class="card-title">① 소비자물가지수 CPI</span><span class="card-src"><a href="https://www.bls.gov/cpi/" target="_blank">BLS — 2026.03.11</a></span></div>
+      <div class="g3">
+        <div><div class="bval" style="color:var(--amber);">2.4%</div><div class="blabel">헤드라인 CPI (YoY)</div><span class="delta neu">— 전월 유지</span></div>
+        <div><div class="bval" style="color:var(--amber);">2.5%</div><div class="blabel">코어 CPI (YoY)</div><span class="delta neu">— 전월 유지</span></div>
+        <div><div class="bval" style="color:var(--text);">+0.3%</div><div class="blabel">전월 대비 (2월)</div><span class="delta dn">↑ 1월 +0.2%에서 가속</span></div>
+      </div>
+      <div class="pbar-wrap"><div class="pbar-track"><div class="pbar-fill" style="width:48%;background:linear-gradient(90deg,var(--green),var(--amber));"></div></div><div class="pbar-labels"><span>FED 목표 2.0%</span><span style="color:var(--amber);font-weight:600;">▲ 현재 2.4%</span><span>과열 5%+</span></div></div>
+      <div class="iblock">
+        <p><strong>세부 항목:</strong> 주거비 +0.2%, 식품 +0.4%, 에너지 +0.6%, 중고차 -3.2%(YoY), 쇠고기 +15%, 커피 +18%</p>
+        <div class="note note-a">⚡ 2월 CPI는 이란 전쟁 이전 데이터. 3~4월 에너지 급등 반영 예정 → 연말 3.5% 시나리오 주시.</div>
+        <div class="note note-b">💡 CPI↑ → 금리 고공행진 → 달러↑ / 미국주식 부담 → 엔화·원화 약세.</div>
+      </div>
+      <a class="lbtn" href="https://www.bls.gov/cpi/" target="_blank">↗ BLS CPI</a>
+      <a class="lbtn" href="https://fred.stlouisfed.org/series/CPIAUCSL" target="_blank">↗ FRED 장기차트</a>
+    </div>
+    <div class="g2">
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head"><span class="card-title">② 고용통계 (NFP)</span><span class="card-src"><a href="https://www.bls.gov/ces/" target="_blank">BLS — 2026.03.06</a></span></div>
+        <div class="bval" style="color:var(--red);">-92K</div>
+        <div class="blabel">비농업 고용 변화 (2월) — 예상 +59K 대폭 하회</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"><span class="delta dn">실업률 4.4% ↑</span><span class="delta neu">시간당임금 +3.8%</span></div>
+        <div class="iblock">
+          <div class="note note-r">⚠️ 3개월 평균 ≈ +6K/월. 2025.11 이후 -85만명. 침체 선행 신호.</div>
+          <div class="note note-b">💡 FED 조기 인하 기대 강화. 다음 발표: 2026.04.03</div>
+        </div>
+        <a class="lbtn" href="https://www.bls.gov/ces/" target="_blank">↗ BLS 고용통계</a>
+      </div>
+      <div class="card" style="animation-delay:.15s;">
+        <div class="card-head"><span class="card-title">③ 주택착공건수</span><span class="card-src"><a href="https://www.census.gov/construction/nrc/" target="_blank">Census Bureau</a></span></div>
+        <div class="bval" style="color:var(--text);">1,366K</div>
+        <div class="blabel">1월 연율 환산 — 전월比 -9.8%</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"><span class="delta dn">12개월 이동평균 하락</span><span class="tag tr">경기 선행 하방</span></div>
+        <div class="iblock">
+          <div class="note note-a">⚡ 30년 고정 모기지 ≈ 6.8%. 12개월 평균 하락 = 과거 침체 선행 패턴.</div>
+          <div class="note note-b">💡 금리 인하 시 가장 먼저 반등할 섹터.</div>
+        </div>
+        <a class="lbtn" href="https://www.census.gov/construction/nrc/" target="_blank">↗ Census 주택통계</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 투자심리 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-title">투자 심리 &amp; 밸류에이션 지표</span><div class="sec-line"></div></div>
+    <div class="g2" style="margin-bottom:20px;">
+      <div class="card" style="animation-delay:.05s;">
+        <div class="card-head"><span class="card-title">① CNN Fear &amp; Greed Index</span><span class="card-src"><a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank">CNN Business</a></span></div>
+        <div class="gauge-row">
+          <div class="gauge-num" style="color:var(--red);">16</div>
+          <div style="flex:1;min-width:140px;">
+            <div class="gauge-status" style="color:var(--red);">EXTREME FEAR</div>
+            <div class="gauge-item"><span>현재 (3/20)</span><span style="color:var(--red);">16</span></div>
+            <div class="gauge-item"><span>1주 전</span><span style="color:var(--red);">~22</span></div>
+            <div class="gauge-item"><span>1개월 전</span><span style="color:var(--amber);">~45</span></div>
+            <div class="gauge-item"><span>1년 전</span><span style="color:var(--green);">~62</span></div>
+          </div>
+        </div>
+        <div class="pbar-wrap" style="margin-top:14px;"><div class="pbar-track"><div class="pbar-fill" style="width:16%;background:var(--red);"></div></div><div class="pbar-labels"><span>0 극도공포</span><span style="color:var(--red);font-weight:700;">▲ 16</span><span>50 중립</span><span>100 극도탐욕</span></div></div>
+        <div class="iblock"><div class="note note-g">💡 25 이하는 향후 12개월 수익률 우수 구간(역발상). VIX·수익률 곡선 교차 확인 필수.</div></div>
+        <a class="lbtn" href="https://edition.cnn.com/markets/fear-and-greed" target="_blank">↗ CNN 실시간</a>
+      </div>
+      <div class="card" style="animation-delay:.1s;">
+        <div class="card-head"><span class="card-title">② CME FedWatch — 금리 인하 확률</span><span class="card-src"><a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">CME Group</a></span></div>
+        <div class="bval" style="font-size:1.6rem;color:var(--accent);">3.50 ~ 3.75%</div>
+        <div class="blabel">현행 FF금리 — 2026.03.19 FOMC 동결 결정</div>
+        <div style="font-size:.7rem;color:var(--muted);margin:12px 0 4px;">6월 FOMC 동결 확률 89.2%</div>
+        <div class="fw-bar"><div class="fw-seg" style="flex:89.2;background:var(--accent);color:#fff;">동결 89.2%</div><div class="fw-seg" style="flex:10.8;background:var(--green);color:#fff;">인하</div></div>
+        <table class="dtable">
+          <thead><tr><th>시점</th><th>동결 확률</th><th>컨센서스</th></tr></thead>
+          <tbody>
+            <tr><td>5월</td><td class="mono"><span class="delta neu">~90%</span></td><td>동결 확정적</td></tr>
+            <tr><td>6월</td><td class="mono"><span class="delta dn">89.2%</span></td><td>동결 유력</td></tr>
+            <tr><td>12월</td><td class="mono"><span class="delta up">51.3%</span></td><td>연내 동결 가능성↑</td></tr>
+            <tr><td>2027 중반</td><td class="mono"><span class="delta neu">—</span></td><td>첫 인하 예상</td></tr>
+          </tbody>
+        </table>
+        <div class="iblock"><div class="note note-a">⚡ 3/19 FOMC: FED 동결 + PCE 2.7% 상향 + 2026년 1회 인하 유지. 이란 전쟁 불확실성 강조. FedWatch는 연내 동결 가능성 51.3%로 인하 시나리오를 대폭 후퇴시킴.</div></div>
+        <a class="lbtn" href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank">↗ CME FedWatch</a>
+      </div>
+    </div>
+    <div class="card" style="animation-delay:.15s;">
+      <div class="card-head"><span class="card-title">③ 버핏 지표 (시총 ÷ GDP)</span><span class="card-src"><a href="https://www.gurufocus.com/stock-market-valuations.php" target="_blank">GuruFocus</a> | <a href="https://www.currentmarketvaluation.com/models/buffett-indicator.php" target="_blank">Current Market Val.</a></span></div>
+      <div class="g3">
+        <div><div class="bval" style="color:var(--red);">217%</div><div class="blabel">현재 비율</div><span class="delta dn">트렌드線 +64%</span></div>
+        <div><div class="bval" style="color:var(--red);">227.5%</div><div class="blabel">Q4 2025 GDP 반영치</div><span class="delta dn">역대 2번째 최고</span></div>
+        <div><div class="bval" style="color:var(--red);">+2.0σ</div><div class="blabel">표준편차</div><span class="tag tr">STRONGLY OVERVALUED</span></div>
+      </div>
+      <div style="margin:20px 0 4px;font-size:.68rem;color:var(--muted);">밸류에이션 존 (역사적 트렌드 기준)</div>
+      <div class="bzone-bar">
+        <div class="bzone" style="background:rgba(31,189,138,.7);"></div>
+        <div class="bzone" style="background:rgba(86,204,178,.5);"></div>
+        <div class="bzone" style="background:rgba(232,160,48,.5);"></div>
+        <div class="bzone" style="background:rgba(232,120,60,.6);"></div>
+        <div class="bzone" style="background:rgba(232,73,90,.7);position:relative;"><div class="bzone-ptr"></div></div>
+      </div>
+      <div class="bzone-labels"><span>강력저평가<br>&lt;-2σ</span><span>저평가<br>-2~-1σ</span><span>적정<br>±1σ</span><span>고평가<br>+1~+2σ</span><span style="color:var(--red);font-weight:700;">강력고평가<br>&gt;+2σ</span></div>
+      <div class="iblock">
+        <p>버크셔 해서웨이 현금 <strong>$3,800억+ (역대 최대)</strong> — 버핏이 말보다 행동으로 보내는 신호.</p>
+        <div class="note note-r">⚠️ 단기 타이밍 지표 아님. 신규 포지션 진입 시 리스크 관리 강화 근거로 활용.</div>
+        <div class="note note-b">💡 분산 투자·포지션 규모 관리 재검토 권고.</div>
+      </div>
+      <a class="lbtn" href="https://www.gurufocus.com/stock-market-valuations.php" target="_blank">↗ GuruFocus 실시간</a>
+      <a class="lbtn" href="https://www.currentmarketvaluation.com/models/buffett-indicator.php" target="_blank">↗ 장기 시계열</a>
+    </div>
+  </div>
+
+  <!-- 06 경제 캘린더 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">06</span><span class="sec-title">경제 캘린더 — 주요 발표 일정 (실시간)</span><div class="sec-line"></div><span class="sec-badge">LIVE</span></div>
+    <div class="tv-wrap" style="height:500px;">
+      <div class="tradingview-widget-container" style="height:100%;">
+        <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+        {"colorTheme":"dark","isTransparent":false,"width":"100%","height":"100%","locale":"kr","importanceFilter":"0,1","countryFilter":"us,jp,eu,cn,kr"}
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 리스크 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">07</span><span class="sec-title">현재 시장 핵심 리스크</span><div class="sec-line"></div><span class="sec-badge sec-badge-new">긴급</span></div>
+    <div class="card risk-card">
+      <div class="card-head"><span class="card-title" style="color:var(--red);">🔴 이란 전쟁 (2026.02.28) — 유가 급등 &amp; 인플레이션 재점화</span><span class="tag tr">진행 중</span></div>
+      <div class="g4">
+        <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">WTI 원유</div><div class="sv" style="color:var(--red);">$97.64</div></div>
+        <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">브렌트유</div><div class="sv" style="color:var(--red);">$116</div></div>
+        <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">VIX 3월 고점</div><div class="sv" style="color:var(--red);">31.77</div></div>
+        <div class="spill" style="border-color:rgba(232,73,90,.2);"><div class="sl">호르무즈 봉쇄</div><div class="sv" style="color:var(--amber);">부분 차단</div></div>
+      </div>
+      <div class="iblock">
+        <p>2026.02.28 미·이스라엘 이란 공습(작전명 "Operation Midnight Hammer") → 호르무즈 해협 부분 봉쇄 → 브렌트 $116, WTI $97 급등. 세계 원유 공급의 20% 통과 루트.</p>
+        <div class="note note-r">⚠️ 유가 $100+ 지속 시 2026년말 CPI → 3.5% 추정. 3~4월 CPI에 전면 반영 예정. FED 금리 인상 재론 가능성 대두. 일부 시장 참가자 연내 인상 베팅.</div>
+        <p><strong>일본 영향:</strong> 원유 수입 전량 의존 → 무역적자 확대 → 엔화 추가 약세 → BOJ 딜레마 심화 (인플레↑ vs 경기↓).</p>
+        <div class="note note-b">💡 에너지주(XOM·CVX·ENEOS) 수혜 / 항공·운송·화학 비용 압박 / 금·방산주 주목. Trump 존스법 일시 면제 → 국내 원유 수송 비용 완화.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 요약표 -->
+  <div>
+    <div class="sec-head"><span class="sec-num">08</span><span class="sec-title">전체 지표 요약 — 빠른 참조</span><div class="sec-line"></div></div>
+    <div class="card">
+      <div class="tbl-scroll">
+        <table class="dtable">
+          <thead><tr><th>#</th><th>지표명</th><th>현재치</th><th>평가</th><th>투자 시그널</th><th>링크</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">01</td><td>USD/JPY</td><td class="mono">¥149~150권</td><td><span class="tag ta">엔 약세 지속</span></td><td>160엔 돌파 시 BOJ 개입 주의</td><td><a href="https://www.tradingview.com/symbols/FX-USDJPY/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">02</td><td>BOJ 정책금리</td><td class="mono">0.75%</td><td><span class="tag ta">동결 (3/19)</span></td><td>다음 회의 2026.05.01 — 1.0% 인상 전망</td><td><a href="https://www.boj.or.jp/en/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">03</td><td>닛케이225</td><td class="mono">53,289</td><td><span class="tag tr">고점 대비 -10%</span></td><td>고점 59,332 (2/26) 대비 조정 중</td><td><a href="https://nikkei225jp.com/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">04</td><td>VIX 공포지수</td><td class="mono">25.09</td><td><span class="tag tr">고변동 레짐</span></td><td>25+ 지속 → 밸류에이션 재조정 신호</td><td><a href="https://www.cboe.com/us/indices/dashboard/vix/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">05</td><td>수익률 곡선 10Y-2Y</td><td class="mono">+0.48%p</td><td><span class="tag ta">스티프닝↑</span></td><td>장기금리↑ + 단기금리↓ = 스태그플레이션 경계</td><td><a href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">06</td><td>코어 PCE (1월)</td><td class="mono">3.1% YoY</td><td><span class="tag tr">2년래 최고</span></td><td>FED 목표 2% 크게 상회 → 금리 인하 지연</td><td><a href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">07</td><td>ISM 제조업 PMI (2월)</td><td class="mono">52.4</td><td><span class="tag tg">2연속 확장</span></td><td>가격지수 70.5 → 생산비 인플레 주의</td><td><a href="https://www.ismworld.org/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">08</td><td>미시간 소비심리 (3월)</td><td class="mono">55.5</td><td><span class="tag tr">3개월 최저</span></td><td>이란 전쟁·유가 급등 → 소비 위축 신호</td><td><a href="https://fred.stlouisfed.org/series/UMCSENT" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">09</td><td>비농업 고용 (2월)</td><td class="mono">-92K</td><td><span class="tag tr">충격 감소</span></td><td>예상 +59K 대폭 하회 → 경기 둔화 신호</td><td><a href="https://www.bls.gov/ces/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">10</td><td>Fear &amp; Greed</td><td class="mono">16</td><td><span class="tag tr">극도 공포</span></td><td>역발상 매수 구간 — 거시 리스크 병행 확인</td><td><a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">11</td><td>FedWatch 6월 동결</td><td class="mono">89.2%</td><td><span class="tag tr">인하 기대 후퇴</span></td><td>연내 동결 가능성 51.3% — 2027 중반 인하 예상</td><td><a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">12</td><td>WTI 원유</td><td class="mono">$97.64</td><td><span class="tag tr">전쟁 급등</span></td><td>에너지주 수혜 / 소비·항공 섹터 압박</td><td><a href="https://finance.yahoo.com/quote/USO/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">13</td><td>브렌트유</td><td class="mono">$116</td><td><span class="tag tr">호르무즈 봉쇄</span></td><td>$120 돌파 시 글로벌 스태그플레이션 리스크</td><td><a href="https://finance.yahoo.com/quote/USO/" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+            <tr><td class="mono">14</td><td>버핏 지표</td><td class="mono">217~227%</td><td><span class="tag tr">강력 고평가</span></td><td>중장기 기대수익률 압박 → 리스크 관리</td><td><a href="https://www.gurufocus.com/stock-market-valuations.php" target="_blank" style="color:var(--accent);">↗</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>면책고지:</strong> 본 자료는 공개 통계 데이터를 바탕으로 한 정보 제공 목적이며, 특정 종목 또는 자산의 매매를 권유하지 않습니다. 투자 판단 및 손익은 투자자 본인에게 귀속됩니다. |
+  실시간 차트: TradingView (ETF 심볼 기준) | 경제지표: BLS, Census Bureau, CME, CNN, CBOE, GuruFocus, FRED |
+  최종 수동 업데이트: 2026년 3월 20일
+</footer>
+</body>
+</html>
