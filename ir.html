@@ -287,52 +287,158 @@
 
       <!-- 탭: AI 투자 분석 -->
       <div class="tab-pane" id="tab-ai">
-        <div style="background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:18px 20px;margin-bottom:16px;">
-          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <div style="flex:1;min-width:200px;">
-              <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;">분석 관점 선택</div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;">
-                  <input type="checkbox" id="opt-fundamental" checked style="accent-color:var(--accent);"> 펀더멘털
-                </label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;">
-                  <input type="checkbox" id="opt-technical" checked style="accent-color:var(--accent);"> 테크니컬
-                </label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;">
-                  <input type="checkbox" id="opt-risk" checked style="accent-color:var(--accent);"> 리스크
-                </label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;">
-                  <input type="checkbox" id="opt-catalyst" checked style="accent-color:var(--accent);"> 촉매/이슈
-                </label>
-              </div>
-            </div>
-            <div style="flex:1;min-width:200px;">
-              <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;">투자 시계 (horizon)</div>
-              <select id="opt-horizon" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
-                <option value="단기 (1~3개월)">단기 (1~3개월)</option>
-                <option value="중기 (6~12개월)" selected>중기 (6~12개월)</option>
-                <option value="장기 (1~3년)">장기 (1~3년)</option>
-              </select>
-            </div>
-            <button id="ai-analyze-btn" onclick="runAIAnalysis()"
-              style="padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s;">
-              📋 프롬프트 복사 + Claude 열기
+        <!-- AI 분석 모드 탭 -->
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:16px;">
+            <button class="ai-mode-btn active" onclick="switchAIMode('score',this)"
+              style="padding:7px 14px;font-size:.72rem;font-weight:600;color:var(--accent);background:rgba(61,142,245,.1);border:none;border-bottom:2px solid var(--accent);cursor:pointer;margin-bottom:-1px;">
+              🎯 종합 점수
+            </button>
+            <button class="ai-mode-btn" onclick="switchAIMode('thesis',this)"
+              style="padding:7px 14px;font-size:.72rem;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;">
+              📝 투자 Thesis
+            </button>
+            <button class="ai-mode-btn" onclick="switchAIMode('compare',this)"
+              style="padding:7px 14px;font-size:.72rem;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;">
+              ⚖️ 종목 비교
+            </button>
+            <button class="ai-mode-btn" onclick="switchAIMode('scenario',this)"
+              style="padding:7px 14px;font-size:.72rem;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;">
+              🎲 시나리오
+            </button>
+            <button class="ai-mode-btn" onclick="switchAIMode('news',this)"
+              style="padding:7px 14px;font-size:.72rem;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;">
+              📰 뉴스·공시 해석
+            </button>
+            <button class="ai-mode-btn" onclick="switchAIMode('valuation',this)"
+              style="padding:7px 14px;font-size:.72rem;font-weight:600;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;">
+              💰 밸류에이션
             </button>
           </div>
+
+          <!-- 모드별 옵션 패널 -->
+          <div id="ai-mode-score" class="ai-mode-panel" style="background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;">분석 관점</div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                  <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;"><input type="checkbox" id="opt-fundamental" checked style="accent-color:var(--accent);"> 펀더멘털</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;"><input type="checkbox" id="opt-technical" checked style="accent-color:var(--accent);"> 테크니컬</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;"><input type="checkbox" id="opt-risk" checked style="accent-color:var(--accent);"> 리스크</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:.75rem;cursor:pointer;"><input type="checkbox" id="opt-catalyst" checked style="accent-color:var(--accent);"> 촉매/이슈</label>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px;">투자 시계</div>
+                <select id="opt-horizon" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+                  <option value="단기 (1~3개월)">단기 (1~3개월)</option>
+                  <option value="중기 (6~12개월)" selected>중기 (6~12개월)</option>
+                  <option value="장기 (1~3년)">장기 (1~3년)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="ai-mode-thesis" class="ai-mode-panel" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Bull case / Bear case 형태의 투자 thesis를 작성합니다.</div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">투자 시계</div>
+                <select id="opt-thesis-horizon" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+                  <option value="단기">단기 (1~3개월)</option>
+                  <option value="중기" selected>중기 (6~12개월)</option>
+                  <option value="장기">장기 (1~3년)</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">특별히 강조할 포인트 (선택)</div>
+                <input id="opt-thesis-focus" type="text" placeholder="예: ESS 사업, 인도 시장, AI 수혜..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+              </div>
+            </div>
+          </div>
+
+          <div id="ai-mode-compare" class="ai-mode-panel" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">현재 선택 종목과 비교할 종목을 입력하세요 (최대 2개)</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:150px;">
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">비교 종목 1</div>
+                <input id="opt-compare1" type="text" placeholder="예: 6501 (日立), NVDA, 000660" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">비교 종목 2 (선택)</div>
+                <input id="opt-compare2" type="text" placeholder="예: 6758 (ソニー), AAPL" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+              </div>
+              <div>
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">비교 기준</div>
+                <select id="opt-compare-basis" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+                  <option value="종합">종합 비교</option>
+                  <option value="밸류에이션">밸류에이션</option>
+                  <option value="성장성">성장성</option>
+                  <option value="수익성">수익성</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="ai-mode-scenario" class="ai-mode-panel" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">최악 / 기본 / 최선 시나리오별 주가 전망을 분석합니다.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">시계</div>
+                <select id="opt-scenario-horizon" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+                  <option value="6개월">6개월</option>
+                  <option value="12개월" selected>12개월</option>
+                  <option value="2~3년">2~3년</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">주요 변수 (선택)</div>
+                <input id="opt-scenario-var" type="text" placeholder="예: 엔화 환율, 미국 금리, 중국 수요..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+              </div>
+            </div>
+          </div>
+
+          <div id="ai-mode-news" class="ai-mode-panel" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">분석할 뉴스·공시 내용을 붙여넣으세요. Claude가 투자 관점에서 해석합니다.</div>
+            <textarea id="opt-news-text" placeholder="뉴스 기사, IR 공시 내용, 실적 발표 등을 붙여넣기..." style="width:100%;min-height:100px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:.75rem;color:var(--text);outline:none;resize:vertical;font-family:'Noto Sans KR',sans-serif;line-height:1.6;"></textarea>
+          </div>
+
+          <div id="ai-mode-valuation" class="ai-mode-panel" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:16px 20px;margin-bottom:14px;">
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">DCF 및 상대 밸류에이션으로 적정 주가를 산출합니다.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">밸류에이션 방법</div>
+                <select id="opt-val-method" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+                  <option value="종합">DCF + 상대 밸류</option>
+                  <option value="DCF">DCF 중심</option>
+                  <option value="상대밸류">상대 밸류 중심</option>
+                  <option value="배당할인">배당할인모델(DDM)</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:.68rem;color:var(--muted);margin-bottom:5px;">참고 수치 (선택 입력)</div>
+                <input id="opt-val-data" type="text" placeholder="예: EPS 234엔, PER 15배, 성장률 8%..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:.75rem;color:var(--text);outline:none;">
+              </div>
+            </div>
+          </div>
+
+          <button id="ai-analyze-btn" onclick="runAIAnalysis()"
+            style="padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s;">
+            📋 프롬프트 복사 + Claude 열기
+          </button>
         </div>
 
-        <!-- 안내 메시지 -->
+        <!-- 안내 / 결과 -->
         <div id="ai-result-wrap">
           <div style="background:rgba(61,142,245,.06);border:1px solid rgba(61,142,245,.2);border-radius:10px;padding:20px 24px;">
             <div style="font-size:.82rem;font-weight:600;color:var(--accent);margin-bottom:10px;">🤖 Claude AI 분석 사용 방법</div>
-            <div style="font-size:.78rem;color:var(--text);line-height:2;">
-              1. 위 버튼 클릭 → 분석 프롬프트가 <strong style="color:var(--green);">자동 복사</strong>됩니다<br>
-              2. claude.ai가 <strong style="color:var(--green);">새 탭</strong>으로 열립니다<br>
-              3. claude.ai에서 <strong style="color:var(--green);">Ctrl+V</strong> 붙여넣기 후 전송<br>
-              4. 펀더멘털 · 테크니컬 · 리스크 종합 분석 결과를 받습니다
+            <div style="font-size:.78rem;color:var(--text);line-height:2.2;">
+              1. 분석 모드 선택 → 옵션 설정<br>
+              2. <strong style="color:var(--green);">📋 프롬프트 복사 + Claude 열기</strong> 클릭<br>
+              3. claude.ai에서 <strong style="color:var(--green);">Ctrl+V</strong> 붙여넣기 후 전송
             </div>
             <div style="font-size:.68rem;color:var(--muted);margin-top:10px;">
-              💡 claude.ai Pro 구독 시 웹 검색 기능으로 최신 정보까지 반영됩니다
+              💡 claude.ai Pro 구독 시 웹 검색으로 최신 실적·뉴스까지 반영됩니다
             </div>
           </div>
         </div>
@@ -723,93 +829,105 @@ function saveFinance(){
 }
 
 // ═══════════════════════════════════════════════════
+// AI 분석 모드 전환
+// ═══════════════════════════════════════════════════
+
+let currentAIMode = 'score';
+
+function switchAIMode(mode, btn){
+  currentAIMode = mode;
+  document.querySelectorAll('.ai-mode-btn').forEach(b=>{
+    b.style.color='var(--muted)'; b.style.background='none'; b.style.borderBottom='2px solid transparent';
+  });
+  btn.style.color='var(--accent)'; btn.style.background='rgba(61,142,245,.1)'; btn.style.borderBottom='2px solid var(--accent)';
+  document.querySelectorAll('.ai-mode-panel').forEach(p=>p.style.display='none');
+  const panel = document.getElementById('ai-mode-'+mode);
+  if(panel) panel.style.display='block';
+  document.getElementById('ai-result-wrap').innerHTML=`<div style="background:rgba(61,142,245,.06);border:1px solid rgba(61,142,245,.2);border-radius:10px;padding:14px 18px;font-size:.78rem;color:var(--muted);">옵션 설정 후 <strong style="color:var(--accent);">📋 프롬프트 복사 + Claude 열기</strong> 를 클릭하세요.</div>`;
+}
+
+// ═══════════════════════════════════════════════════
 // AI 분석 — 프롬프트 복사 + claude.ai 열기
 // ═══════════════════════════════════════════════════
 
 async function runAIAnalysis(){
   if(!currentStock){ alert('종목을 먼저 선택해주세요.'); return; }
-
   const s = currentStock;
-  const market  = s.market || 'JP';
-  const exchange = market==='JP' ? '도쿄증권거래소(TSE)' : market==='US' ? 'NYSE/NASDAQ' : '한국증권거래소(KRX)';
-  const flag    = market==='US' ? '🇺🇸' : market==='KR' ? '🇰🇷' : '🇯🇵';
-  const horizon = document.getElementById('opt-horizon').value;
+  const mode = currentAIMode || 'score';
+  const market = s.market || 'JP';
+  const exchange = market==='JP'?'도쿄증권거래소(TSE)':market==='US'?'NYSE/NASDAQ':'한국증권거래소(KRX)';
+  const flag = market==='US'?'🇺🇸':market==='KR'?'🇰🇷':'🇯🇵';
+  const base = `종목: ${s.name} (${s.code}) ${flag} / ${exchange} / 섹터: ${s.sector}`;
 
-  const useFundamental = document.getElementById('opt-fundamental').checked;
-  const useTechnical   = document.getElementById('opt-technical').checked;
-  const useRisk        = document.getElementById('opt-risk').checked;
-  const useCatalyst    = document.getElementById('opt-catalyst').checked;
+  if(mode==='compare' && !document.getElementById('opt-compare1')?.value?.trim()){
+    alert('비교할 종목을 입력해주세요.'); return;
+  }
+  if(mode==='news' && !document.getElementById('opt-news-text')?.value?.trim()){
+    alert('분석할 뉴스·공시 내용을 입력해주세요.'); return;
+  }
 
-  const perspectives = [
-    useFundamental && 'PER/PBR 밸류에이션, ROE·ROA 수익성, 매출·영업이익 성장률, 배당수익률, 자기자본비율·부채비율 등 펀더멘털 분석',
-    useTechnical   && 'RSI 과매수·과매도, 이동평균선(골든크로스·데드크로스), MACD, 거래량 변화 등 테크니컬 분석',
-    useRisk        && '사업 리스크, 규제·경쟁·환율·지정학적 리스크 분석',
-    useCatalyst    && '최근 IR 공시, 실적 발표, 신제품·M&A·정책 수혜 등 촉매 요인 분석',
-  ].filter(Boolean).map(p => `- ${p}`).join('\n');
+  // 모드별 프롬프트 생성
+  let prompt = '';
+  const modeLabels = {score:'종합 점수',thesis:'투자 Thesis',compare:'종목 비교',scenario:'시나리오 분석',news:'뉴스·공시 해석',valuation:'밸류에이션'};
 
-  const prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 아래 종목을 웹 검색을 활용하여 최신 정보 기반으로 심층 분석해주세요.
+  if(mode==='score'){
+    const horizon = document.getElementById('opt-horizon')?.value || '중기 (6~12개월)';
+    const parts = [
+      document.getElementById('opt-fundamental')?.checked && 'PER/PBR 밸류에이션, ROE·ROA 수익성, 매출·영업이익 성장률, 배당수익률, 자기자본비율·부채비율',
+      document.getElementById('opt-technical')?.checked   && 'RSI 과매수·과매도, 이동평균선(골든/데드크로스), MACD, 거래량 변화',
+      document.getElementById('opt-risk')?.checked        && '사업·규제·경쟁·환율·지정학적 리스크',
+      document.getElementById('opt-catalyst')?.checked    && '최근 IR공시·실적발표·신제품·M&A·정책수혜 등 촉매',
+    ].filter(Boolean).map(p=>`- ${p}`).join('\n');
+    prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 웹 검색으로 최신 정보를 확인하며 아래 종목을 심층 분석해주세요.\n\n## 분석 대상\n${base}\n투자 시계: ${horizon}\n\n## 분석 항목\n${parts}\n\n## 출력 형식\n### 📊 종합 점수 및 투자 판단\n- **총점**: X / 100점\n- **판단**: 매수검토 / 보류 / 패스\n- **핵심 근거**: (2줄)\n\n### 💹 펀더멘털 (X점/100)\n### 📈 테크니컬 (X점/100)\n### 🛡 리스크 (X점/100, 높을수록 낮은 리스크)\n### ⚡ 촉매/이슈 (X점/100)\n### ✅ 강점 3가지 / ⚠️ 약점 2가지 / 👁 주목 포인트 2가지\n\n※ 웹 검색으로 최신 주가·실적·뉴스를 반드시 확인 후 분석해주세요.`;
 
-## 분석 대상
-- 종목코드/티커: ${s.code}
-- 거래소: ${exchange} ${flag}
-- 기업명: ${s.name}
-- 섹터: ${s.sector}
-- 투자 시계: ${horizon}
+  } else if(mode==='thesis'){
+    const horizon = document.getElementById('opt-thesis-horizon')?.value || '중기';
+    const focus = document.getElementById('opt-thesis-focus')?.value || '';
+    prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 웹 검색으로 최신 정보를 확인하며 아래 종목의 투자 thesis를 작성해주세요.\n\n## 분석 대상\n${base}\n투자 시계: ${horizon}\n${focus?`특별 포인트: ${focus}`:''}\n\n## 출력 형식\n\n### 🎯 핵심 투자 thesis (3줄 요약)\n\n### 🐂 Bull Case (매수 근거)\n1. (근거 1 — 구체적 수치 포함)\n2. (근거 2)\n3. (근거 3)\n- **목표 주가**: X (현재 대비 +X%)\n\n### 🐻 Bear Case (위험 요인)\n1. (위험 1)\n2. (위험 2)\n- **하방 리스크**: X (현재 대비 -X%)\n\n### ⚖️ 결론\n- **투자 판단**: 매수검토 / 보류 / 패스\n- **핵심 모니터링 지표**: (2~3가지)\n\n※ 웹 검색으로 최신 실적·뉴스·주가를 반드시 확인 후 작성해주세요.`;
 
-## 분석 항목
-${perspectives}
+  } else if(mode==='compare'){
+    const c1 = document.getElementById('opt-compare1')?.value || '';
+    const c2 = document.getElementById('opt-compare2')?.value || '';
+    const basis = document.getElementById('opt-compare-basis')?.value || '종합';
+    prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 웹 검색으로 최신 정보를 확인하며 아래 종목들을 비교 분석해주세요.\n\n## 비교 대상\n- 기준 종목: ${s.name} (${s.code}) ${flag}\n- 비교 종목: ${c1}${c2?', '+c2:''}\n- 비교 기준: ${basis}\n\n## 출력 형식\n\n### 📊 핵심 지표 비교표 (PER/PBR/ROE/매출성장률/배당수익률)\n\n### 🏆 종합 순위 및 추천\n1위: (종목) — (이유)\n2위: (종목) — (이유)\n${c2?'3위: (종목) — (이유)':''}\n\n### 💡 각 종목별 핵심 차별화 포인트\n\n### ✅ 최종 추천\n**지금 가장 매력적인 종목**: (종목명)\n**이유**: (2~3줄)\n\n※ 웹 검색으로 최신 재무 데이터·주가·뉴스를 반드시 확인 후 분석해주세요.`;
 
-## 출력 형식
-### 📊 종합 점수 및 투자 판단
-- **총점**: X / 100점
-- **판단**: 매수검토 / 보류 / 패스
-- **근거**: (1~2줄 핵심 이유)
+  } else if(mode==='scenario'){
+    const horizon = document.getElementById('opt-scenario-horizon')?.value || '12개월';
+    const vars = document.getElementById('opt-scenario-var')?.value || '';
+    prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 웹 검색으로 최신 정보를 확인하며 아래 종목의 시나리오별 투자 전망을 분석해주세요.\n\n## 분석 대상\n${base}\n분석 시계: ${horizon}\n${vars?`주요 변수: ${vars}`:''}\n\n## 출력 형식\n\n### 📌 현재 주가 및 컨텍스트\n\n### 🟢 Base Case (기본 시나리오, 확률 X%)\n- 전제 조건 / 예상 주가 / 핵심 드라이버\n\n### 🔵 Bull Case (최선 시나리오, 확률 X%)\n- 전제 조건 / 예상 주가 / 트리거\n\n### 🔴 Bear Case (최악 시나리오, 확률 X%)\n- 전제 조건 / 예상 주가 / 리스크 요인\n\n### 📋 결론 및 투자 전략\n- 기대 수익률 (가중평균) / 권장 전략 / 손절 기준\n\n※ 웹 검색으로 최신 주가·실적·거시 환경을 반드시 확인 후 분석해주세요.`;
 
-### 💹 펀더멘털 분석 (X점 / 100)
-(PER·PBR·ROE·매출 성장률·배당 등 구체적 수치와 평가)
+  } else if(mode==='news'){
+    const newsText = document.getElementById('opt-news-text')?.value?.trim() || '';
+    prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 아래 뉴스·공시 내용을 투자 관점에서 분석해주세요.\n\n## 종목 정보\n${base}\n\n## 분석할 뉴스·공시 내용\n---\n${newsText}\n---\n\n## 출력 형식\n\n### 📌 핵심 내용 요약 (3줄)\n\n### 📈 주가에 미치는 영향\n- 단기 (1~4주): 긍정/중립/부정 — (이유)\n- 중기 (3~6개월): 긍정/중립/부정 — (이유)\n\n### 💡 투자 관점 해석\n- 긍정적 요인 / 부정적 요인 / 시장이 놓칠 수 있는 포인트\n\n### 🎯 액션 포인트\n- 판단: 매수 기회 / 관망 / 매도 검토\n- 근거 / 모니터링할 후속 지표`;
 
-### 📈 테크니컬 분석 (X점 / 100)
-(RSI·이동평균·MACD·거래량 등 현재 기술적 상태)
+  } else if(mode==='valuation'){
+    const method = document.getElementById('opt-val-method')?.value || '종합';
+    const valData = document.getElementById('opt-val-data')?.value || '';
+    prompt = `당신은 글로벌 주식 전문 투자 애널리스트입니다. 웹 검색으로 최신 재무 데이터를 확인하며 아래 종목의 적정 주가를 산출해주세요.\n\n## 분석 대상\n${base}\n밸류에이션 방법: ${method}\n${valData?`참고 수치: ${valData}`:''}\n\n## 출력 형식\n\n### 📌 현재 주가 및 주요 재무 지표 (웹 검색으로 최신 확인)\n\n### 💹 DCF 밸류에이션 (해당 시)\n- WACC / 성장률 / FCF 추정 → **DCF 적정 주가**: X (±X%)\n\n### 📊 상대 밸류에이션 (해당 시)\n- 업종 평균 PER·PBR 적용 → **상대 밸류 적정 주가**: X (±X%)\n\n### 🎯 종합 적정 주가\n- **적정 주가 범위**: X ~ X\n- **현재 주가 대비**: 고평가 / 적정 / 저평가\n- **투자 판단**: 매수검토 / 보류 / 패스\n\n※ 웹 검색으로 최신 재무 데이터를 반드시 확인 후 산출해주세요.`;
+  }
 
-### 🛡 리스크 분석 (X점 / 100, 높을수록 리스크 낮음)
-(주요 리스크 요인과 수준)
-
-### ⚡ 촉매/이슈 (X점 / 100)
-(최근 IR·실적·뉴스·정책 등 주요 촉매)
-
-### ✅ 강점 (3가지)
-### ⚠️ 약점·리스크 (2가지)
-### 👁 주목 포인트 (2가지)
-
-※ 웹 검색으로 최신 주가·실적·뉴스를 반드시 확인 후 분석해주세요.
-※ 본 분석은 투자 참고용이며 최종 투자 판단은 본인 책임입니다.`;
+  if(!prompt){ alert('프롬프트 생성 실패.'); return; }
 
   // 클립보드 복사
   try {
     await navigator.clipboard.writeText(prompt);
   } catch(e) {
-    // fallback
     const ta = document.createElement('textarea');
-    ta.value = prompt;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    ta.value = prompt; ta.style.cssText='position:fixed;opacity:0;';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
   }
 
-  // 결과창 업데이트
   document.getElementById('ai-result-wrap').innerHTML = `
-    <div style="background:rgba(31,189,138,.06);border:1px solid rgba(31,189,138,.3);border-radius:10px;padding:20px 24px;">
-      <div style="font-size:.85rem;font-weight:700;color:var(--green);margin-bottom:12px;">✅ 프롬프트가 클립보드에 복사됐습니다!</div>
+    <div style="background:rgba(31,189,138,.06);border:1px solid rgba(31,189,138,.3);border-radius:10px;padding:18px 22px;">
+      <div style="font-size:.85rem;font-weight:700;color:var(--green);margin-bottom:12px;">✅ 프롬프트 복사 완료!</div>
       <div style="font-size:.78rem;color:var(--text);line-height:2.2;">
         <span style="background:rgba(31,189,138,.12);padding:2px 10px;border-radius:4px;font-weight:700;">1</span>
-        &nbsp; claude.ai가 새 탭으로 열립니다 (안 열리면 아래 버튼 클릭)<br>
+        &nbsp; claude.ai 새 탭이 열립니다<br>
         <span style="background:rgba(31,189,138,.12);padding:2px 10px;border-radius:4px;font-weight:700;">2</span>
-        &nbsp; 채팅창에 <strong style="color:var(--green);">Ctrl+V</strong> 붙여넣기<br>
+        &nbsp; 채팅창에 <strong style="color:var(--green);">Ctrl+V</strong> 붙여넣기 후 전송<br>
         <span style="background:rgba(31,189,138,.12);padding:2px 10px;border-radius:4px;font-weight:700;">3</span>
-        &nbsp; 전송하면 <strong style="color:var(--green);">${s.name} (${s.code})</strong> 분석 결과를 받습니다
+        &nbsp; <strong style="color:var(--green);">${modeLabels[mode]}</strong> 분석 결과를 받습니다
       </div>
       <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
         <a href="https://claude.ai/new" target="_blank"
@@ -822,11 +940,10 @@ ${perspectives}
         </button>
       </div>
       <div style="font-size:.65rem;color:var(--muted);margin-top:10px;">
-        분석 대상: ${flag} ${s.name} (${s.code}) · ${exchange} · ${horizon}
+        ${flag} ${s.name} (${s.code}) · ${modeLabels[mode]} 프롬프트
       </div>
     </div>`;
 
-  // claude.ai 새 탭 열기
   window.open('https://claude.ai/new', '_blank');
 }
 
