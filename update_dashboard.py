@@ -102,9 +102,14 @@ def sub(html, pattern, repl_fn):
     return new_html
 
 def set_text(html, el_id, text):
-    # [^<]* 대신 .*? 사용 — em dash(—) 등 특수문자도 처리
+    """id 요소 내부 텍스트 교체 — 일반 텍스트 (태그 없음)"""
     return sub(html, rf'(id="{el_id}"[^>]*>).*?(?=<)',
                lambda m: m.group(1) + text)
+
+def set_chg(html, el_id, content):
+    """등락 요소 교체 — span 등 HTML 태그 포함. 닫는 </div>까지 통째로 교체"""
+    return sub(html, rf'(<div[^>]*id="{el_id}"[^>]*>).*?(</div>)',
+               lambda m: m.group(1) + content + m.group(2))
 
 def set_border(html, el_id, border):
     new_html, n = re.subn(
@@ -122,7 +127,7 @@ def set_border(html, el_id, border):
 def update_index_card(html, idx_id, data, fmt="USD"):
     if not data: return html
     html = set_text(html, f"v-{idx_id}", fmt_num(data["price"], fmt))
-    html = set_text(html, f"c-{idx_id}", fmt_chg(data.get("chg"), data.get("pct")))
+    html = set_chg(html,  f"c-{idx_id}", fmt_chg(data.get("chg"), data.get("pct")))
     html = set_border(html, idx_id, border_col(data.get("chg")))
     return html
 
