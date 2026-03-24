@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시장을 읽는 눈 — 핵심 지표 완전 정복</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#222630;--accent:#e8c97d;--accent2:#6eb5ff;--accent3:#7fffb0;--danger:#ff6b6b;--muted:#556070;--text:#d4dae8;--text2:#8a95a8;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.7;}
+  .hero{background:linear-gradient(160deg,#0d1220 0%,#0a0c10 60%);border-bottom:1px solid var(--border);padding:48px 40px 40px;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,201,125,0.07) 0%,transparent 70%);}
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  .back-btn{font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:5px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;transition:all .2s;}
+  .back-btn:hover{color:var(--text);border-color:var(--accent);}
+  .hero-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:16px;}
+  .hero h1{font-family:'Noto Serif KR',serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:#fff;line-height:1.2;margin-bottom:12px;}
+  .hero-sub{color:var(--text2);font-size:13px;max-width:600px;line-height:1.8;}
+  .nav-bar{display:flex;flex-wrap:wrap;gap:6px;padding:14px 40px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+  .nav-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none;white-space:nowrap;}
+  .nav-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .container{max-width:960px;margin:0 auto;padding:0 40px 80px;}
+  .part-header{margin:56px 0 24px;padding-bottom:16px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+  .part-num{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;}
+  .part-title{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:#fff;}
+  .part-desc{color:var(--text2);font-size:12px;margin-top:6px;font-style:italic;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;overflow:hidden;}
+  .card-header{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;user-select:none;transition:background .2s;}
+  .card-header:hover{background:var(--surface2);}
+  .card-icon{font-size:16px;width:28px;text-align:center;flex-shrink:0;}
+  .card-name{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#fff;flex:1;}
+  .card-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:2px;flex-shrink:0;}
+  .tag-policy{background:rgba(232,201,125,.15);color:var(--accent);}
+  .tag-price{background:rgba(255,107,107,.15);color:var(--danger);}
+  .tag-labor{background:rgba(110,181,255,.15);color:var(--accent2);}
+  .tag-growth{background:rgba(127,255,176,.15);color:var(--accent3);}
+  .tag-market{background:rgba(180,130,255,.15);color:#c490ff;}
+  .tag-fx{background:rgba(255,180,80,.15);color:#ffb450;}
+  .tag-stock{background:rgba(100,220,130,.15);color:#64dc82;}
+  .tag-tech{background:rgba(100,200,255,.15);color:#64c8ff;}
+  .tag-alt{background:rgba(150,150,150,.15);color:#aaa;}
+  .chevron{color:var(--muted);font-size:12px;transition:transform .25s;flex-shrink:0;}
+  .card.open .chevron{transform:rotate(180deg);}
+  .card-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border);}
+  .card.open .card-body{display:block;}
+  .section-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:16px 0 6px;}
+  .def-text{color:var(--text2);font-size:13px;line-height:1.75;}
+  .imp-text{color:var(--text);font-size:13px;line-height:1.75;}
+  .signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+  .signal-box{padding:10px 14px;border-radius:5px;font-size:12px;line-height:1.5;}
+  .signal-up{background:rgba(255,107,107,.08);border-left:3px solid var(--danger);}
+  .signal-down{background:rgba(127,255,176,.08);border-left:3px solid var(--accent3);}
+  .signal-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;display:block;margin-bottom:4px;}
+  .sig-up-label{color:var(--danger);}
+  .sig-down-label{color:var(--accent3);}
+  .signal-result{color:var(--text2);font-size:11px;}
+  .warn-box{margin-top:12px;background:rgba(232,201,125,.06);border:1px solid rgba(232,201,125,.2);border-radius:5px;padding:10px 14px;font-size:12px;color:#c9b06a;line-height:1.6;}
+  .warn-box::before{content:'⚠ ';font-weight:bold;}
+  .info-box{margin-top:12px;background:rgba(110,181,255,.06);border:1px solid rgba(110,181,255,.2);border-radius:5px;padding:10px 14px;font-size:12px;color:#7db8e8;line-height:1.6;}
+  .info-box::before{content:'💡 ';}
+  .example-box{margin-top:12px;background:rgba(127,255,176,.05);border:1px solid rgba(127,255,176,.15);border-radius:5px;padding:10px 14px;font-size:12px;color:#89e8a8;line-height:1.6;}
+  .example-box::before{content:'📌 실제 사례: ';}
+  .mini-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px;}
+  .mini-table th{background:var(--surface2);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+  .mini-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text2);vertical-align:top;}
+  .mini-table tr:last-child td{border-bottom:none;}
+  .summary-section{margin-top:56px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .summary-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+  .summary-header h2{font-family:'Noto Serif KR',serif;font-size:16px;color:#fff;}
+  .summary-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .summary-table th{background:var(--surface2);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;padding:10px 16px;text-align:left;}
+  .summary-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.6;}
+  .summary-table tr:last-child td{border-bottom:none;}
+  .summary-cat{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--accent);}
+  .summary-items{color:var(--text2);}
+  .summary-signal{color:var(--text);font-size:11px;}
+  .footer{text-align:center;padding:32px 40px;border-top:1px solid var(--border);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;}
+  .svg-wrap{margin:14px 0;background:var(--surface2);border-radius:6px;padding:12px;overflow-x:auto;}
+  .cycle-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+  .cycle-box{background:var(--surface2);border-radius:6px;padding:12px;border-top:3px solid;}
+  .cycle-box h4{font-size:11px;font-weight:700;margin-bottom:6px;}
+  .cycle-box ul{list-style:none;font-size:11px;color:var(--text2);line-height:1.8;}
+  .val-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+  .val-box{background:var(--surface2);border-radius:6px;padding:12px;}
+  .val-box h4{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:6px;}
+  .val-box p{font-size:11px;color:var(--text2);line-height:1.7;}
+  @media(max-width:600px){.hero,.container{padding-left:20px;padding-right:20px;}.nav-bar{padding-left:16px;padding-right:16px;}.signal-grid,.cycle-grid,.val-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="hero-label">MARKET INTELLIGENCE · 시장 지표 공부자료</div>
+      <h1>시장을 읽는 눈<br>핵심 지표 완전 정복</h1>
+      <p class="hero-sub">지표는 시장이 보내는 신호다. 신호를 읽지 못하면 항상 남보다 늦게 움직인다.<br>9개 파트 · 50+ 지표를 인과관계 흐름으로 정리했다.</p>
+    </div>
+    <a href="index.html" class="back-btn">← 메인 대시보드</a>
+  </div>
+</div>
+
+<nav class="nav-bar">
+  <a href="#part1" class="nav-btn">01 통화정책</a>
+  <a href="#part2" class="nav-btn">02 물가</a>
+  <a href="#part3" class="nav-btn">03 노동시장</a>
+  <a href="#part4" class="nav-btn">04 경기·성장</a>
+  <a href="#part5" class="nav-btn">05 금융시장</a>
+  <a href="#part6" class="nav-btn">06 원자재·글로벌</a>
+  <a href="#part7" class="nav-btn">07 주식 특화</a>
+  <a href="#part8" class="nav-btn">08 기술적 분석</a>
+  <a href="#part9" class="nav-btn">09 이색 지표</a>
+  <a href="#summary" class="nav-btn">📋 요약표</a>
+</nav>
+
+<div class="container">
+
+<!-- PART 1 -->
+<div id="part1">
+  <div class="part-header"><span class="part-num">PART 01</span><span class="part-title">통화정책 — 시장의 수도꼭지</span></div>
+  <p class="part-desc">모든 자산 가격은 결국 돈의 양과 가격(금리)으로 귀결된다. 여기서부터 시작해야 한다.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🏦</span><span class="card-name">FOMC 기준금리 결정</span><span class="card-tag tag-policy">통화정책</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">연방공개시장위원회(FOMC)가 연 8회 열어 기준금리를 결정한다. 금리는 돈의 '임대료'다. 임대료가 비싸지면 돈이 움츠러들고, 싸지면 돈이 흘러나온다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">전 세계 자산 가격의 할인율(discount rate)이 여기서 결정된다. 기업의 미래 이익도, 부동산 가치도 모두 이 금리 하나에 반응한다. DCF(미래현금흐름 할인) 모델에서 분모에 금리가 들어가므로, 금리가 오르면 주식 적정 가치가 낮아진다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">📈 매파적 (인상·동결)</span><span class="signal-result">자금 조달 비용 상승 → 성장주·기술주 특히 타격. PER 멀티플 압축.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">📉 비둘기파적 (인하)</span><span class="signal-result">유동성 공급 기대 → 성장주 반등. 배당주·유틸리티는 상대 매력 감소.</span></div>
+      </div>
+      <div class="warn-box">금리 결정 자체보다 파월 의장 발언의 뉘앙스가 더 큰 변수. 점도표(Dot Plot)와 반드시 함께 봐야 한다.</div>
+      <div class="example-box">2022년 연준은 0.25%에서 시작해 불과 18개월 만에 5.5%까지 인상. 이 기간 나스닥은 -33% 폭락했다. 금리와 성장주 PER 멀티플이 정확히 역방향으로 움직인 교과서적 사례.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📜</span><span class="card-name">연준 대차대조표 (QE/QT)</span><span class="card-tag tag-policy">통화정책</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">연준이 보유한 채권 등 자산의 총합. QE(양적완화) 시 팽창, QT(양적긴축) 시 축소된다. 2020년 코로나 이후 4조→9조 달러로 2배 이상 팽창했다가 현재 축소 중.</p>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;">
+          <text x="10" y="15" fill="#556070" font-size="9" font-family="monospace">연준 대차대조표 개념도 (조 달러)</text>
+          <line x1="40" y1="100" x2="460" y2="100" stroke="#222630" stroke-width="1"/>
+          <line x1="40" y1="20" x2="40" y2="100" stroke="#222630" stroke-width="1"/>
+          <polyline points="40,90 120,85 200,60 280,35 320,38 380,50 460,55" fill="none" stroke="#e8c97d" stroke-width="2"/>
+          <text x="120" y="78" fill="#7fffb0" font-size="8">4조</text>
+          <text x="270" y="28" fill="#ff6b6b" font-size="8">9조(고점)</text>
+          <text x="430" y="48" fill="#6eb5ff" font-size="8">QT중</text>
+          <text x="40" y="112" fill="#556070" font-size="8">2019</text>
+          <text x="190" y="112" fill="#556070" font-size="8">2020(코로나)</text>
+          <text x="340" y="112" fill="#556070" font-size="8">2022(QT시작)</text>
+          <text x="430" y="112" fill="#556070" font-size="8">현재</text>
+        </svg>
+      </div>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">QT (축소)</span><span class="signal-result">시중 유동성 흡수 → 자산가격 하방 압력. 특히 채권 시장 수급 악화.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">QE (팽창)</span><span class="signal-result">유동성 폭발 → 위험자산 랠리의 연료. 2020~2021 자산 버블의 주범.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🏧</span><span class="card-name">역레포(RRP) 잔액 & M2 통화량</span><span class="card-tag tag-policy">통화정책</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">역레포(RRP)</div>
+      <p class="def-text">금융기관들이 하룻밤 연준에 현금을 맡겨두는 금액. 시장에 갈 곳 없는 잉여 유동성의 '대기실'. 2023년 2조 달러 이상에서 현재 급격히 감소 중 → 자금이 실제 시장으로 이동하는 신호.</p>
+      <div class="section-label">M2 통화량</div>
+      <p class="def-text">시중에 유통되는 돈의 총량(현금+요구불예금+저축성예금). M2 증가율과 주식시장은 장기적으로 높은 상관관계를 보인다.</p>
+      <div class="info-box">RRP 잔액 급감 + M2 반등 = 더블 강세 신호. 대기 자금이 실제로 움직이기 시작했다는 뜻.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2 -->
+<div id="part2">
+  <div class="part-header"><span class="part-num">PART 02</span><span class="part-title">물가 — 금리 방향의 나침반</span></div>
+  <p class="part-desc">인플레이션이 살아있는 한 연준은 금리를 내리기 어렵다. 물가 지표가 모든 정책의 선행지표다.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🌡️</span><span class="card-name">CPI / Core CPI — 소비자물가지수</span><span class="card-tag tag-price">물가</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">도시 소비자 구매 품목들의 가격 변화율. 식품·에너지 제외 버전을 근원 CPI(Core CPI)라 부른다. 매월 둘째 주 수요일 발표. 시장이 가장 긴장하는 데이터 중 하나.</p>
+      <div class="warn-box">헤드라인 CPI는 유가에 오염된다. Core CPI의 3개월 이동 방향으로 추세를 판단하는 것이 핵심.</div>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">예상보다 높음 (핫)</span><span class="signal-result">금리 인하 지연 → 성장주·채권 하락. 은행·에너지주 단기 수혜.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">예상보다 낮음 (쿨)</span><span class="signal-result">인하 기대 강화 → 기술주·성장주 급등. 채권 랠리.</span></div>
+      </div>
+      <div class="example-box">2022년 6월 CPI 9.1% 발표 당일 S&P500 -0.45%, 이후 연준 자이언트스텝(0.75%) 연속 단행. 나스닥 연간 -33%의 도화선.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">💳</span><span class="card-name">PCE / PPI — 연준 선호 지표</span><span class="card-tag tag-price">물가</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">PCE (개인소비지출)</div>
+      <p class="def-text">소비자의 실제 지출 패턴 변화를 반영. 품목 대체 효과를 포착해 연준이 가장 신뢰하는 지표. 연준의 공식 인플레이션 타겟(2%)이 바로 이 PCE 기준이다. CPI보다 시장 반응은 약하지만 연준 내부 판단에 더 강하게 영향.</p>
+      <div class="section-label">PPI (생산자물가)</div>
+      <p class="def-text">기업이 원재료 구매 또는 제품 출하 시의 가격 변화율. CPI보다 1~3개월 선행한다. CPI의 예고편. PPI 상승 → 수개월 내 CPI 상승 가능성.</p>
+      <div class="info-box">3가지 물가 지표 확인 순서: PPI(선행) → CPI(시장 충격) → PCE(연준 판단). 방향이 모두 같으면 강한 신호.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🧠</span><span class="card-name">미시간대 기대 인플레이션</span><span class="card-tag tag-price">물가</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">소비자들이 1년 후·5년 후 물가 상승을 얼마나 예상하는지 설문. 인플레이션 기대심리가 실제 인플레이션을 만든다(자기실현적 예언).</p>
+      <div class="warn-box">5~10년 기대 인플레이션이 3% 이상으로 올라오면 연준이 즉각 긴장. 기대치 고착화가 연준이 가장 두려워하는 시나리오 — 1970년대 스태그플레이션 재현 우려.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 3 -->
+<div id="part3">
+  <div class="part-header"><span class="part-num">PART 03</span><span class="part-title">노동시장 — 경제의 체온계</span></div>
+  <p class="part-desc">고용이 탄탄하면 소비가 살아있다. 하지만 고용이 너무 좋으면 임금 인플레이션이 온다.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📋</span><span class="card-name">NFP — 비농업 고용자 수</span><span class="card-tag tag-labor">노동</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">매월 첫째 주 금요일 발표. 한 달간 농업 외 분야에서 생긴 일자리 수. 시장이 한 달 중 가장 긴장하는 지표. 컨센서스와의 차이(서프라이즈)가 핵심이다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">지나치게 강함 (+30만↑)</span><span class="signal-result">연준 인하 명분 없음 → 채권 매도, 성장주 하락 압력</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">약함 (+10만↓)</span><span class="signal-result">인하 기대 강화 but 침체 우려 공존 → 방어주 선호</span></div>
+      </div>
+      <div class="warn-box">고용자 수 + 평균 시간당 임금(AHE) 반드시 함께 봐야 한다. 일자리는 줄었는데 임금이 오르면 여전히 인플레이션 압력.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">⚖️</span><span class="card-name">JOLTS & 샴의 법칙 (Sahm Rule)</span><span class="card-tag tag-labor">노동</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">JOLTS — 구인·이직 보고서</div>
+      <p class="def-text">채용 공고 수, 채용 수, 자발적 퇴직 수 포함. 자발적 퇴직률(Quits Rate)이 높으면 "더 좋은 데 갈 수 있다"는 자신감 → 임금 상승 압력. 구인 1,000만 이상 = 노동 수요 초과.</p>
+      <div class="section-label">샴의 법칙</div>
+      <p class="def-text">실업률 3개월 평균이 직전 12개월 최저치 대비 0.5%p 이상 오르면 경기침체로 판정. 1970년대 이후 한 번도 틀리지 않은 공식.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">샴 지수 0.5 돌파</span><span class="signal-result">경기침체 공식 진입 → 방어 포지션 전환. 경기소비재·산업재 비중 축소.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">샴 지수 0.3~0.5</span><span class="signal-result">경고 구간 → 포트폴리오 방어 시작 검토</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 4 -->
+<div id="part4">
+  <div class="part-header"><span class="part-num">PART 04</span><span class="part-title">경기 & 성장 — 거시경제의 큰 그림</span></div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📈</span><span class="card-name">GDP & ISM 구매관리자 지수</span><span class="card-tag tag-growth">경기</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">GDP</div>
+      <p class="def-text">국가 전체 생산의 총 시장가치. 분기별 속보치→잠정치→확정치 순. 2분기 연속 역성장 = 기술적 경기침체. 단 NBER의 공식 침체 선언은 별개.</p>
+      <div class="section-label">ISM 제조업/비제조업 PMI</div>
+      <p class="def-text">구매담당자 현장 체감 경기. 50 기준선으로 이상이면 확장, 이하면 수축. 미국 경제에서 서비스업 비중이 70% 이상이라 비제조업 지수가 더 중요.</p>
+      <table class="mini-table">
+        <tr><th>상황</th><th>주식시장 해석</th></tr>
+        <tr><td>두 지표 모두 50↑</td><td>경기 확장 확인 → 경기민감주·소재주 유리</td></tr>
+        <tr><td>제조업만 50↓</td><td>산업 일부 약화, 전체는 견조 → 서비스·소비주 선호</td></tr>
+        <tr><td>두 지표 모두 50↓</td><td>광범위 수축 → 방어주·배당주 피난처</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🛍️</span><span class="card-name">소매판매 & 주택 지표</span><span class="card-tag tag-growth">경기</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">소매판매</div>
+      <p class="def-text">소비자 소매 지출 합산. 미국 GDP의 약 70%가 소비에서 나온다. 자동차·주유소 제외 '근원 소매판매'로 추세 파악. 헤드라인은 자동차 판매에 오염될 수 있다.</p>
+      <div class="section-label">주택 지표 (NAHB / 착공 / 기존주택판매)</div>
+      <p class="def-text">주택은 경기 사이클에서 가장 먼저 꺾이고 가장 먼저 회복하는 섹터. 30년 모기지 금리와 역방향. NAHB가 먼저 반등하면 6개월 내 착공 증가 기대. 홈디포·로우스 등 주택 관련주의 선행지표.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PART 5 -->
+<div id="part5">
+  <div class="part-header"><span class="part-num">PART 05</span><span class="part-title">금융시장 지표 — 시장 내부의 건강 검진</span></div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📉</span><span class="card-name">미 10년물 국채 금리 & 장단기 스프레드</span><span class="card-tag tag-market">금융시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">10년물 국채 금리</div>
+      <p class="def-text">전 세계 모든 자산의 '무위험 수익률' 기준. 모기지, 회사채, 신흥국 금리 모두 여기에 연동. 기술주의 DCF 분모에 직접 들어가므로 금리↑=기술주 PER 압축.</p>
+      <div class="section-label">장단기 금리차 (10Y-2Y 스프레드)</div>
+      <p class="def-text">10년물 금리에서 2년물 금리를 뺀 값. 정상적으론 양수(+). 역전(마이너스) 후 재역전(steepening) 시점이 침체 진입과 역사적으로 일치한다.</p>
+      <div class="warn-box">역전 자체가 아니라 재역전(정상화) 시작 타이밍을 조심. 역전 해소 후 6~18개월 내 침체 시작의 역설적 경고 — 2006~2007년, 2019~2020년 모두 해당.</div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 500 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;">
+          <text x="10" y="14" fill="#556070" font-size="9" font-family="monospace">10Y-2Y 스프레드 개념도</text>
+          <line x1="40" y1="55" x2="460" y2="55" stroke="#e8c97d" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="10" y="58" fill="#e8c97d" font-size="8">0%</text>
+          <polyline points="40,35 120,45 180,60 230,72 280,68 340,52 400,42 460,38" fill="none" stroke="#6eb5ff" stroke-width="2"/>
+          <rect x="175" y="55" width="110" height="18" fill="rgba(255,107,107,0.15)"/>
+          <text x="200" y="67" fill="#ff6b6b" font-size="8">역전 구간</text>
+          <text x="170" y="90" fill="#556070" font-size="8">역전 시작</text>
+          <text x="280" y="90" fill="#ff6b6b" font-size="8">↑재역전 = 침체 경고</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">😱</span><span class="card-name">VIX 공포지수 & 신용스프레드</span><span class="card-tag tag-market">금융시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">VIX (변동성 지수)</div>
+      <p class="def-text">S&P500 옵션 가격으로 계산되는 향후 30일 예상 변동성. 시장의 공포온도계.</p>
+      <table class="mini-table">
+        <tr><th>VIX 구간</th><th>시장 상태</th><th>주식 전략</th></tr>
+        <tr><td>15 이하</td><td>자기만족(Complacency)</td><td>충격에 취약. 풋옵션 헤지 고려.</td></tr>
+        <tr><td>20~30</td><td>경계 구간</td><td>포지션 크기 축소, 방어주 비중 확대</td></tr>
+        <tr><td>40 이상</td><td>패닉 상태</td><td>역발상 분할 매수. 역사적 바닥 근접.</td></tr>
+      </table>
+      <div class="section-label">신용 스프레드 (Credit Spread)</div>
+      <p class="def-text">회사채 금리와 국채 금리의 차이. 기업이 파산 위험에 처할수록 스프레드가 커진다. 주식보다 먼저 반응하는 경우 많음. 하이일드 400bp↓ = 리스크 온. 600bp↑ 급등 = 주식 동반 하락 전조.</p>
+      <div class="info-box">VIX 급등 + 신용스프레드 확대 동시 발생 = 진짜 위기 신호. 하나만 움직이면 과잉반응일 수 있다.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📊</span><span class="card-name">풋/콜 비율 & 마진 부채</span><span class="card-tag tag-market">금융시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">풋/콜 비율</div>
+      <p class="def-text">하락(풋) 베팅 vs 상승(콜) 베팅의 비율. 1.0 이상(풋 우세) → 공포 극대화 → 역발상 상승 신호. 0.5 이하(콜 우세) → 과도한 낙관 → 단기 조정 경고.</p>
+      <div class="section-label">마진 부채</div>
+      <p class="def-text">투자자가 주식 매수를 위해 빌린 돈의 총량. 사상 최고치 갱신 → 시장 과열 경고. 급격한 하락 → 강제 청산 국면. 마진 부채 급감 = 강제 청산 매도 → 바닥 신호이기도 하다.</p>
+      <div class="example-box">2021년 말 마진 부채 역대 최고(9,000억 달러) 기록 후 2022년 급감 → 주식시장 -30% 하락과 정확히 동행.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 6 -->
+<div id="part6">
+  <div class="part-header"><span class="part-num">PART 06</span><span class="part-title">원자재 & 글로벌</span></div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🛢️</span><span class="card-name">WTI 유가 & 금 (XAU/USD)</span><span class="card-tag tag-fx">원자재</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">WTI 유가</div>
+      <p class="def-text">에너지 비용 = 기업 원가의 핵심. 유가 급등은 항공·해운·물류·소비재 마진을 직접 압박하고, 동시에 CPI를 밀어올려 금리 인상 압력을 높인다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">유가 급등</span><span class="signal-result">CPI↑ + 기업마진 압박. 에너지주 수혜. 항공·소비재 타격.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">유가 급락</span><span class="signal-result">인플레 하락 호재. 단 수요 감소 반영이면 경기 우려도 공존.</span></div>
+      </div>
+      <div class="section-label">금 (XAU/USD)</div>
+      <p class="def-text">인플레이션 헤지 + 안전자산 두 가지 역할. 달러 약세 + 실질 금리 하락 시 가장 강하게 상승. 중앙은행 매수 추세 확인 필요.</p>
+      <div class="warn-box">위기 국면에서 금·달러 모두 동반 상승하면 진짜 패닉 상태를 의미. 금만 오르면 인플레 헤지 수요.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🔩</span><span class="card-name">구리(닥터 코퍼) & BDI & ECB/BoJ</span><span class="card-tag tag-fx">원자재·글로벌</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">구리 (닥터 코퍼)</div>
+      <p class="def-text">전기차, 인프라, 건설 등 산업 전반에 사용. 실물 경기의 선행 지표. 구리 상승 + 주식 상승 = 건강한 랠리. 구리 하락 + 주식 상승 = 유동성만의 랠리(불안정).</p>
+      <div class="section-label">발틱 건화물 지수 (BDI)</div>
+      <p class="def-text">곡물·석탄·철광석 운반선 운임료. 조작이 어려워 실물 무역의 진짜 바로미터. BDI 상승 → 글로벌 무역 회복. BDI 급락 → 무역 위축 선행 경고.</p>
+      <div class="section-label">ECB / BoJ 통화정책 & 엔캐리</div>
+      <p class="def-text">유로화·엔화는 DXY의 핵심 구성 통화. 저금리 엔화를 빌려 고수익 자산에 투자하는 엔캐리 트레이드 — BoJ가 금리를 올리면 이 포지션이 일제히 청산.</p>
+      <div class="example-box">2024년 8월 블랙먼데이: BoJ 금리 인상 발표 후 엔캐리 포지션 대규모 청산 → 닛케이 -12%, 나스닥 -6% 단기 급락. 글로벌 연쇄 반응의 교과서적 사례.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 7 — 주식 특화 (크립토 → 주식) -->
+<div id="part7">
+  <div class="part-header"><span class="part-num">PART 07</span><span class="part-title">주식 특화 지표 — 종목 선택의 핵심 무기</span></div>
+  <p class="part-desc">거시 지표로 방향을 잡았다면, 이제 개별 종목 레벨에서 어떤 신호를 봐야 하는지 정리한다.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📊</span><span class="card-name">실적 시즌 — EPS vs 컨센서스 & 어닝 서프라이즈</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">분기별로 기업이 실제 이익(EPS)을 발표하는 기간. 시장은 절대 수치가 아니라 애널리스트 컨센서스 대비 서프라이즈(차이)에 반응한다. 미국은 1·4·7·10월에 집중 발표.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">어닝 서프라이즈 (컨센서스↑)</span><span class="signal-result">단기 급등. 단 가이던스(다음 분기 전망)가 더 중요.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">어닝 미스 + 가이던스 하향</span><span class="signal-result">더블 악재 → 급락. 실적 좋아도 가이던스 하향 시 하락.</span></div>
+      </div>
+      <div class="warn-box">실적이 좋아도 '가이던스 하향'이면 주가가 빠진다. 미래 훼손이 더 큰 악재이기 때문. "Buy the rumor, Sell the news" 패턴 주의.</div>
+      <div class="example-box">메타(2022.02): EPS 미스 + 사용자 감소 → 단 하루 -26% 폭락, 시총 2,320억 달러 증발. 반대로 엔비디아(2023.05): EPS 서프라이즈 +18% + 가이던스 2배 상향 → 당일 +24%.</div>
+      <table class="mini-table">
+        <tr><th>상황</th><th>주가 반응</th><th>전략</th></tr>
+        <tr><td>EPS↑ + 가이던스↑</td><td>강한 상승</td><td>홀드·추가 매수 검토</td></tr>
+        <tr><td>EPS↑ + 가이던스↓</td><td>하락 가능</td><td>즉시 확인, 매도 검토</td></tr>
+        <tr><td>EPS↓ + 가이던스↑</td><td>혼조, 회복 기대</td><td>이유 분석 후 판단</td></tr>
+        <tr><td>EPS↓ + 가이던스↓</td><td>급락</td><td>손절 or 재평가</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🕵️</span><span class="card-name">내부자 매매 — SEC Form 4 & Schedule 13D</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">임원·이사·10% 이상 주주 등 내부자가 자사 주식을 매수·매도할 때 SEC에 의무적으로 신고하는 공시. Form 4는 2 영업일 이내 제출. 누구보다 회사 내부를 잘 아는 사람들의 베팅이다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">내부자 집중 매수</span><span class="signal-result">CEO·임원이 자기 돈으로 사는 것 = 강한 확신. 특히 여러 임원이 동시에 매수 시 강력 신호.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">내부자 대규모 매도</span><span class="signal-result">단독으론 약한 신호(세금·다각화). 다수 임원 동시 매도 = 경고. 단 주가 하락 전 매도는 위험.</span></div>
+      </div>
+      <div class="info-box">확인 사이트: SEC EDGAR (edgar.sec.gov), OpenInsider, InsiderSentiment. 집중 매수 후 1~6개월 수익률이 시장 대비 유의미하게 높다는 연구 결과 다수.</div>
+      <div class="warn-box">내부자 매도는 여러 이유(세금 납부, 다각화, 스톡옵션 행사)가 있어 신뢰도가 낮다. 내부자 매수에 집중하라.</div>
+      <div class="example-box">워런 버핏은 공개 시장 매수를 거의 하지 않지만, 자사주(버크셔 해서웨이) 매입을 내부자 매수의 일종으로 볼 수 있다. 버크셔 자사주 매입 발표 = 버핏이 "지금 자사가 저평가됐다"는 신호.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🩳</span><span class="card-name">공매도 잔고 & 숏 스퀴즈</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">공매도 잔고 (Short Interest)</div>
+      <p class="def-text">현재 공매도(하락 베팅)된 주식 수를 전체 유동 주식 수로 나눈 비율. Short Interest Ratio(SIR) = 공매도 잔고 / 일평균 거래량 = 청산에 걸리는 일수.</p>
+      <div class="section-label">숏 스퀴즈 (Short Squeeze)</div>
+      <p class="def-text">공매도 잔고가 높은 상태에서 주가가 상승하면, 공매도 포지션 손실을 막기 위해 강제 환매수가 일어나며 주가가 폭발적으로 상승하는 현상.</p>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 500 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;">
+          <text x="10" y="15" fill="#556070" font-size="9" font-family="monospace">숏 스퀴즈 메커니즘</text>
+          <rect x="10" y="25" width="100" height="30" rx="4" fill="rgba(255,107,107,0.15)" stroke="#ff6b6b" stroke-width="1"/>
+          <text x="60" y="38" fill="#ff6b6b" font-size="9" text-anchor="middle">공매도 잔고 높음</text>
+          <text x="60" y="50" fill="#ff6b6b" font-size="8" text-anchor="middle">(SIR 10일↑)</text>
+          <text x="115" y="43" fill="#556070" font-size="10">→</text>
+          <rect x="125" y="25" width="100" height="30" rx="4" fill="rgba(232,201,125,0.1)" stroke="#e8c97d" stroke-width="1"/>
+          <text x="175" y="38" fill="#e8c97d" font-size="9" text-anchor="middle">주가 상승 촉매</text>
+          <text x="175" y="50" fill="#e8c97d" font-size="8" text-anchor="middle">(호재·매수세)</text>
+          <text x="230" y="43" fill="#556070" font-size="10">→</text>
+          <rect x="245" y="25" width="100" height="30" rx="4" fill="rgba(255,107,107,0.1)" stroke="#ff6b6b" stroke-width="1"/>
+          <text x="295" y="38" fill="#ff6b6b" font-size="9" text-anchor="middle">공매도 손실</text>
+          <text x="295" y="50" fill="#ff6b6b" font-size="8" text-anchor="middle">→ 강제 환매수</text>
+          <text x="350" y="43" fill="#556070" font-size="10">→</text>
+          <rect x="365" y="25" width="120" height="30" rx="4" fill="rgba(127,255,176,0.1)" stroke="#7fffb0" stroke-width="1"/>
+          <text x="425" y="38" fill="#7fffb0" font-size="9" text-anchor="middle">주가 폭등</text>
+          <text x="425" y="50" fill="#7fffb0" font-size="8" text-anchor="middle">(연쇄 스퀴즈)</text>
+          <text x="50" y="90" fill="#8a95a8" font-size="11">공매도 잔고 높은 종목 = 양날의 검</text>
+          <text x="50" y="108" fill="#556070" font-size="10">↑ 숏 스퀴즈 폭등 가능 / ↓ 공매도 세력의 강한 확신(하락 베팅)도 의미</text>
+        </svg>
+      </div>
+      <div class="example-box">GameStop(GME, 2021.01): 공매도 잔고 140%(발행주식보다 많음) → 레딧(WallStreetBets) 개인투자자 매수 공세 → 2주 만에 주가 25달러→483달러(+1,800%). 멜빈 캐피탈 등 헤지펀드 수십억 달러 손실.</div>
+      <table class="mini-table">
+        <tr><th>SIR (일수)</th><th>해석</th><th>전략 힌트</th></tr>
+        <tr><td>1~3일</td><td>낮은 공매도</td><td>숏 스퀴즈 가능성 낮음</td></tr>
+        <tr><td>5~10일</td><td>중간</td><td>호재 발생 시 단기 스퀴즈 가능</td></tr>
+        <tr><td>10일↑</td><td>높은 공매도</td><td>강한 스퀴즈 잠재력. 단 하락 세력도 강하다는 의미.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📐</span><span class="card-name">밸류에이션 — PER / PBR / EV·EBITDA / PEG</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">기업이 적정 가격에 거래되고 있는지 판단하는 지표들. 절대값보다 동종업계 평균·과거 자사 수준과의 비교가 핵심.</p>
+      <div class="val-grid">
+        <div class="val-box">
+          <h4>PER (주가수익비율)</h4>
+          <p>주가 ÷ EPS. 투자자가 1원의 이익을 위해 몇 배를 지불하는가. 성장주는 높은 PER 정당화 가능. 금리 상승 시 고PER 종목 직격.</p>
+        </div>
+        <div class="val-box">
+          <h4>PBR (주가순자산비율)</h4>
+          <p>주가 ÷ BPS(주당 순자산). 1 미만 = 청산가치 이하 (가치함정 주의). 금융주·산업주에 적합. 무형자산 많은 기술주엔 부적합.</p>
+        </div>
+        <div class="val-box">
+          <h4>EV/EBITDA</h4>
+          <p>기업가치 ÷ 세전·이자·감가상각 전 이익. 부채 구조·감가상각 차이를 제거해 인수합병(M&A) 시 가장 많이 사용. 10배 이하 = 저평가 가이드라인(업종마다 다름).</p>
+        </div>
+        <div class="val-box">
+          <h4>PEG (성장조정 PER)</h4>
+          <p>PER ÷ 이익성장률(%). PEG 1 = 적정. 1 미만 = 성장 대비 저평가. 성장주 밸류에이션에 PER만 쓰는 함정을 보완. 피터 린치가 즐겨 사용.</p>
+        </div>
+      </div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 500 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;">
+          <text x="10" y="15" fill="#556070" font-size="9" font-family="monospace">금리와 PER 멀티플의 관계</text>
+          <line x1="40" y1="90" x2="460" y2="90" stroke="#222630" stroke-width="1"/>
+          <line x1="40" y1="20" x2="40" y2="90" stroke="#222630" stroke-width="1"/>
+          <polyline points="40,30 120,35 200,42 280,55 340,68 420,80" fill="none" stroke="#e8c97d" stroke-width="2"/>
+          <polyline points="40,80 120,75 200,68 280,55 340,42 420,30" fill="none" stroke="#6eb5ff" stroke-width="2"/>
+          <text x="430" y="83" fill="#e8c97d" font-size="9">금리↑</text>
+          <text x="430" y="28" fill="#6eb5ff" font-size="9">PER↓</text>
+          <text x="45" y="100" fill="#556070" font-size="8">2020(저금리)</text>
+          <text x="350" y="100" fill="#556070" font-size="8">2022(고금리)</text>
+          <text x="150" y="10" fill="#8a95a8" font-size="9">금리 상승 → PER 멀티플 압축 → 성장주 하락</text>
+        </svg>
+      </div>
+      <div class="warn-box">동일 PER이라도 금리 환경에 따라 적정/고평가가 달라진다. 저금리 시대의 PER 30배와 고금리 시대의 PER 30배는 전혀 다르다.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🔄</span><span class="card-name">경기 사이클 4단계 & 섹터 로테이션</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">경기 사이클과 주도 섹터</div>
+      <p class="def-text">경기는 4단계를 순환한다. 각 단계마다 시장을 이끄는 섹터가 다르다. 이 흐름을 읽으면 섹터 ETF 로테이션 전략이 가능하다.</p>
+      <div class="cycle-grid">
+        <div class="cycle-box" style="border-color:#7fffb0;">
+          <h4 style="color:#7fffb0;">① 회복기</h4>
+          <ul>
+            <li>금리 하락 시작</li>
+            <li>실업률 고점 통과</li>
+            <li>✅ 금융주</li>
+            <li>✅ 경기소비재</li>
+            <li>✅ 부동산(리츠)</li>
+          </ul>
+        </div>
+        <div class="cycle-box" style="border-color:#6eb5ff;">
+          <h4 style="color:#6eb5ff;">② 확장기</h4>
+          <ul>
+            <li>GDP↑ 기업이익↑</li>
+            <li>고용 증가</li>
+            <li>✅ 기술주</li>
+            <li>✅ 산업재</li>
+            <li>✅ 소재주</li>
+          </ul>
+        </div>
+        <div class="cycle-box" style="border-color:#e8c97d;">
+          <h4 style="color:#e8c97d;">③ 둔화기</h4>
+          <ul>
+            <li>금리 고점 근접</li>
+            <li>성장 속도 감소</li>
+            <li>✅ 에너지주</li>
+            <li>✅ 필수소비재</li>
+            <li>✅ 헬스케어</li>
+          </ul>
+        </div>
+        <div class="cycle-box" style="border-color:#ff6b6b;">
+          <h4 style="color:#ff6b6b;">④ 침체기</h4>
+          <ul>
+            <li>GDP 역성장</li>
+            <li>기업 감원</li>
+            <li>✅ 유틸리티</li>
+            <li>✅ 국채·금</li>
+            <li>✅ 헬스케어</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box">현재 사이클 위치 파악법: ISM PMI + 수익률 곡선 + 실업률 방향 세 가지를 동시에 확인. 섹터 ETF로는 XLF(금융), XLK(기술), XLE(에너지), XLU(유틸리티), XLV(헬스케어) 활용 가능.</div>
+      <div class="example-box">2022~2023: 금리 급등 → 기술주 폭락, 에너지주(XLE) +65% 폭등. 전형적인 둔화기→침체기 섹터 로테이션. 에너지·유틸리티가 방어주 역할을 완벽히 수행.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 8 -->
+<div id="part8">
+  <div class="part-header"><span class="part-num">PART 08</span><span class="part-title">기술적 분석 핵심 도구</span></div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📊</span><span class="card-name">거래량 & 이동평균선 (MA)</span><span class="card-tag tag-tech">기술적</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">거래량 — 가격의 증거</div>
+      <p class="def-text">가격은 속일 수 있지만 거래량은 속이기 어렵다. 기관이 매집·매도하면 거래량이 먼저 터진다.</p>
+      <table class="mini-table">
+        <tr><th>상황</th><th>의미</th></tr>
+        <tr><td>상승 + 거래량 증가</td><td>진짜 상승 — 기관·세력 참여 (신뢰도 高)</td></tr>
+        <tr><td>상승 + 거래량 감소</td><td>가짜 상승 → 조만간 반전 가능성</td></tr>
+        <tr><td>하락 + 거래량 폭증</td><td>공황 청산 → 역발상 매수 검토</td></tr>
+      </table>
+      <div class="section-label">이동평균선 (MA)</div>
+      <p class="def-text">20일선(단기·스윙), 50일선(중기), 200일선(장기·기관 기준). 주가가 200일선 위에 있으면 기관들의 평균 매수 단가 위 = 우호적 환경.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">골든크로스 (50↑200)</span><span class="signal-result">장기 상승 추세 전환 신호. 기관 매수 확인.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">데스크로스 (50↓200)</span><span class="signal-result">장기 하락 추세 경고. 비중 축소 신호.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">💹</span><span class="card-name">RSI / VWAP / 볼린저 밴드</span><span class="card-tag tag-tech">기술적</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">RSI (상대강도지수)</div>
+      <p class="def-text">RSI 70↑ = 과매수(단기 조정). RSI 30↓ = 과매도(단기 반등). 단 강한 추세 장에서 RSI는 과매수·과매도에 오래 머문다. 추세 판단 없이 RSI만 보면 역추세 매매의 함정.</p>
+      <div class="section-label">VWAP (거래량 가중 평균가)</div>
+      <p class="def-text">기관들이 매매 집행의 기준으로 삼는 가격. VWAP 위 반등 = 기관 매수 지지. VWAP 아래 눌림 = 기관 매도 압력 존재. 데이트레이더와 기관의 공통 기준선.</p>
+      <div class="section-label">볼린저 밴드</div>
+      <p class="def-text">20일 이평 ± 2 표준편차. 밴드 폭 수축(스퀴즈) = 대형 방향성 이탈 임박. 상단 밴드 지속 접촉 = 강한 추세 상승 확인. 밴드 하단 이탈 + 거래량 폭증 = 공황 청산 바닥 신호.</p>
+      <div class="info-box">RSI + 볼린저 밴드 + 거래량 3중 확인: 모두 같은 방향 신호일 때 진입 신뢰도가 가장 높다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PART 9 -->
+<div id="part9">
+  <div class="part-header"><span class="part-num">PART 09</span><span class="part-title">이색 지표 — 실물 경제의 조각들</span></div>
+  <p class="part-desc">공식 통계보다 현실을 먼저 보여주는 민간 데이터들.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🍔</span><span class="card-name">이색 경제 지표 모음</span><span class="card-tag tag-alt">이색</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <table class="mini-table">
+        <tr><th>지표</th><th>내용</th><th>투자 활용</th></tr>
+        <tr><td>빅맥 지수</td><td>맥도날드 빅맥 가격으로 환율 적정성 측정</td><td>PPP 기반 환율 괴리 → 신흥국 통화 저평가 국가 주목</td></tr>
+        <tr><td>립스틱 지수</td><td>불황기에 작은 사치(립스틱)가 잘 팔리는 현상</td><td>소비재 기업 내 '보상 소비' 수혜 종목 선별</td></tr>
+        <tr><td>남성 속옷 지수</td><td>경제 위기 때 속옷 교체 소비부터 줄임</td><td>그린스펀 전 의장 활용. 생필품 소비 최저점 = 바닥 근접</td></tr>
+        <tr><td>마천루 지수</td><td>세계 최고층 빌딩 완공 시점에 경기 정점</td><td>엠파이어(1930), 부르즈칼리파(2010). 건설주 매도 타이밍 힌트</td></tr>
+        <tr><td>골판지 상자 지수</td><td>택배 박스 수요 = 소비 물류의 직접 반영</td><td>패키징 기업 실적이 소비 경기 선행. 이커머스 거래량 대리 지표.</td></tr>
+        <tr><td>FedEx 실적</td><td>글로벌 물류 최대 기업의 분기 가이던스</td><td>"FedEx가 경기를 말한다" — 가이던스 하향 = 글로벌 경기 경고</td></tr>
+        <tr><td>네 마녀의 날</td><td>3·6·9·12월 셋째 주 금요일 파생 동시 만기</td><td>비정상적 변동성 발생. 포지션 조정 완료 후 방향 참고.</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summary" class="summary-section">
+  <div class="summary-header"><span style="font-size:18px">📋</span><h2>지표 요약 체크리스트 — 주식 투자자용</h2></div>
+  <table class="summary-table">
+    <tr><th>분류</th><th>주요 지표</th><th>핵심 판단 기준</th></tr>
+    <tr><td><span class="summary-cat">통화정책</span></td><td class="summary-items">FOMC, QE/QT, M2, RRP</td><td class="summary-signal">금리 방향 + 유동성 규모 → PER 멀티플 방향 결정</td></tr>
+    <tr><td><span class="summary-cat">물가</span></td><td class="summary-items">CPI, PCE, PPI, 기대인플레</td><td class="summary-signal">2% 목표 수렴 속도 → 금리 인하 타이밍</td></tr>
+    <tr><td><span class="summary-cat">노동</span></td><td class="summary-items">NFP, AHE, JOLTS, 샴의 법칙</td><td class="summary-signal">고용 강도 + 임금 압력 → 침체 조기 경보</td></tr>
+    <tr><td><span class="summary-cat">경기 성장</span></td><td class="summary-items">GDP, ISM, 소매판매, NAHB</td><td class="summary-signal">확장/수축 국면 → 섹터 로테이션 방향</td></tr>
+    <tr><td><span class="summary-cat">금융시장</span></td><td class="summary-items">10Y금리, VIX, 신용스프레드, 마진부채</td><td class="summary-signal">리스크 온/오프 → 비중 조절 타이밍</td></tr>
+    <tr><td><span class="summary-cat">원자재·글로벌</span></td><td class="summary-items">DXY, 금, 유가, 구리, 엔캐리</td><td class="summary-signal">글로벌 유동성·리스크 환경</td></tr>
+    <tr><td><span class="summary-cat">주식 특화</span></td><td class="summary-items">EPS·가이던스, 내부자매매, 공매도, PER/PBR/PEG</td><td class="summary-signal">개별 종목 진입·청산 타이밍</td></tr>
+    <tr><td><span class="summary-cat">경기 사이클</span></td><td class="summary-items">ISM + 수익률 곡선 + 실업률</td><td class="summary-signal">회복→확장→둔화→침체 → 섹터 ETF 로테이션</td></tr>
+    <tr><td><span class="summary-cat">기술적 분석</span></td><td class="summary-items">거래량, 200MA, RSI, VWAP, 볼린저</td><td class="summary-signal">진입·청산 타이밍 정밀화</td></tr>
+  </table>
+</div>
+
+</div>
+
+<div class="footer">MARKET INTELLIGENCE STUDY GUIDE · 2026.03 · 주식 중심 재편 · 투자 판단은 본인 책임</div>
+
+<script>
+function toggle(card){ card.classList.toggle('open'); }
+</script>
+</body>
+</html>
