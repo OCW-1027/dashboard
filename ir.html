@@ -1225,5 +1225,23 @@ if(urlCode){
   }
 }
 </script>
+
+<!-- 맨위로 버튼 -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+  style="display:none;position:fixed;bottom:28px;right:28px;z-index:9999;
+    width:46px;height:46px;border-radius:50%;
+    background:var(--accent);color:#000;border:none;
+    font-size:1.2rem;font-weight:700;cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.5);
+    align-items:center;justify-content:center;"
+  title="맨위로">↑</button>
+<script>
+(function(){
+  var btn = document.getElementById('scroll-top');
+  window.addEventListener('scroll', function(){
+    btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+  });
+})();
+</script>
 </body>
 </html>
