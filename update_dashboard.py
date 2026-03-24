@@ -35,9 +35,14 @@ def fetch_yahoo(symbol):
             data = json.loads(r.read())
         meta  = data["chart"]["result"][0]["meta"]
         price = meta["regularMarketPrice"]
-        prev  = meta.get("chartPreviousClose") or meta.get("previousClose") or price
-        chg   = price - prev
-        pct   = (chg / prev * 100) if prev else 0
+        # Yahoo 자체 등락값 우선 사용 → 가장 정확
+        chg   = meta.get("regularMarketChange")
+        pct   = meta.get("regularMarketChangePercent")
+        # 없으면 직접 계산 (fallback)
+        if chg is None or pct is None:
+            prev = meta.get("chartPreviousClose") or meta.get("previousClose") or price
+            chg  = price - prev
+            pct  = (chg / prev * 100) if prev else 0
         return {"price": price, "chg": chg, "pct": pct}
     except Exception as e:
         print(f"  Yahoo {symbol} 오류: {e}")
