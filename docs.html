@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자료실 — 투자 리서치</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--shadow:0 2px 20px rgba(0,0,0,.6);}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6;}
+
+  /* ── 잠금 화면 ── */
+  #lock-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;}
+  .lock-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 48px;width:380px;max-width:90vw;text-align:center;box-shadow:var(--shadow);}
+  .lock-icon{font-size:2.8rem;margin-bottom:16px;}
+  .lock-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#e8edf8;margin-bottom:6px;}
+  .lock-sub{font-size:.75rem;color:var(--muted);margin-bottom:24px;}
+  .lock-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:11px 16px;font-size:.95rem;color:var(--text);text-align:center;letter-spacing:3px;outline:none;transition:border-color .2s;font-family:'DM Mono',monospace;}
+  .lock-input:focus{border-color:var(--accent);}
+  .lock-btn{width:100%;margin-top:12px;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.5px;}
+  .lock-btn:hover{opacity:.85;}
+  .lock-err{font-size:.75rem;color:var(--red);margin-top:10px;min-height:18px;}
+
+  /* ── 헤더 ── */
+  header{background:linear-gradient(160deg,#0c1220 0%,#0e1828 60%,#080d16 100%);border-bottom:1px solid var(--border);padding:24px 48px 20px;position:relative;overflow:hidden;}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(61,142,245,.3),transparent);}
+  .header-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .back-btn{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:5px 12px;border-radius:6px;transition:all .2s;}
+  .back-btn:hover{color:var(--text);border-color:var(--accent);}
+  .logo h1{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:#e8edf8;}
+  .logo h1 span{color:var(--accent);}
+  .logo-tags{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+  .htag{font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid;}
+  .htag-b{color:var(--accent);border-color:rgba(61,142,245,.35);background:rgba(61,142,245,.06);}
+  .htag-g{color:var(--accent2);border-color:rgba(86,204,178,.35);background:rgba(86,204,178,.06);}
+  .htag-a{color:var(--amber);border-color:rgba(232,160,48,.35);background:rgba(232,160,48,.06);}
+  .header-right{display:flex;align-items:center;gap:12px;}
+  .lock-status{font-size:.7rem;color:var(--green);display:flex;align-items:center;gap:5px;}
+
+  /* ── 레이아웃 ── */
+  .page{max-width:1400px;margin:0 auto;padding:28px 32px 80px;}
+
+  /* ── 툴바 ── */
+  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
+  .search-input{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;font-size:.85rem;color:var(--text);outline:none;transition:border-color .2s;}
+  .search-input:focus{border-color:var(--accent);}
+  .search-input::placeholder{color:var(--muted);}
+  .filter-btn{padding:8px 14px;font-size:.72rem;font-weight:600;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s;}
+  .filter-btn.active,.filter-btn:hover{background:rgba(61,142,245,.1);color:var(--accent);border-color:rgba(61,142,245,.3);}
+  .view-btn{padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;cursor:pointer;color:var(--muted);transition:all .2s;font-size:.85rem;}
+  .view-btn.active{color:var(--accent);border-color:rgba(61,142,245,.3);}
+
+  /* ── 카테고리 섹션 ── */
+  .cat-section{margin-bottom:32px;}
+  .cat-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .cat-title{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+  .cat-line{flex:1;height:1px;background:var(--border);}
+  .cat-count{font-size:.62rem;color:var(--muted);font-family:'DM Mono',monospace;}
+
+  /* ── 카드 그리드 ── */
+  .docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .docs-list{display:flex;flex-direction:column;gap:8px;}
+
+  /* ── 파일 카드 (그리드) ── */
+  .doc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s;animation:fadeUp .4s ease both;position:relative;overflow:hidden;}
+  .doc-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4);}
+  .doc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0;}
+  .doc-card.pdf::before{background:var(--red);}
+  .doc-card.img::before{background:var(--accent2);}
+  .doc-card.xlsx::before{background:var(--green);}
+  .doc-card.link::before{background:var(--amber);}
+  .doc-card.ppt::before{background:var(--amber);}
+  .doc-icon{font-size:1.8rem;margin-bottom:10px;display:block;}
+  .doc-title{font-size:.82rem;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:6px;word-break:break-word;}
+  .doc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+  .doc-date{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);}
+  .doc-size{font-size:.62rem;color:var(--muted);}
+  .doc-tag{font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;}
+  .tag-pdf{color:var(--red);background:rgba(232,73,90,.12);}
+  .tag-img{color:var(--accent2);background:rgba(86,204,178,.12);}
+  .tag-xlsx{color:var(--green);background:rgba(31,189,138,.12);}
+  .tag-link{color:var(--amber);background:rgba(232,160,48,.12);}
+  .tag-ppt{color:var(--amber);background:rgba(232,160,48,.12);}
+
+  /* ── 파일 행 (리스트) ── */
+  .doc-row{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
+  .doc-row:hover{border-color:var(--border2);}
+  .doc-row .doc-icon{font-size:1.3rem;margin:0;flex-shrink:0;}
+  .doc-row .doc-title{flex:1;font-size:.82rem;font-weight:500;}
+  .doc-row .doc-date{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);}
+
+  /* ── 빈 상태 ── */
+  .empty{text-align:center;padding:60px 20px;color:var(--muted);}
+  .empty .icon{font-size:2.5rem;margin-bottom:12px;opacity:.35;}
+  .empty p{font-size:.82rem;line-height:1.8;}
+
+  /* ── 뷰어 모달 ── */
+  #viewer-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;flex-direction:column;}
+  #viewer-modal.open{display:flex;}
+  .viewer-header{display:flex;align-items:center;gap:14px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+  .viewer-title{flex:1;font-size:.85rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .viewer-close{padding:6px 14px;background:rgba(232,73,90,.15);color:var(--red);border:1px solid rgba(232,73,90,.3);border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;}
+  .viewer-download{padding:6px 14px;background:rgba(61,142,245,.12);color:var(--accent);border:1px solid rgba(61,142,245,.25);border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;text-decoration:none;}
+  .viewer-body{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:16px;}
+  .viewer-body iframe{width:100%;height:100%;border:none;border-radius:8px;background:#fff;}
+  .viewer-body img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  @media(max-width:768px){.page{padding:16px 14px 60px;}header{padding:18px 16px 14px;}.docs-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}}
+</style>
+</head>
+<body>
+
+<!-- ── 잠금 화면 ── -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-icon">🔐</div>
+    <div class="lock-title">투자 <span style="color:var(--accent);">자료실</span></div>
+    <div class="lock-sub">비밀번호를 입력해주세요</div>
+    <input class="lock-input" id="pw-input" type="password" placeholder="••••••••" maxlength="20"
+      onkeydown="if(event.key==='Enter') checkPassword()">
+    <button class="lock-btn" onclick="checkPassword()">입장</button>
+    <div class="lock-err" id="pw-err"></div>
+  </div>
+</div>
+
+<!-- ── 메인 ── -->
+<div id="main-content" style="display:none;">
+
+<header>
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a href="index.html" class="back-btn">← 메인 대시보드</a>
+      <div class="logo">
+        <h1>투자 <span>자료실</span></h1>
+        <div class="logo-tags">
+          <span class="htag htag-b">📄 PDF</span>
+          <span class="htag htag-g">🖼 이미지</span>
+          <span class="htag htag-a">📊 Excel</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="lock-status">🔒 비공개 자료실</span>
+      <button onclick="lockScreen()" style="padding:6px 12px;background:rgba(232,73,90,.1);color:var(--red);border:1px solid rgba(232,73,90,.25);border-radius:6px;font-size:.7rem;cursor:pointer;">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- 툴바 -->
+  <div class="toolbar">
+    <input class="search-input" id="search-input" type="text" placeholder="🔍 파일명, 카테고리 검색..."
+      oninput="renderDocs()">
+    <button class="filter-btn active" onclick="setFilter('all',this)">전체</button>
+    <button class="filter-btn" onclick="setFilter('pdf',this)">PDF</button>
+    <button class="filter-btn" onclick="setFilter('img',this)">이미지</button>
+    <button class="filter-btn" onclick="setFilter('xlsx',this)">엑셀</button>
+    <button class="filter-btn" onclick="setFilter('link',this)">링크</button>
+    <div style="margin-left:auto;display:flex;gap:6px;">
+      <button class="view-btn active" id="btn-grid" onclick="setView('grid',this)" title="그리드">⊞</button>
+      <button class="view-btn" id="btn-list" onclick="setView('list',this)" title="리스트">☰</button>
+    </div>
+  </div>
+
+  <!-- 자료 목록 -->
+  <div id="docs-container"></div>
+
+</div>
+</div>
+
+<!-- ── 파일 뷰어 모달 ── -->
+<div id="viewer-modal">
+  <div class="viewer-header">
+    <span class="viewer-title" id="viewer-title">파일명</span>
+    <a class="viewer-download" id="viewer-download" href="#" target="_blank">⬇ 다운로드</a>
+    <button class="viewer-close" onclick="closeViewer()">✕ 닫기</button>
+  </div>
+  <div class="viewer-body" id="viewer-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// 비밀번호 설정
+// 변경하려면 아래 PASSWORDS 배열에 원하는 비밀번호 추가
+// ═══════════════════════════════════════════════════
+const PASSWORDS = ['invest2026', 'ocw1027'];  // ← 비밀번호 여기서 변경
+
+function checkPassword(){
+  const val = document.getElementById('pw-input').value.trim();
+  const err = document.getElementById('pw-err');
+  if(PASSWORDS.includes(val)){
+    sessionStorage.setItem('docs_auth', 'ok');
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    renderDocs();
+  } else {
+    err.textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    setTimeout(()=> err.textContent='', 2500);
+  }
+}
+
+function lockScreen(){
+  sessionStorage.removeItem('docs_auth');
+  location.reload();
+}
+
+// 세션 유지 (같은 탭에서는 재입력 불필요)
+if(sessionStorage.getItem('docs_auth') === 'ok'){
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════
+// 자료 목록 데이터
+// 파일을 추가할 때마다 여기에 항목 추가
+// ═══════════════════════════════════════════════════
+// path: GitHub Pages에서의 파일 경로 (docs/ 폴더 기준)
+// type: pdf | img | xlsx | link | ppt
+// category: 원하는 카테고리명 (자유롭게 설정)
+
+const DOCS = [
+  // ── 예시 항목 (실제 파일 추가 시 교체하세요) ──────────
+  {
+    title: '2026년 3월 시장 분석 리포트',
+    path: 'docs/sample_market_report.pdf',
+    type: 'pdf',
+    category: '시장 분석',
+    date: '2026-03-20',
+    size: '2.4MB',
+    desc: '글로벌 시장 현황 및 전망'
+  },
+  {
+    title: 'QPS홀딩스 투자 분석',
+    path: 'docs/qps_analysis.pdf',
+    type: 'pdf',
+    category: '종목 분석',
+    date: '2026-03-18',
+    size: '1.8MB',
+    desc: '위성사업 성장성 분석'
+  },
+  {
+    title: '포트폴리오 현황 (2026.03)',
+    path: 'docs/portfolio_202603.xlsx',
+    type: 'xlsx',
+    category: '포트폴리오',
+    date: '2026-03-20',
+    size: '156KB',
+    desc: '월간 포트폴리오 현황'
+  },
+  {
+    title: '닛케이 차트 분석',
+    path: 'docs/nikkei_chart_0320.png',
+    type: 'img',
+    category: '차트·이미지',
+    date: '2026-03-20',
+    size: '890KB',
+    desc: '닛케이225 기술적 분석'
+  },
+  {
+    title: 'BOJ 통화정책 발표 (3월)',
+    path: 'https://www.boj.or.jp/mopo/mpmdeci/mpr_2026/',
+    type: 'link',
+    category: '거시경제',
+    date: '2026-03-19',
+    size: '',
+    desc: 'BOJ 공식 발표 링크'
+  },
+];
+
+// ═══════════════════════════════════════════════════
+// 상태
+// ═══════════════════════════════════════════════════
+let currentFilter = 'all';
+let currentView   = 'grid';
+
+const TYPE_ICON  = {pdf:'📄', img:'🖼', xlsx:'📊', link:'🔗', ppt:'📑'};
+const TYPE_LABEL = {pdf:'PDF', img:'이미지', xlsx:'엑셀', link:'링크', ppt:'PPT'};
+
+function setFilter(type, btn){
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs();
+}
+
+function setView(v, btn){
+  currentView = v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs();
+}
+
+// ═══════════════════════════════════════════════════
+// 렌더링
+// ═══════════════════════════════════════════════════
+function renderDocs(){
+  const query = document.getElementById('search-input')?.value?.toLowerCase() || '';
+  const container = document.getElementById('docs-container');
+
+  // 필터 + 검색
+  let filtered = DOCS.filter(d=>{
+    const matchType = currentFilter==='all' || d.type===currentFilter;
+    const matchSearch = !query ||
+      d.title.toLowerCase().includes(query) ||
+      d.category.toLowerCase().includes(query) ||
+      (d.desc||'').toLowerCase().includes(query);
+    return matchType && matchSearch;
+  });
+
+  if(filtered.length === 0){
+    container.innerHTML = `<div class="empty"><div class="icon">📭</div><p>자료가 없습니다${query ? `<br>"${query}" 검색 결과 없음` : ''}</p></div>`;
+    return;
+  }
+
+  // 카테고리별 그룹핑
+  const groups = {};
+  filtered.forEach(d=>{
+    if(!groups[d.category]) groups[d.category] = [];
+    groups[d.category].push(d);
+  });
+
+  let html = '';
+  for(const [cat, items] of Object.entries(groups)){
+    html += `
+      <div class="cat-section">
+        <div class="cat-head">
+          <span class="cat-title">${cat}</span>
+          <div class="cat-line"></div>
+          <span class="cat-count">${items.length}개</span>
+        </div>
+        <div class="${currentView==='grid' ? 'docs-grid' : 'docs-list'}">
+          ${items.map((d,i) => currentView==='grid' ? renderCard(d,i) : renderRow(d,i)).join('')}
+        </div>
+      </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderCard(d, i){
+  return `
+    <div class="doc-card ${d.type}" onclick="openDoc(${DOCS.indexOf(d)})"
+      style="animation-delay:${i*0.04}s">
+      <span class="doc-icon">${TYPE_ICON[d.type]||'📁'}</span>
+      <div class="doc-title">${d.title}</div>
+      ${d.desc ? `<div style="font-size:.7rem;color:var(--muted);margin-top:4px;">${d.desc}</div>` : ''}
+      <div class="doc-meta">
+        <span class="doc-date">${d.date}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${d.size ? `<span class="doc-size">${d.size}</span>` : ''}
+          <span class="doc-tag tag-${d.type}">${TYPE_LABEL[d.type]||d.type}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderRow(d, i){
+  return `
+    <div class="doc-row" onclick="openDoc(${DOCS.indexOf(d)})"
+      style="animation-delay:${i*0.03}s">
+      <span class="doc-icon">${TYPE_ICON[d.type]||'📁'}</span>
+      <div class="doc-title">${d.title}${d.desc ? `<div style="font-size:.68rem;color:var(--muted);margin-top:2px;">${d.desc}</div>` : ''}</div>
+      <span class="doc-tag tag-${d.type}" style="flex-shrink:0;">${TYPE_LABEL[d.type]||d.type}</span>
+      <span class="doc-date" style="flex-shrink:0;">${d.date}</span>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// 파일 열기
+// ═══════════════════════════════════════════════════
+function openDoc(idx){
+  const d = DOCS[idx];
+  if(!d) return;
+
+  // 링크는 새 탭으로
+  if(d.type === 'link'){
+    window.open(d.path, '_blank');
+    return;
+  }
+
+  // 엑셀은 다운로드
+  if(d.type === 'xlsx'){
+    const a = document.createElement('a');
+    a.href = d.path; a.download = d.title; a.click();
+    return;
+  }
+
+  // PDF · 이미지는 뷰어 모달
+  const modal = document.getElementById('viewer-modal');
+  document.getElementById('viewer-title').textContent = d.title;
+  document.getElementById('viewer-download').href = d.path;
+
+  const body = document.getElementById('viewer-body');
+  if(d.type === 'pdf'){
+    body.innerHTML = `<iframe src="${d.path}#toolbar=1&navpanes=0" style="width:100%;height:100%;border:none;border-radius:8px;"></iframe>`;
+  } else if(d.type === 'img'){
+    body.innerHTML = `<img src="${d.path}" alt="${d.title}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;">`;
+  } else if(d.type === 'ppt'){
+    // PPT는 Google Docs Viewer로
+    const encoded = encodeURIComponent(window.location.origin + '/' + d.path);
+    body.innerHTML = `<iframe src="https://docs.google.com/viewer?url=${encoded}&embedded=true" style="width:100%;height:100%;border:none;border-radius:8px;background:#fff;"></iframe>`;
+  }
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeViewer(){
+  document.getElementById('viewer-modal').classList.remove('open');
+  document.getElementById('viewer-body').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+// ESC로 뷰어 닫기
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape') closeViewer();
+});
+
+// 세션 인증 후 초기 렌더링
+if(sessionStorage.getItem('docs_auth') === 'ok'){
+  renderDocs();
+}
+</script>
+</body>
+</html>
