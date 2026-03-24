@@ -9,10 +9,10 @@
   :root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#222630;--accent:#e8c97d;--accent2:#6eb5ff;--accent3:#7fffb0;--danger:#ff6b6b;--muted:#556070;--text:#d4dae8;--text2:#8a95a8;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.7;}
-  .hero{background:linear-gradient(160deg,#0d1220 0%,#0a0c10 60%);border-bottom:1px solid var(--border);padding:48px 40px 40px;position:relative;overflow:hidden;}
-  .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,201,125,0.07) 0%,transparent 70%);}
-  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
-  .back-btn{font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:5px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;transition:all .2s;}
+  .hero{background:linear-gradient(160deg,#0d1220 0%,#0a0c10 60%);border-bottom:1px solid var(--border);padding:48px 40px 40px;position:relative;}
+  .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,201,125,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;position:relative;z-index:1;}
+  .back-btn{font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:5px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;transition:all .2s;position:relative;z-index:2;}
   .back-btn:hover{color:var(--text);border-color:var(--accent);}
   .hero-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:16px;}
   .hero h1{font-family:'Noto Serif KR',serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:#fff;line-height:1.2;margin-bottom:12px;}
@@ -630,12 +630,13 @@ function toggle(card){ card.classList.toggle('open'); }
 
 <!-- 맨위로 버튼 -->
 <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
-  style="display:none;position:fixed;bottom:28px;right:28px;z-index:9999;
+  style="display:none;position:fixed;bottom:28px;right:28px;z-index:99999;
     width:46px;height:46px;border-radius:50%;
     background:var(--accent);color:#000;border:none;
     font-size:1.2rem;font-weight:700;cursor:pointer;
     box-shadow:0 4px 16px rgba(0,0,0,.5);
-    align-items:center;justify-content:center;"
+    align-items:center;justify-content:center;
+    pointer-events:auto;"
   title="맨위로">↑</button>
 <script>
 (function(){
