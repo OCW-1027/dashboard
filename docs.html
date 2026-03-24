@@ -6,9 +6,10 @@
 <title>자료실 — 투자 리서치</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--shadow:0 2px 20px rgba(0,0,0,.6);}
+  :root{--bg:#080b10;--surface:#0e1218;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;}
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6;}
+  html,body{height:100%;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;display:flex;flex-direction:column;}
   #lock-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;}
   .lock-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 48px;width:380px;max-width:90vw;text-align:center;}
   .lock-icon{font-size:2.8rem;margin-bottom:16px;}
@@ -19,52 +20,18 @@
   .lock-btn{width:100%;margin-top:12px;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;}
   .lock-btn:hover{opacity:.85;}
   .lock-err{font-size:.75rem;color:var(--red);margin-top:10px;min-height:18px;}
-  header{background:linear-gradient(160deg,#0c1220 0%,#0e1828 60%,#080d16 100%);border-bottom:1px solid var(--border);padding:24px 48px 20px;}
-  header::after{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(61,142,245,.3),transparent);margin-top:0;}
-  .header-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  header{background:linear-gradient(160deg,#0c1220 0%,#0e1828 60%,#080d16 100%);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0;}
+  .header-inner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
   .back-btn{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:5px 12px;border-radius:6px;}
   .back-btn:hover{color:var(--text);border-color:var(--accent);}
-  .logo h1{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:#e8edf8;}
+  .logo h1{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#e8edf8;}
   .logo h1 span{color:var(--accent);}
-  .logo-tags{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
-  .htag{font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid;}
-  .htag-b{color:var(--accent);border-color:rgba(61,142,245,.35);background:rgba(61,142,245,.06);}
-  .htag-g{color:var(--accent2);border-color:rgba(86,204,178,.35);background:rgba(86,204,178,.06);}
-  .htag-a{color:var(--amber);border-color:rgba(232,160,48,.35);background:rgba(232,160,48,.06);}
-  .page{max-width:1400px;margin:0 auto;padding:28px 32px 80px;}
-  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px;}
-  .search-input{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;font-size:.85rem;color:var(--text);outline:none;}
-  .search-input:focus{border-color:var(--accent);}
-  .search-input::placeholder{color:var(--muted);}
-  .filter-btn{padding:8px 14px;font-size:.72rem;font-weight:600;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);cursor:pointer;}
-  .filter-btn.active{background:rgba(61,142,245,.1);color:var(--accent);border-color:rgba(61,142,245,.3);}
-  .view-btn{padding:7px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;cursor:pointer;color:var(--muted);}
-  .view-btn.active{color:var(--accent);border-color:rgba(61,142,245,.3);}
-  .info-box{background:rgba(61,142,245,.06);border:1px solid rgba(61,142,245,.2);border-radius:10px;padding:14px 18px;font-size:.75rem;color:var(--muted);margin-bottom:20px;line-height:1.9;}
-  .docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
-  .docs-list{display:flex;flex-direction:column;gap:8px;}
-  .doc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;animation:fadeUp .4s ease both;}
-  .doc-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4);}
-  .doc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0;}
-  .doc-card.pdf::before{background:var(--red);}
-  .doc-card.image::before{background:var(--accent2);}
-  .doc-card.spreadsheet::before{background:var(--green);}
-  .doc-card.other::before{background:var(--muted);}
-  .doc-icon{font-size:2rem;margin-bottom:10px;display:block;}
-  .doc-title{font-size:.82rem;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px;word-break:break-word;}
-  .doc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
-  .doc-date{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);}
-  .doc-tag{font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;}
-  .tag-pdf{color:var(--red);background:rgba(232,73,90,.12);}
-  .tag-image{color:var(--accent2);background:rgba(86,204,178,.12);}
-  .tag-spreadsheet{color:var(--green);background:rgba(31,189,138,.12);}
-  .tag-other{color:var(--muted);background:rgba(107,122,150,.12);}
-  .doc-row{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
-  .doc-row:hover{border-color:var(--border2);}
-  .loading{text-align:center;padding:60px;color:var(--muted);font-size:.82rem;}
-  .empty{text-align:center;padding:60px 20px;color:var(--muted);}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-  @media(max-width:768px){.page{padding:16px 14px 60px;}header{padding:18px 16px 14px;}.docs-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}}
+  .drive-btn{font-size:.72rem;color:var(--accent2);text-decoration:none;border:1px solid rgba(86,204,178,.3);padding:6px 13px;border-radius:6px;background:rgba(86,204,178,.06);display:inline-flex;align-items:center;gap:5px;}
+  .drive-btn:hover{background:rgba(86,204,178,.12);}
+  .logout-btn{padding:6px 12px;background:rgba(232,73,90,.1);color:var(--red);border:1px solid rgba(232,73,90,.25);border-radius:6px;font-size:.7rem;cursor:pointer;}
+  .drive-wrap{flex:1;padding:12px 16px;overflow:hidden;display:flex;flex-direction:column;gap:8px;}
+  .drive-frame{flex:1;border:none;border-radius:10px;background:#fff;}
+  .info-bar{font-size:.72rem;color:var(--muted);padding:8px 12px;background:rgba(61,142,245,.06);border:1px solid rgba(61,142,245,.2);border-radius:8px;line-height:1.8;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -81,183 +48,77 @@
   </div>
 </div>
 
-<div id="main-content" style="display:none;">
+<div id="main-content" style="display:none;flex:1;flex-direction:column;overflow:hidden;" class="d-flex">
+
 <header>
   <div class="header-inner">
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
       <a href="index.html" class="back-btn">← 메인 대시보드</a>
       <div class="logo">
         <h1>투자 <span>자료실</span></h1>
-        <div class="logo-tags">
-          <span class="htag htag-b">📄 PDF</span>
-          <span class="htag htag-g">🖼 이미지</span>
-          <span class="htag htag-a">📊 Excel</span>
-        </div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <a href="https://drive.google.com/drive/folders/1ZvtsRiq_8tS0-3lshsC6go5Naxp5BRFl"
-        target="_blank"
-        style="font-size:.7rem;color:var(--accent2);text-decoration:none;border:1px solid rgba(86,204,178,.3);padding:6px 13px;border-radius:6px;background:rgba(86,204,178,.06);display:inline-flex;align-items:center;gap:5px;">
-        📂 Google Drive 열기 (파일 추가)
+        target="_blank" class="drive-btn">
+        📂 Google Drive 열기 (파일 추가/수정)
       </a>
-      <button onclick="lockScreen()" style="padding:6px 12px;background:rgba(232,73,90,.1);color:var(--red);border:1px solid rgba(232,73,90,.25);border-radius:6px;font-size:.7rem;cursor:pointer;">로그아웃</button>
+      <button class="logout-btn" onclick="lockScreen()">로그아웃</button>
     </div>
   </div>
 </header>
 
-<div class="page">
-  <div class="info-box">
-    💡 <strong style="color:var(--accent);">파일 추가 방법</strong>: 우측 상단 <strong style="color:var(--accent2);">📂 Google Drive 열기</strong> 클릭 → 파일 업로드 → 이 페이지 <strong>새로고침(F5)</strong>하면 자동으로 목록에 나타납니다.
+<div class="drive-wrap" id="drive-wrap" style="display:none;">
+  <div class="info-bar">
+    💡 <strong style="color:var(--accent);">파일 추가 방법</strong>: 우측 상단 <strong style="color:var(--accent2);">📂 Google Drive 열기</strong> 버튼 클릭 → 파일 업로드 → 아래 화면이 자동으로 반영됩니다. &nbsp;|&nbsp;
+    파일 클릭 시 Google Drive에서 바로 열람·다운로드 가능합니다.
   </div>
-
-  <div class="toolbar">
-    <input class="search-input" id="search-input" type="text" placeholder="🔍 파일명 검색..." oninput="renderDocs()">
-    <button class="filter-btn active" onclick="setFilter('all',this)">전체</button>
-    <button class="filter-btn" onclick="setFilter('pdf',this)">PDF</button>
-    <button class="filter-btn" onclick="setFilter('image',this)">이미지</button>
-    <button class="filter-btn" onclick="setFilter('spreadsheet',this)">엑셀</button>
-    <button style="padding:8px 14px;font-size:.72rem;font-weight:600;border-radius:6px;border:1px solid rgba(86,204,178,.3);background:rgba(86,204,178,.06);color:var(--accent2);cursor:pointer;" onclick="loadFiles()">🔄 새로고침</button>
-    <div style="margin-left:auto;display:flex;gap:6px;">
-      <button class="view-btn active" id="btn-grid" onclick="setView('grid',this)">⊞</button>
-      <button class="view-btn" id="btn-list" onclick="setView('list',this)">☰</button>
-    </div>
-  </div>
-
-  <div id="docs-container">
-    <div class="loading">⏳ 파일 목록 불러오는 중...</div>
-  </div>
+  <iframe
+    class="drive-frame"
+    id="drive-frame"
+    src="https://drive.google.com/embeddedfolderview?id=1ZvtsRiq_8tS0-3lshsC6go5Naxp5BRFl#list"
+    style="height:calc(100vh - 160px);">
+  </iframe>
 </div>
+
 </div>
 
 <script>
 const PASSWORDS = ['invest2026', 'ocw1027'];
-const FOLDER_ID = '1ZvtsRiq_8tS0-3lshsC6go5Naxp5BRFl';
 
 function checkPassword(){
   const val = document.getElementById('pw-input').value.trim();
   const err = document.getElementById('pw-err');
   if(PASSWORDS.includes(val)){
     sessionStorage.setItem('docs_auth','ok');
-    document.getElementById('lock-screen').style.display='none';
-    document.getElementById('main-content').style.display='block';
-    loadFiles();
+    showMain();
   } else {
-    err.textContent='비밀번호가 올바르지 않습니다.';
-    document.getElementById('pw-input').value='';
+    err.textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('pw-input').value = '';
     document.getElementById('pw-input').focus();
-    setTimeout(()=>err.textContent='',2500);
+    setTimeout(()=>err.textContent='', 2500);
   }
 }
-function lockScreen(){sessionStorage.removeItem('docs_auth');location.reload();}
-if(sessionStorage.getItem('docs_auth')==='ok'){
-  document.getElementById('lock-screen').style.display='none';
-  document.getElementById('main-content').style.display='block';
+
+function showMain(){
+  document.getElementById('lock-screen').style.display = 'none';
+  const main = document.getElementById('main-content');
+  main.style.display = 'flex';
+  main.style.flexDirection = 'column';
+  main.style.flex = '1';
+  document.getElementById('drive-wrap').style.display = 'flex';
+  document.getElementById('drive-wrap').style.flexDirection = 'column';
+  document.getElementById('drive-wrap').style.flex = '1';
 }
 
-let allFiles=[], currentFilter='all', currentView='grid';
-
-function setFilter(t,btn){currentFilter=t;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderDocs();}
-function setView(v,btn){currentView=v;document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderDocs();}
-
-function getFileType(name){
-  const ext=name.split('.').pop().toLowerCase();
-  if(['pdf'].includes(ext))return'pdf';
-  if(['jpg','jpeg','png','gif','webp'].includes(ext))return'image';
-  if(['xlsx','xls','csv'].includes(ext))return'spreadsheet';
-  return'other';
-}
-const ICONS={pdf:'📄',image:'🖼️',spreadsheet:'📊',other:'📁'};
-const LABELS={pdf:'PDF',image:'이미지',spreadsheet:'엑셀',other:'파일'};
-
-async function loadFiles(){
-  if(sessionStorage.getItem('docs_auth')!=='ok')return;
-  document.getElementById('docs-container').innerHTML='<div class="loading">⏳ Google Drive에서 파일 목록을 불러오는 중...</div>';
-  try{
-    const apiUrl=`https://www.googleapis.com/drive/v3/files?q=%271ZvtsRiq_8tS0-3lshsC6go5Naxp5BRFl%27+in+parents+and+trashed%3Dfalse&fields=files(id%2Cname%2CmimeType%2CmodifiedTime%2Csize)&key=AIzaSyC4dCkdS57KKBSXOo8s3JhT83mmkmgf9xk`;
-    const proxyUrl=`https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
-    const res=await fetch(proxyUrl,{signal:AbortSignal.timeout(12000)});
-    const data=await res.json();
-    const json=JSON.parse(data.contents||'{}');
-    const files=(json.files||[]).filter(f=>f.name!=='placeholder.txt');
-    if(files.length>0){
-      allFiles=files.map(f=>({
-        id:f.id, name:f.name,
-        type:getFileType(f.name),
-        date:(f.modifiedTime||'').slice(0,10),
-        size:f.size?formatSize(parseInt(f.size)):'',
-        driveUrl:`https://drive.google.com/file/d/${f.id}/view`,
-      }));
-      renderDocs();
-    } else {
-      showFallback();
-    }
-  }catch(e){showFallback();}
+function lockScreen(){
+  sessionStorage.removeItem('docs_auth');
+  location.reload();
 }
 
-function formatSize(bytes){
-  if(bytes>1048576)return(bytes/1048576).toFixed(1)+'MB';
-  if(bytes>1024)return(bytes/1024).toFixed(0)+'KB';
-  return bytes+'B';
+if(sessionStorage.getItem('docs_auth') === 'ok'){
+  showMain();
 }
-
-function showFallback(){
-  document.getElementById('docs-container').innerHTML=`
-    <div style="background:rgba(232,160,48,.07);border:1px solid rgba(232,160,48,.25);border-radius:10px;padding:20px 24px;">
-      <div style="font-size:.82rem;font-weight:600;color:var(--amber);margin-bottom:10px;">⚠️ 자동 로드 실패</div>
-      <div style="font-size:.75rem;color:var(--muted);line-height:1.9;">
-        Google Drive API 접근이 차단되었습니다.<br>
-        아래 버튼으로 Drive 폴더에서 직접 확인하세요.
-      </div>
-      <a href="https://drive.google.com/drive/folders/${FOLDER_ID}" target="_blank"
-        style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:9px 18px;background:rgba(86,204,178,.1);color:var(--accent2);border:1px solid rgba(86,204,178,.3);border-radius:7px;text-decoration:none;font-size:.78rem;font-weight:700;">
-        📂 Google Drive 폴더 열기
-      </a>
-    </div>`;
-}
-
-function renderDocs(){
-  const query=document.getElementById('search-input')?.value?.toLowerCase()||'';
-  const container=document.getElementById('docs-container');
-  let filtered=allFiles.filter(f=>{
-    const matchType=currentFilter==='all'||f.type===currentFilter;
-    const matchSearch=!query||f.name.toLowerCase().includes(query);
-    return matchType&&matchSearch;
-  });
-  if(filtered.length===0){
-    container.innerHTML=`<div class="empty"><div style="font-size:2rem;margin-bottom:12px;opacity:.35;">📭</div><p style="font-size:.82rem;">${query?`"${query}" 검색 결과가 없습니다`:'파일이 없습니다'}</p></div>`;
-    return;
-  }
-  container.innerHTML=`
-    <div style="font-size:.68rem;color:var(--muted);margin-bottom:12px;">총 ${filtered.length}개 파일</div>
-    <div class="${currentView==='grid'?'docs-grid':'docs-list'}">
-      ${filtered.map((f,i)=>currentView==='grid'?renderCard(f,i):renderRow(f,i)).join('')}
-    </div>`;
-}
-
-function renderCard(f,i){return`
-  <div class="doc-card ${f.type}" onclick="window.open('${f.driveUrl}','_blank')" style="animation-delay:${i*0.04}s">
-    <span class="doc-icon">${ICONS[f.type]||'📁'}</span>
-    <div class="doc-title">${f.name}</div>
-    <div class="doc-meta">
-      <span class="doc-date">${f.date}</span>
-      <div style="display:flex;align-items:center;gap:6px;">
-        ${f.size?`<span style="font-size:.62rem;color:var(--muted);">${f.size}</span>`:''}
-        <span class="doc-tag tag-${f.type}">${LABELS[f.type]||f.type}</span>
-      </div>
-    </div>
-  </div>`;}
-
-function renderRow(f,i){return`
-  <div class="doc-row" onclick="window.open('${f.driveUrl}','_blank')" style="animation-delay:${i*0.03}s">
-    <span style="font-size:1.4rem;">${ICONS[f.type]||'📁'}</span>
-    <div style="flex:1;font-size:.82rem;font-weight:500;">${f.name}</div>
-    ${f.size?`<span style="font-size:.65rem;color:var(--muted);font-family:'DM Mono',monospace;">${f.size}</span>`:''}
-    <span class="doc-tag tag-${f.type}">${LABELS[f.type]||f.type}</span>
-    <span style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);">${f.date}</span>
-  </div>`;}
-
-if(sessionStorage.getItem('docs_auth')==='ok'){loadFiles();}
 </script>
 </body>
 </html>
