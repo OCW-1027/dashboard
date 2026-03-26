@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-글로벌 투자 대시보드 자동 업데이트 스크립트
-매일 15:30 JST (일본장 마감 후) 실행
+글로벌 투자 대시보드 자동 업데이트
+매일 15:30 JST 실행
+모든 지수 등락률을 Stooq에서 정확히 계산 (서버사이드 = CORS 없음)
 """
 
 import urllib.request
@@ -12,6 +13,61 @@ from datetime import datetime, timezone, timedelta
 
 FRED_API_KEY = "83e6861e8b657ab00872c409fba12af7"
 JST = timezone(timedelta(hours=9))
+
+# ── Stooq (서버사이드 직접, CORS 없음, 등락률 100% 정확) ─────────
+def fetch_stooq(sym, label=""):
+    url = f"https://stooq.com/q/d/l/?s={sym}&i=d"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            lines = r.read().decode("utf-8").strip().split("\n")
+        rows = [l for l in lines if l and not l.startswith("Date")]
+        if len(rows) < 2:
+            print(f"  ⚠️  Stooq {label}: 데이터 부족")
+            return None
+        today   = rows[-1].split(",")
+        prev    = rows[-2].split(",")
+        price   = float(today[4])
+        prev_cl = float(prev[4])
+        chg = price - prev_cl
+        pct = (chg / prev_cl * 100) if prev_cl else 0
+        print(f"  ✅ {label}: {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
+        return {"price": price, "chg": chg, "pct": pct}
+    except Exception as e:
+        print(f"  ❌ Stooq {label} 오류: {e}")
+        return None
+
+# ── Yahoo Finance (Stooq 실패 시 fallback) ────────────────────────
+def fetch_yahoo(symbol, label=""):
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=10d"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+        result  = data["chart"]["result"][0]
+        meta    = result["meta"]
+        price   = meta["regularMarketPrice"]
+        # 종가 배열에서 전일 종가 직접 추출
+        closes  = [c for c in result.get("indicators", {}).get("quote", [{}])[0].get("close", []) if c is not None]
+        if len(closes) >= 2:
+            prev_cl = closes[-2]
+            chg = price - prev_cl
+            pct = (chg / prev_cl * 100) if prev_cl else 0
+        else:
+            prev_cl = meta.get("chartPreviousClose") or meta.get("previousClose") or price
+            chg = price - prev_cl
+            pct = (chg / prev_cl * 100) if prev_cl else 0
+        print(f"  ✅ {label} (Yahoo): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
+        return {"price": price, "chg": chg, "pct": pct}
+    except Exception as e:
+        print(f"  ❌ Yahoo {label} 오류: {e}")
+        return None
+
+def fetch_index(stooq_sym, yahoo_sym, label):
+    """Stooq 우선, 실패 시 Yahoo fallback"""
+    r = fetch_stooq(stooq_sym, label)
+    if r: return r
+    return fetch_yahoo(yahoo_sym, label)
 
 def fetch_fred(series_id):
     url = (f"https://api.stlouisfed.org/fred/series/observations"
@@ -26,53 +82,6 @@ def fetch_fred(series_id):
     except Exception as e:
         print(f"  FRED {series_id} 오류: {e}")
         return None
-
-def fetch_yahoo(symbol):
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=5d"
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read())
-        meta  = data["chart"]["result"][0]["meta"]
-        price = meta["regularMarketPrice"]
-        # Yahoo 자체 등락값 우선 사용 → 가장 정확
-        chg   = meta.get("regularMarketChange")
-        pct   = meta.get("regularMarketChangePercent")
-        # 없으면 직접 계산 (fallback)
-        if chg is None or pct is None:
-            prev = meta.get("chartPreviousClose") or meta.get("previousClose") or price
-            chg  = price - prev
-            pct  = (chg / prev * 100) if prev else 0
-        return {"price": price, "chg": chg, "pct": pct}
-    except Exception as e:
-        print(f"  Yahoo {symbol} 오류: {e}")
-        return None
-
-def fetch_topix_stooq():
-    url = "https://stooq.com/q/d/l/?s=%5Etpx&i=d"
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            lines = r.read().decode("utf-8").strip().split("\n")
-        if len(lines) < 3:
-            return None
-        latest  = lines[-1].split(",")
-        prev    = lines[-2].split(",")
-        price   = float(latest[4])
-        prev_cl = float(prev[4])
-        chg     = price - prev_cl
-        pct     = (chg / prev_cl * 100) if prev_cl else 0
-        print(f"  TOPIX (stooq): {price:.2f} ({chg:+.2f} / {pct:+.2f}%)")
-        return {"price": price, "chg": chg, "pct": pct}
-    except Exception as e:
-        print(f"  TOPIX stooq 오류: {e}")
-        return None
-
-def fetch_nikkei():
-    r = fetch_yahoo("^N225")
-    if r: return r
-    price = fetch_fred("NIKKEI225")
-    return {"price": price, "chg": None, "pct": None} if price else None
 
 def fetch_fear_greed():
     url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
@@ -92,14 +101,13 @@ def fmt_num(v, fmt="USD"):
 def fmt_chg(chg, pct):
     if chg is None: return "—"
     sign = "+" if chg >= 0 else ""
-    col = "#1fbd8a" if chg >= 0 else "#e8495a"
+    col  = "#1fbd8a" if chg >= 0 else "#e8495a"
     return f'<span style="color:{col};font-weight:600;">{sign}{chg:.2f} ({sign}{pct:.2f}%)</span>'
 
 def border_col(chg):
     if chg is None: return "rgba(28,35,51,1)"
     return "rgba(31,189,138,.35)" if chg >= 0 else "rgba(232,73,90,.35)"
 
-# ── 핵심: lambda 방식으로 HTML 특수문자 충돌 완전 방지 ─────────────
 def sub(html, pattern, repl_fn):
     new_html, n = re.subn(pattern, repl_fn, html, count=1, flags=re.DOTALL)
     if n == 0:
@@ -107,13 +115,10 @@ def sub(html, pattern, repl_fn):
     return new_html
 
 def set_text(html, el_id, text):
-    """id 요소 내부 텍스트 교체 — 일반 텍스트 (태그 없음)"""
     return sub(html, rf'(id="{el_id}"[^>]*>).*?(?=<)',
                lambda m: m.group(1) + text)
 
 def set_chg(html, el_id, content):
-    """등락 요소 교체 — span 등 HTML 태그 포함. 여는태그 이후 닫는</div>까지 통째로 교체"""
-    # 여는 div 태그 이후 모든 내용(중첩 span 포함)을 닫는 </div> 직전까지 교체
     return sub(html, rf'(<div[^>]*\bid="{el_id}"[^>]*>)(.*?)(</div>)',
                lambda m: m.group(1) + content + m.group(3))
 
@@ -122,8 +127,7 @@ def set_border(html, el_id, border):
         rf'(id="idx-{el_id}"[^>]*style=")[^"]*(")',
         lambda m: m.group(1) + f'border-color:{border};' + m.group(2),
         html, count=1, flags=re.DOTALL)
-    if n > 0:
-        return new_html
+    if n > 0: return new_html
     new_html, n = re.subn(
         rf'(id="idx-{el_id}")',
         lambda m: m.group(1) + f' style="border-color:{border};"',
@@ -132,9 +136,9 @@ def set_border(html, el_id, border):
 
 def update_index_card(html, idx_id, data, fmt="USD"):
     if not data: return html
-    html = set_text(html, f"v-{idx_id}", fmt_num(data["price"], fmt))
-    html = set_chg(html,  f"c-{idx_id}", fmt_chg(data.get("chg"), data.get("pct")))
-    html = set_border(html, idx_id, border_col(data.get("chg")))
+    html = set_text(html,  f"v-{idx_id}", fmt_num(data["price"], fmt))
+    html = set_chg(html,   f"c-{idx_id}", fmt_chg(data.get("chg"), data.get("pct")))
+    html = set_border(html, idx_id,       border_col(data.get("chg")))
     return html
 
 def update_dashboard():
@@ -142,38 +146,30 @@ def update_dashboard():
     print(f"대시보드 업데이트: {datetime.now(JST).strftime('%Y-%m-%d %H:%M JST')}")
     print("=" * 55)
 
-    print("\n[1] 지수 데이터 수집...")
-    nk225   = fetch_nikkei()
-    topix   = fetch_topix_stooq()
-    mothers = fetch_yahoo("2516.T")
-    kospi   = fetch_yahoo("^KS11")
-    kosdaq  = fetch_yahoo("^KQ11")
-    spx     = fetch_yahoo("^GSPC")
-    ndx     = fetch_yahoo("^NDX")
-    dji     = fetch_yahoo("^DJI")
-    rut     = fetch_yahoo("^RUT")
-    sox     = fetch_yahoo("^SOX")
-
-    for name, d in [("NKY",nk225),("TOPIX",topix),("Mothers",mothers),
-                    ("KOSPI",kospi),("KOSDAQ",kosdaq),
-                    ("SPX",spx),("NDX",ndx),("DJI",dji),("RUT",rut),("SOX",sox)]:
-        if d:
-            s = f" ({'+' if d['chg']>=0 else ''}{d['chg']:.2f})" if d.get("chg") is not None else ""
-            print(f"  {name}: {d['price']:,.2f}{s}")
-        else:
-            print(f"  {name}: 수집 실패")
+    print("\n[1] 지수 데이터 수집 (Stooq 우선)...")
+    # Stooq 심볼 / Yahoo 심볼 / 레이블
+    nk225   = fetch_index("^nkx",    "^N225",  "닛케이225")
+    topix   = fetch_stooq("^tpx",              "TOPIX")
+    mothers = fetch_index("2516.jp", "2516.T", "グロース250")
+    kospi   = fetch_index("^kospi",  "^KS11",  "코스피")
+    kosdaq  = fetch_index("^kosdaq", "^KQ11",  "코스닥")
+    spx     = fetch_index("^spx",    "^GSPC",  "S&P500")
+    ndx     = fetch_index("^ndq",    "^NDX",   "나스닥100")
+    dji     = fetch_index("^dji",    "^DJI",   "다우존스")
+    rut     = fetch_index("^rut",    "^RUT",   "러셀2000")
+    sox     = fetch_index("^sox",    "^SOX",   "필라반도체")
 
     print("\n[2] 거시지표 수집...")
-    vix   = fetch_fred("VIXCLS")
-    y10   = fetch_fred("DGS10")
-    y2    = fetch_fred("DGS2")
-    y30   = fetch_fred("DGS30")
-    wti   = fetch_fred("DCOILWTICO")
-    brent = fetch_fred("DCOILBRENTEU")
-    fg    = fetch_fear_greed()
+    vix    = fetch_fred("VIXCLS")
+    y10    = fetch_fred("DGS10")
+    y2     = fetch_fred("DGS2")
+    y30    = fetch_fred("DGS30")
+    wti    = fetch_fred("DCOILWTICO")
+    brent  = fetch_fred("DCOILBRENTEU")
+    fg     = fetch_fear_greed()
     spread = round(y10 - y2, 2) if y10 and y2 else None
-    print(f"  VIX:{vix}  10Y:{y10}  2Y:{y2}  30Y:{y30}")
-    print(f"  WTI:${wti}  Brent:${brent}  F&G:{fg}  Spread:{spread}")
+    print(f"  VIX:{vix}  10Y:{y10}  2Y:{y2}  Spread:{spread}")
+    print(f"  WTI:${wti}  Brent:${brent}  F&G:{fg}")
 
     html_path = os.path.join(os.path.dirname(__file__), "index.html")
     with open(html_path, "r", encoding="utf-8") as f:
@@ -184,7 +180,7 @@ def update_dashboard():
     today    = datetime.now(JST).strftime("%Y.%m.%d")
     now_str  = datetime.now(JST).strftime("%Y.%m.%d %H:%M JST")
 
-    # 지수 카드
+    # 지수 카드 업데이트
     html = update_index_card(html, "nk225",   nk225,   "JPY")
     html = update_index_card(html, "topix",   topix,   "JPY")
     html = update_index_card(html, "mothers", mothers, "JPY")
@@ -207,7 +203,6 @@ def update_dashboard():
                    lambda m: m.group(1) + f'{vix:.2f}')
         html = sub(html, r'(VIX — 공포지수.*?<div class="blabel">)[^<]+',
                    lambda m: m.group(1) + f'{today} 종가')
-        print(f"  ✅ VIX: {vix:.2f}")
 
     # 수익률 곡선
     if spread is not None:
@@ -237,21 +232,16 @@ def update_dashboard():
                    lambda m: m.group(1) + fg_col)
         html = sub(html, r'(gauge-status" style="color:[^"]+">)[^<]+',
                    lambda m: m.group(1) + fg_lbl)
-        html = sub(html, r'(현재 \()\d+/\d+(\))',
-                   lambda m: m.group(1) + datetime.now(JST).strftime("%-m/%-d") + m.group(2))
         html = sub(html, r'(pbar-fill" style="width:)\d+(%";background:var\(--red\))',
                    lambda m: m.group(1) + str(fg) + m.group(2))
-        print(f"  ✅ Fear&Greed: {fg} ({fg_lbl})")
 
     # WTI / 브렌트
     if wti:
         html = sub(html, r'(WTI 원유</div><div class="sv"[^>]+>\$)[0-9.]+',
                    lambda m: m.group(1) + f'{wti:.2f}')
-        print(f"  ✅ WTI: ${wti:.2f}")
     if brent:
         html = sub(html, r'(브렌트유</div><div class="sv"[^>]+>\$)[0-9.]+',
                    lambda m: m.group(1) + f'{brent:.0f}')
-        print(f"  ✅ Brent: ${brent:.0f}")
 
     # 요약표
     if nk225:
