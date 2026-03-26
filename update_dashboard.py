@@ -237,7 +237,7 @@ def update_dashboard():
 
     # 타임스탬프
     html = set_text(html, "idx-timestamp",
-        f'📊 GitHub Actions 자동 업데이트 · {now_str}')
+        f'📊 전일 종가 기준 · 매일 6회 자동갱신 · 최종: {now_str}')
 
     # VIX
     if vix:
