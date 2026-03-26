@@ -114,12 +114,24 @@ def fetch_fred(series_id):
         return None
 
 def fetch_fear_greed():
-    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+    urls = [
+        "https://production.dataviz.cnn.io/index/fearandgreed/graphdata",
+        "https://fear-and-greed-index.p.rapidapi.com/v1/fgi",
+    ]
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://edition.cnn.com/markets/fear-and-greed",
+        "Origin": "https://edition.cnn.com",
+    }
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        req = urllib.request.Request(urls[0], headers=headers)
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
-        return round(float(data["fear_and_greed"]["score"]))
+        score = round(float(data["fear_and_greed"]["score"]))
+        print(f"  ✅ Fear&Greed: {score}")
+        return score
     except Exception as e:
         print(f"  Fear&Greed 오류: {e}")
         return None
