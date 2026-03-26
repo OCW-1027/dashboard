@@ -39,42 +39,55 @@ def fetch_stooq(sym, label=""):
 
 # ── Yahoo Finance (Stooq 실패 시 fallback) ────────────────────────
 def fetch_yahoo(symbol, label=""):
-    """Yahoo Finance v8 — 서버사이드 직접 호출 (CORS 없음)"""
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=10d"
+    """Yahoo Finance v8 — 서버사이드 직접 호출"""
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=5d"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
-        result  = data["chart"]["result"][0]
-        meta    = result["meta"]
-        price   = meta["regularMarketPrice"]
+        result = data["chart"]["result"][0]
+        meta   = result["meta"]
+        price  = meta["regularMarketPrice"]
 
-        # ★ 방법1: Yahoo 자체 change 필드 (가장 정확)
+        # ★ 방법1: Yahoo 자체 change 필드
         chg = meta.get("regularMarketChange")
         pct = meta.get("regularMarketChangePercent")
-        if chg is not None and pct is not None and abs(chg) > 0.001:
-            print(f"  ✅ {label} (Yahoo v8 change): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
+        if chg is not None and pct is not None and abs(chg) > 0.01:
+            print(f"  ✅ {label} (Yahoo change): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
             return {"price": price, "chg": chg, "pct": pct}
 
-        # ★ 방법2: 종가 배열에서 전일 종가 직접 추출
-        closes = [c for c in result.get("indicators", {}).get("quote", [{}])[0].get("close", []) if c is not None]
-        if len(closes) >= 2:
-            prev_cl = closes[-2]
-            chg = price - prev_cl
-            pct = (chg / prev_cl * 100) if prev_cl else 0
-            if abs(chg) > 0.001:
-                print(f"  ✅ {label} (Yahoo v8 array): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
-                return {"price": price, "chg": chg, "pct": pct}
+        # ★ 방법2: 타임스탬프 기반 전일 종가 추출
+        timestamps = result.get("timestamp", [])
+        closes     = result.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+        if timestamps and closes and len(timestamps) >= 2:
+            # 오늘 날짜 (JST)
+            today_date = datetime.now(JST).date()
+            # 타임스탬프와 종가를 날짜별로 묶기
+            daily = {}
+            for ts, cl in zip(timestamps, closes):
+                if cl is None: continue
+                d = datetime.fromtimestamp(ts, tz=timezone.utc).date()
+                daily[d] = cl  # 같은 날이면 마지막 값으로 덮어씀
+            sorted_days = sorted(daily.keys())
+            # 오늘 또는 가장 최근 날짜 = 현재가, 그 전날 = 전일 종가
+            if len(sorted_days) >= 2:
+                prev_day   = sorted_days[-2]
+                prev_close = daily[prev_day]
+                if prev_close and abs(price - prev_close) > 0.01:
+                    chg = price - prev_close
+                    pct = (chg / prev_close * 100)
+                    print(f"  ✅ {label} (Yahoo ts): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
+                    return {"price": price, "chg": chg, "pct": pct}
 
-        # ★ 방법3: chartPreviousClose fallback
+        # ★ 방법3: chartPreviousClose
         prev_cl = meta.get("chartPreviousClose") or meta.get("previousClose")
-        if prev_cl and abs(price - prev_cl) > 0.001:
+        if prev_cl and abs(price - prev_cl) > 0.01:
             chg = price - prev_cl
-            pct = (chg / prev_cl * 100) if prev_cl else 0
-            print(f"  ✅ {label} (Yahoo v8 prev): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
+            pct = (chg / prev_cl * 100)
+            print(f"  ✅ {label} (Yahoo prev): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
             return {"price": price, "chg": chg, "pct": pct}
 
-        print(f"  ⚠️  {label} (Yahoo): 가격만 수집 ({price:,.2f}), 등락 계산 불가")
+        print(f"  ⚠️  {label}: 가격만 수집 ({price:,.2f}), 등락 계산 불가")
         return {"price": price, "chg": None, "pct": None}
     except Exception as e:
         print(f"  ❌ Yahoo {label} 오류: {e}")
