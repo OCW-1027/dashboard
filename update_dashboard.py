@@ -274,7 +274,7 @@ def update_dashboard():
                    lambda m: m.group(1) + fg_col)
         html = sub(html, r'(gauge-status" style="color:[^"]+">)[^<]+',
                    lambda m: m.group(1) + fg_lbl)
-        html = sub(html, r'(pbar-fill" style="width:)\d+(%";background:var\(--red\);)',
+        html = sub(html, r'(pbar-fill" style="width:)\d+(%;background:var\(--red\);)',
                    lambda m: m.group(1) + str(fg) + m.group(2))
 
     # WTI / 브렌트
