@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
 글로벌 투자 대시보드 자동 업데이트
-매일 15:30 JST 실행
-모든 지수 등락률을 Stooq에서 정확히 계산 (서버사이드 = CORS 없음)
+매일 6회 실행 (JST 기준)
 """
 
 import urllib.request
@@ -14,7 +13,7 @@ from datetime import datetime, timezone, timedelta
 FRED_API_KEY = "83e6861e8b657ab00872c409fba12af7"
 JST = timezone(timedelta(hours=9))
 
-# ── Stooq (서버사이드 직접, CORS 없음, 등락률 100% 정확) ─────────
+# ── Stooq ─────────────────────────────────────────────────────────
 def fetch_stooq(sym, label=""):
     url = f"https://stooq.com/q/d/l/?s={sym}&i=d"
     try:
@@ -37,9 +36,8 @@ def fetch_stooq(sym, label=""):
         print(f"  ❌ Stooq {label} 오류: {e}")
         return None
 
-# ── Yahoo Finance (Stooq 실패 시 fallback) ────────────────────────
+# ── Yahoo Finance ──────────────────────────────────────────────────
 def fetch_yahoo(symbol, label=""):
-    """Yahoo Finance v8 — 서버사이드 직접 호출"""
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=5d"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -48,85 +46,73 @@ def fetch_yahoo(symbol, label=""):
         result = data["chart"]["result"][0]
         meta   = result["meta"]
         price  = meta["regularMarketPrice"]
-
-        # ★ 방법1: Yahoo 자체 change 필드
         chg = meta.get("regularMarketChange")
         pct = meta.get("regularMarketChangePercent")
         if chg is not None and pct is not None and abs(chg) > 0.01:
-            print(f"  ✅ {label} (Yahoo change): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
+            print(f"  ✅ {label} (Yahoo): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
             return {"price": price, "chg": chg, "pct": pct}
-
-        # ★ 방법2: 타임스탬프 기반 전일 종가 추출
         timestamps = result.get("timestamp", [])
         closes     = result.get("indicators", {}).get("quote", [{}])[0].get("close", [])
-        if timestamps and closes and len(timestamps) >= 2:
-            # 오늘 날짜 (JST)
-            today_date = datetime.now(JST).date()
-            # 타임스탬프와 종가를 날짜별로 묶기
+        if timestamps and closes:
             daily = {}
             for ts, cl in zip(timestamps, closes):
                 if cl is None: continue
                 d = datetime.fromtimestamp(ts, tz=timezone.utc).date()
-                daily[d] = cl  # 같은 날이면 마지막 값으로 덮어씀
+                daily[d] = cl
             sorted_days = sorted(daily.keys())
-            # 오늘 또는 가장 최근 날짜 = 현재가, 그 전날 = 전일 종가
             if len(sorted_days) >= 2:
-                prev_day   = sorted_days[-2]
-                prev_close = daily[prev_day]
+                prev_close = daily[sorted_days[-2]]
                 if prev_close and abs(price - prev_close) > 0.01:
                     chg = price - prev_close
                     pct = (chg / prev_close * 100)
                     print(f"  ✅ {label} (Yahoo ts): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
                     return {"price": price, "chg": chg, "pct": pct}
-
-        # ★ 방법3: chartPreviousClose
         prev_cl = meta.get("chartPreviousClose") or meta.get("previousClose")
         if prev_cl and abs(price - prev_cl) > 0.01:
             chg = price - prev_cl
             pct = (chg / prev_cl * 100)
             print(f"  ✅ {label} (Yahoo prev): {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
             return {"price": price, "chg": chg, "pct": pct}
-
-        print(f"  ⚠️  {label}: 가격만 수집 ({price:,.2f}), 등락 계산 불가")
+        print(f"  ⚠️  {label}: 가격만 ({price:,.2f})")
         return {"price": price, "chg": None, "pct": None}
     except Exception as e:
         print(f"  ❌ Yahoo {label} 오류: {e}")
         return None
 
 def fetch_index(stooq_sym, yahoo_sym, label):
-    """Stooq 우선, 실패 시 Yahoo fallback"""
     r = fetch_stooq(stooq_sym, label)
     if r: return r
     return fetch_yahoo(yahoo_sym, label)
 
-def fetch_fred(series_id):
+# ── FRED ───────────────────────────────────────────────────────────
+def fetch_fred(series_id, limit=1):
     url = (f"https://api.stlouisfed.org/fred/series/observations"
            f"?series_id={series_id}&api_key={FRED_API_KEY}"
-           f"&file_type=json&sort_order=desc&limit=1")
+           f"&file_type=json&sort_order=desc&limit={limit}")
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
         obs = [o for o in data["observations"] if o["value"] != "."]
-        return float(obs[0]["value"]) if obs else None
+        if limit == 1:
+            return float(obs[0]["value"]) if obs else None
+        return [float(o["value"]) for o in obs]
     except Exception as e:
         print(f"  FRED {series_id} 오류: {e}")
-        return None
+        return None if limit == 1 else []
 
+# ── Fear & Greed ───────────────────────────────────────────────────
 def fetch_fear_greed():
-    urls = [
-        "https://production.dataviz.cnn.io/index/fearandgreed/graphdata",
-        "https://fear-and-greed-index.p.rapidapi.com/v1/fgi",
-    ]
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Accept": "application/json",
         "Referer": "https://edition.cnn.com/markets/fear-and-greed",
         "Origin": "https://edition.cnn.com",
     }
     try:
-        req = urllib.request.Request(urls[0], headers=headers)
+        req = urllib.request.Request(
+            "https://production.dataviz.cnn.io/index/fearandgreed/graphdata",
+            headers=headers)
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
         score = round(float(data["fear_and_greed"]["score"]))
@@ -136,6 +122,95 @@ def fetch_fear_greed():
         print(f"  Fear&Greed 오류: {e}")
         return None
 
+# ── USD/JPY (Stooq) ────────────────────────────────────────────────
+def fetch_usdjpy():
+    r = fetch_stooq("usdjpy", "USD/JPY")
+    if r: return r["price"]
+    return None
+
+# ── ISM 제조업 PMI (FRED NAPM) ─────────────────────────────────────
+def fetch_ism():
+    v = fetch_fred("NAPM")
+    if v: print(f"  ✅ ISM PMI: {v}")
+    return v
+
+# ── 코어 PCE YoY (FRED 2개값으로 YoY 계산) ─────────────────────────
+def fetch_core_pce_yoy():
+    try:
+        url = (f"https://api.stlouisfed.org/fred/series/observations"
+               f"?series_id=PCEPILFE&api_key={FRED_API_KEY}"
+               f"&file_type=json&sort_order=desc&limit=13")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+        obs = [o for o in data["observations"] if o["value"] != "."]
+        if len(obs) >= 13:
+            latest    = float(obs[0]["value"])
+            yr_ago    = float(obs[12]["value"])
+            yoy = (latest - yr_ago) / yr_ago * 100
+            print(f"  ✅ 코어 PCE YoY: {yoy:.1f}%")
+            return round(yoy, 1)
+    except Exception as e:
+        print(f"  코어 PCE YoY 오류: {e}")
+    return None
+
+# ── NFP 전월대비 ───────────────────────────────────────────────────
+def fetch_nfp_chg():
+    try:
+        url = (f"https://api.stlouisfed.org/fred/series/observations"
+               f"?series_id=PAYEMS&api_key={FRED_API_KEY}"
+               f"&file_type=json&sort_order=desc&limit=2")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+        obs = [o for o in data["observations"] if o["value"] != "."]
+        if len(obs) >= 2:
+            chg = round((float(obs[0]["value"]) - float(obs[1]["value"])) * 1000)
+            print(f"  ✅ NFP 전월比: {chg:+,}명")
+            return chg
+    except Exception as e:
+        print(f"  NFP 오류: {e}")
+    return None
+
+# ── FedWatch (CME) ─────────────────────────────────────────────────
+def fetch_fedwatch():
+    """CME FedWatch — 다음 FOMC 동결 확률"""
+    try:
+        url = "https://www.cmegroup.com/CmeWS/mvc/MeetingList/monthlyMeetingListJson.do?meetingType=FOMC"
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+            "Referer": "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html"
+        })
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read())
+        meetings = data.get("meetings", [])
+        for m in meetings:
+            if m.get("isActive") or m.get("isNext"):
+                probs = m.get("probabilityChart", [])
+                for p in probs:
+                    if "No Change" in p.get("description", "") or "Unchanged" in p.get("description", ""):
+                        val = round(float(p.get("probability", 0)))
+                        print(f"  ✅ FedWatch 동결확률: {val}%")
+                        return val
+    except Exception as e:
+        print(f"  FedWatch 오류: {e}")
+    return None
+
+# ── 버핏 지표 (Wilshire5000 / GDP) ────────────────────────────────
+def fetch_buffett():
+    try:
+        wilshire = fetch_fred("WILL5000PR")  # Wilshire 5000 시총
+        gdp      = fetch_fred("GDP")         # 명목 GDP (분기)
+        if wilshire and gdp:
+            ratio = round(wilshire / gdp * 100, 1)
+            print(f"  ✅ 버핏 지표: {ratio}% (Wilshire:{wilshire:.0f} / GDP:{gdp:.0f})")
+            return ratio
+    except Exception as e:
+        print(f"  버핏 지표 오류: {e}")
+    return None
+
+# ── 포맷 함수 ──────────────────────────────────────────────────────
 def fmt_num(v, fmt="USD"):
     if v is None: return "—"
     return f"{v:,.2f}"
@@ -183,23 +258,23 @@ def update_index_card(html, idx_id, data, fmt="USD"):
     html = set_border(html, idx_id,       border_col(data.get("chg")))
     return html
 
+# ── 메인 ──────────────────────────────────────────────────────────
 def update_dashboard():
     print("=" * 55)
     print(f"대시보드 업데이트: {datetime.now(JST).strftime('%Y-%m-%d %H:%M JST')}")
     print("=" * 55)
 
-    print("\n[1] 지수 데이터 수집 (Stooq 우선)...")
-    # Stooq 심볼 / Yahoo 심볼 / 레이블
+    print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_index("^nkx",    "^N225",  "닛케이225")
     topix   = fetch_stooq("^tpx",              "TOPIX")
     mothers = fetch_index("2516.jp", "2516.T", "グロース250")
     kospi   = fetch_index("^kospi",  "^KS11",  "코스피")
-    kosdaq  = fetch_yahoo("^KQ11",  "코스닥")
+    kosdaq  = fetch_yahoo("^KQ11",             "코스닥")
     spx     = fetch_index("^spx",    "^GSPC",  "S&P500")
     ndx     = fetch_index("^ndq",    "^NDX",   "나스닥100")
     dji     = fetch_index("^dji",    "^DJI",   "다우존스")
-    rut     = fetch_yahoo("^RUT",   "러셀2000")
-    sox     = fetch_yahoo("^SOX",   "필라반도체")
+    rut     = fetch_yahoo("^RUT",              "러셀2000")
+    sox     = fetch_yahoo("^SOX",              "필라반도체")
 
     print("\n[2] 거시지표 수집...")
     vix    = fetch_fred("VIXCLS")
@@ -213,16 +288,25 @@ def update_dashboard():
     print(f"  VIX:{vix}  10Y:{y10}  2Y:{y2}  Spread:{spread}")
     print(f"  WTI:${wti}  Brent:${brent}  F&G:{fg}")
 
+    print("\n[3] 월별 지표 수집...")
+    usdjpy   = fetch_usdjpy()
+    michigan = fetch_fred("UMCSENT")
+    ism      = fetch_ism()
+    pce_yoy  = fetch_core_pce_yoy()
+    nfp_chg  = fetch_nfp_chg()
+    fedwatch = fetch_fedwatch()
+    buffett  = fetch_buffett()
+
     html_path = os.path.join(os.path.dirname(__file__), "index.html")
     with open(html_path, "r", encoding="utf-8") as f:
         html = f.read()
 
-    print("\n[3] HTML 업데이트...")
+    print("\n[4] HTML 업데이트...")
     today_kr = datetime.now(JST).strftime("%Y년 %m월 %d일")
     today    = datetime.now(JST).strftime("%Y.%m.%d")
     now_str  = datetime.now(JST).strftime("%Y.%m.%d %H:%M JST")
 
-    # 지수 카드 업데이트
+    # 지수 카드
     html = update_index_card(html, "nk225",   nk225,   "JPY")
     html = update_index_card(html, "topix",   topix,   "JPY")
     html = update_index_card(html, "mothers", mothers, "JPY")
@@ -285,22 +369,77 @@ def update_dashboard():
         html = sub(html, r'(브렌트유</div><div class="sv"[^>]+>\$)[0-9.]+',
                    lambda m: m.group(1) + f'{brent:.0f}')
 
-    # 요약표
+    # ── 요약표 업데이트 ──────────────────────────────────────────
+    # USD/JPY
+    if usdjpy:
+        html = sub(html, r'(<td>USD/JPY</td><td class="mono">)[^<]+',
+                   lambda m: m.group(1) + f'¥{usdjpy:,.2f}')
+        print(f"  ✅ USD/JPY: ¥{usdjpy:,.2f}")
+
+    # 닛케이225
     if nk225:
         html = sub(html, r'(<td>닛케이225</td><td class="mono">)[0-9,]+',
                    lambda m: m.group(1) + f'{nk225["price"]:,.0f}')
+
+    # VIX
     if vix:
         html = sub(html, r'(<td>VIX 공포지수</td><td class="mono">)[0-9.]+',
                    lambda m: m.group(1) + f'{vix:.2f}')
+
+    # 수익률 곡선
     if spread:
         html = sub(html, r'(<td>수익률 곡선 10Y-2Y</td><td class="mono">)[+\-0-9.]+%p',
                    lambda m: m.group(1) + f'{spread:+.2f}%p')
+
+    # 코어 PCE
+    if pce_yoy:
+        html = sub(html, r'(<td>코어 PCE[^<]*</td><td class="mono">)[0-9.]+%',
+                   lambda m: m.group(1) + f'{pce_yoy:.1f}%')
+        print(f"  ✅ 코어 PCE YoY: {pce_yoy:.1f}%")
+
+    # ISM PMI
+    if ism:
+        html = sub(html, r'(<td>ISM 제조업 PMI[^<]*</td><td class="mono">)[0-9.]+',
+                   lambda m: m.group(1) + f'{ism:.1f}')
+
+    # 미시간 소비심리
+    if michigan:
+        html = sub(html, r'(<td>미시간 소비심리[^<]*</td><td class="mono">)[0-9.]+',
+                   lambda m: m.group(1) + f'{michigan:.1f}')
+        print(f"  ✅ 미시간: {michigan:.1f}")
+
+    # 비농업 고용
+    if nfp_chg is not None:
+        html = sub(html, r'(<td>비농업 고용[^<]*</td><td class="mono">)[+\-,\d]+',
+                   lambda m: m.group(1) + f'{nfp_chg:+,}')
+        print(f"  ✅ NFP: {nfp_chg:+,}")
+
+    # Fear & Greed 요약표
+    if fg:
+        html = sub(html, r'(<td>Fear &amp; Greed</td><td class="mono">)\d+',
+                   lambda m: m.group(1) + str(fg))
+
+    # FedWatch
+    if fedwatch:
+        html = sub(html, r'(<td>FedWatch[^<]*</td><td class="mono">)[0-9.]+%',
+                   lambda m: m.group(1) + f'{fedwatch}%')
+        print(f"  ✅ FedWatch 동결확률: {fedwatch}%")
+
+    # WTI / 브렌트 요약표
     if wti:
         html = sub(html, r'(<td>WTI 원유</td><td class="mono">\$)[0-9.]+',
                    lambda m: m.group(1) + f'{wti:.2f}')
     if brent:
         html = sub(html, r'(<td>브렌트유</td><td class="mono">\$)[0-9.]+',
                    lambda m: m.group(1) + f'{brent:.0f}')
+
+    # 버핏 지표
+    if buffett:
+        html = sub(html, r'(<td>버핏 지표</td><td class="mono">)[0-9~.%]+',
+                   lambda m: m.group(1) + f'{buffett}%')
+        print(f"  ✅ 버핏 지표: {buffett}%")
+
+    print("  ✅ 요약표 완료")
 
     # 푸터
     html = sub(html, r'최종 .{0,5}업데이트: [\d년월일 ]+',
