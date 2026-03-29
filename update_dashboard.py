@@ -124,15 +124,22 @@ def fetch_fear_greed():
 
 # ── USD/JPY (Stooq) ────────────────────────────────────────────────
 def fetch_usdjpy():
+    # Stooq 우선, 실패 시 Yahoo
     r = fetch_stooq("usdjpy", "USD/JPY")
     if r: return r["price"]
-    return None
+    r2 = fetch_yahoo("JPY=X", "USD/JPY")
+    return r2["price"] if r2 else None
 
 # ── ISM 제조업 PMI (FRED NAPM) ─────────────────────────────────────
 def fetch_ism():
+    # NAPM = ISM 제조업 PMI (구 시리즈명)
     v = fetch_fred("NAPM")
-    if v: print(f"  ✅ ISM PMI: {v}")
-    return v
+    if v:
+        print(f"  ✅ ISM PMI: {v}")
+        return v
+    # fallback: Manufacturing ISM Report On Business
+    v2 = fetch_fred("MANEMP")
+    return v2
 
 # ── 코어 PCE YoY (FRED 2개값으로 YoY 계산) ─────────────────────────
 def fetch_core_pce_yoy():
@@ -200,11 +207,12 @@ def fetch_fedwatch():
 # ── 버핏 지표 (Wilshire5000 / GDP) ────────────────────────────────
 def fetch_buffett():
     try:
-        wilshire = fetch_fred("WILL5000PR")  # Wilshire 5000 시총
-        gdp      = fetch_fred("GDP")         # 명목 GDP (분기)
+        # Wilshire 5000 Full Cap (시총, 십억달러)
+        wilshire = fetch_fred("WILL5000INDFC")
+        gdp      = fetch_fred("GDP")
         if wilshire and gdp:
             ratio = round(wilshire / gdp * 100, 1)
-            print(f"  ✅ 버핏 지표: {ratio}% (Wilshire:{wilshire:.0f} / GDP:{gdp:.0f})")
+            print(f"  ✅ 버핏 지표: {ratio}%")
             return ratio
     except Exception as e:
         print(f"  버핏 지표 오류: {e}")
@@ -266,7 +274,7 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_index("^nkx",    "^N225",  "닛케이225")
-    topix   = fetch_stooq("^tpx",              "TOPIX")
+    topix   = fetch_stooq("^tpx", "TOPIX") or fetch_yahoo("^N300", "TOPIX") or fetch_yahoo("1306.T", "TOPIX ETF")
     mothers = fetch_index("2516.jp", "2516.T", "グロース250")
     kospi   = fetch_index("^kospi",  "^KS11",  "코스피")
     kosdaq  = fetch_yahoo("^KQ11",             "코스닥")
@@ -281,9 +289,9 @@ def update_dashboard():
     y10    = fetch_fred("DGS10")
     y2     = fetch_fred("DGS2")
     y30    = fetch_fred("DGS30")
-    # WTI/브렌트 — Stooq 우선 (FRED는 2일 지연), fallback FRED
-    wti_r   = fetch_stooq("crudeoil.com", "WTI")
-    brent_r = fetch_stooq("oilbrent.com", "Brent")
+    # WTI/브렌트 — Yahoo Finance로 직접 (Stooq 원자재 미지원, FRED 2일 지연)
+    wti_r   = fetch_yahoo("CL=F",  "WTI")
+    brent_r = fetch_yahoo("BZ=F",  "Brent")
     wti     = wti_r["price"]   if wti_r   else fetch_fred("DCOILWTICO")
     brent   = brent_r["price"] if brent_r else fetch_fred("DCOILBRENTEU")
     fg     = fetch_fear_greed()
