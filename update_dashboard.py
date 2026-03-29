@@ -433,6 +433,17 @@ def update_dashboard():
         html = sub(html, r'(<td>브렌트유</td><td class="mono">\$)[0-9.]+',
                    lambda m: m.group(1) + f'{brent:.0f}')
 
+    # 리스크 카드 (WTI, 브렌트, VIX 실시간 반영)
+    if wti:
+        html = sub(html, r'(id="risk-wti"[^>]*>)\$[0-9.]+',
+                   lambda m: m.group(1) + f'${wti:.2f}')
+    if brent:
+        html = sub(html, r'(id="risk-brent"[^>]*>)\$[0-9.]+',
+                   lambda m: m.group(1) + f'${brent:.0f}')
+    if vix:
+        html = sub(html, r'(id="risk-vix"[^>]*>)[0-9.]+',
+                   lambda m: m.group(1) + f'{vix:.2f}')
+
     # 버핏 지표
     if buffett:
         html = sub(html, r'(<td>버핏 지표</td><td class="mono">)[0-9~.%]+',
