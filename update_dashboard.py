@@ -281,8 +281,11 @@ def update_dashboard():
     y10    = fetch_fred("DGS10")
     y2     = fetch_fred("DGS2")
     y30    = fetch_fred("DGS30")
-    wti    = fetch_fred("DCOILWTICO")
-    brent  = fetch_fred("DCOILBRENTEU")
+    # WTI/브렌트 — Stooq 우선 (FRED는 2일 지연), fallback FRED
+    wti_r   = fetch_stooq("crudeoil.com", "WTI")
+    brent_r = fetch_stooq("oilbrent.com", "Brent")
+    wti     = wti_r["price"]   if wti_r   else fetch_fred("DCOILWTICO")
+    brent   = brent_r["price"] if brent_r else fetch_fred("DCOILBRENTEU")
     fg     = fetch_fear_greed()
     spread = round(y10 - y2, 2) if y10 and y2 else None
     print(f"  VIX:{vix}  10Y:{y10}  2Y:{y2}  Spread:{spread}")
@@ -370,9 +373,9 @@ def update_dashboard():
                    lambda m: m.group(1) + f'{brent:.0f}')
 
     # ── 요약표 업데이트 ──────────────────────────────────────────
-    # USD/JPY
+    # USD/JPY 요약표
     if usdjpy:
-        html = sub(html, r'(<td>USD/JPY</td><td class="mono">)[^<]+',
+        html = sub(html, r'(id="summary-usdjpy"[^>]*>)¥[0-9,.]+',
                    lambda m: m.group(1) + f'¥{usdjpy:,.2f}')
         print(f"  ✅ USD/JPY: ¥{usdjpy:,.2f}")
 
