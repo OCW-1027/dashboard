@@ -274,7 +274,7 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_index("^nkx",    "^N225",  "닛케이225")
-    topix   = fetch_stooq("^tpx", "TOPIX") or fetch_yahoo("^N300", "TOPIX") or fetch_yahoo("1306.T", "TOPIX ETF")
+    topix   = fetch_stooq("^tpx", "TOPIX") or fetch_yahoo("1306.T", "TOPIX ETF")
     mothers = fetch_index("2516.jp", "2516.T", "グロース250")
     kospi   = fetch_index("^kospi",  "^KS11",  "코스피")
     kosdaq  = fetch_yahoo("^KQ11",             "코스닥")
