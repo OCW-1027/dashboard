@@ -82,6 +82,22 @@ def fetch_index(stooq_sym, yahoo_sym, label):
     if r: return r
     return fetch_yahoo(yahoo_sym, label)
 
+# ── TOPIX 전용 (Yahoo Finance에 TOPIX 지수 심볼 없음) ─────────────
+def fetch_topix():
+    """TOPIX: Stooq → 1308.T ETF (Yahoo) fallback
+    1308.T (Amova TOPIX ETF)는 NAV ≈ TOPIX 지수값으로 1:1 추종"""
+    # 1) Stooq
+    r = fetch_stooq("^tpx", "TOPIX")
+    if r:
+        return r
+
+    # 2) 1308.T ETF via Yahoo Finance (가격 ≈ TOPIX 지수)
+    r = fetch_yahoo("1308.T", "TOPIX(1308.T)")
+    if r:
+        return r
+
+    return None
+
 # ── FRED ───────────────────────────────────────────────────────────
 def fetch_fred(series_id, limit=1):
     url = (f"https://api.stlouisfed.org/fred/series/observations"
@@ -272,7 +288,7 @@ def update_dashboard():
 
     print("\n[1] 지수 데이터 수집...")
     nk225   = fetch_index("^nkx",    "^N225",  "닛케이225")
-    topix   = fetch_stooq("^tpx", "TOPIX")
+    topix   = fetch_topix()
     mothers = fetch_index("2516.jp", "2516.T", "グロース250")
     kospi   = fetch_index("^kospi",  "^KS11",  "코스피")
     kosdaq  = fetch_yahoo("^KQ11",             "코스닥")
