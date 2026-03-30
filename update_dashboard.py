@@ -22,8 +22,7 @@ def fetch_stooq(sym, label=""):
             lines = r.read().decode("utf-8").strip().split("\n")
         rows = [l for l in lines if l and not l.startswith("Date")]
         if len(rows) < 2:
-            print(f"  ⚠️  Stooq {label}: 데이터 부족")
-            return None
+            return None  # 조용히 실패 (Yahoo fallback으로 처리)
         today   = rows[-1].split(",")
         prev    = rows[-2].split(",")
         price   = float(today[4])
@@ -33,8 +32,7 @@ def fetch_stooq(sym, label=""):
         print(f"  ✅ {label}: {price:,.2f}  {chg:+.2f} ({pct:+.2f}%)")
         return {"price": price, "chg": chg, "pct": pct}
     except Exception as e:
-        print(f"  ❌ Stooq {label} 오류: {e}")
-        return None
+        return None  # 조용히 실패
 
 # ── Yahoo Finance ──────────────────────────────────────────────────
 def fetch_yahoo(symbol, label=""):
