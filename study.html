@@ -40,6 +40,9 @@
   .tag-stock{background:rgba(100,220,130,.15);color:#64dc82;}
   .tag-tech{background:rgba(100,200,255,.15);color:#64c8ff;}
   .tag-alt{background:rgba(150,150,150,.15);color:#aaa;}
+  .tag-japan{background:rgba(255,100,100,.15);color:#ff6464;}
+  .tag-korea{background:rgba(100,150,255,.15);color:#6496ff;}
+  .tag-cfd{background:rgba(255,200,50,.15);color:#ffc832;}
   .chevron{color:var(--muted);font-size:12px;transition:transform .25s;flex-shrink:0;}
   .card.open .chevron{transform:rotate(180deg);}
   .card-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border);}
@@ -121,7 +124,7 @@
     <div>
       <div class="hero-label">MARKET INTELLIGENCE · 시장 지표 공부자료</div>
       <h1>시장을 읽는 눈<br>핵심 지표 완전 정복</h1>
-      <p class="hero-sub">지표는 시장이 보내는 신호다. 신호를 읽지 못하면 항상 남보다 늦게 움직인다.<br>9개 파트 · 50+ 지표를 인과관계 흐름으로 정리했다.</p>
+      <p class="hero-sub">지표는 시장이 보내는 신호다. 신호를 읽지 못하면 항상 남보다 늦게 움직인다.<br>12개 파트 · 50+ 지표를 인과관계 흐름으로 정리했다.</p>
     </div>
     <a href="/dashboard/" class="back-btn" style="display:none;">← 메인 대시보드로 돌아가기</a>
   </div>
@@ -137,6 +140,9 @@
   <a href="#part7" class="nav-btn">07 주식 특화</a>
   <a href="#part8" class="nav-btn">08 기술적 분석</a>
   <a href="#part9" class="nav-btn">09 이색 지표</a>
+  <a href="#part10" class="nav-btn">10 일본 특화</a>
+  <a href="#part11" class="nav-btn">11 한국 특화</a>
+  <a href="#part12" class="nav-btn">12 CFD·선물</a>
   <a href="#summary" class="nav-btn">📋 요약표</a>
 </nav>
 
@@ -200,6 +206,22 @@
       <div class="info-box">RRP 잔액 급감 + M2 반등 = 더블 강세 신호. 대기 자금이 실제로 움직이기 시작했다는 뜻.</div>
     </div>
   </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🎯</span><span class="card-name">점도표 (Dot Plot) & CME FedWatch</span><span class="card-tag tag-policy">통화정책</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">점도표는 FOMC 위원 19명이 각각 "앞으로 금리가 어디까지 갈 것인가"를 점으로 찍은 것. 분기별(3·6·9·12월) FOMC에서만 공개된다. FedWatch는 CME 금리선물 가격에서 역산한 "시장이 예상하는 다음 FOMC 금리 결정 확률"이다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">금리 결정 자체보다 "앞으로의 경로"가 시장을 더 크게 움직인다. 점도표 중간값이 시장 예상보다 높으면(매파 서프라이즈) 즉시 채권 매도 → 금리 상승 → 주가 하락이 연쇄된다. FedWatch는 실시간으로 시장 기대를 반영하므로 FOMC 전 포지셔닝의 핵심 도구.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">점도표 상향 이동</span><span class="signal-result">시장 기대보다 금리가 높아질 전망 → 성장주 압박, 달러 강세, 채권 금리 상승</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">FedWatch 인하 확률 70%+</span><span class="signal-result">시장이 인하를 거의 확신 → 이미 선반영 가능성. "Buy the rumor, Sell the fact"</span></div>
+      </div>
+      <div class="warn-box">점도표는 "약속"이 아니라 "현재 생각의 스냅샷". 3개월 후 경제 상황이 바뀌면 위원들의 점도 바뀐다. 2022년 초 점도표는 2회 인상을 시사했지만 실제로는 17회 연속 인상.</div>
+      <div class="example-box">2024.12 FOMC: 점도표 중간값이 2025년 인하 횟수를 4회→1회로 축소 → 나스닥 당일 -3.5%. 결정 자체(동결)보다 점도표의 "미래 경로 변경"이 시장을 움직인 대표 사례.</div>
+    </div>
+  </div>
 </div>
 
 <!-- PART 2 -->
@@ -240,6 +262,22 @@
       <div class="warn-box">5~10년 기대 인플레이션이 3% 이상으로 올라오면 연준이 즉각 긴장. 기대치 고착화가 연준이 가장 두려워하는 시나리오 — 1970년대 스태그플레이션 재현 우려.</div>
     </div>
   </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📐</span><span class="card-name">브레이크이벤 인플레이션 (TIPS Spread)</span><span class="card-tag tag-price">물가</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">10년 명목 국채 금리 − 10년 TIPS(물가연동채) 금리 = 시장 참여자들이 향후 10년간 예상하는 평균 인플레이션. 미시간 서베이가 "소비자의 기대"라면, TIPS 스프레드는 "채권시장의 기대"다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">FED가 실제로 참고하는 핵심 지표. CPI/PCE는 과거 데이터이지만, 이것은 미래 전망이다. 기대 인플레이션이 고정(anchored)되어 있으면 FED가 여유를 갖고, 이탈(unanchored)하면 긴급 대응에 나선다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">TIPS 스프레드 2.5%↑</span><span class="signal-result">시장이 인플레 재가속 우려 → 금리 인하 기대 후퇴, 채권 매도</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">TIPS 스프레드 2.0%↓</span><span class="signal-result">인플레 진정 기대 → 금리 인하 경로 강화, 성장주 우호적</span></div>
+      </div>
+      <div class="warn-box">TIPS 시장은 유동성이 제한적이라 위기 시 왜곡될 수 있다. 2020년 3월 코로나 공포에 TIPS 스프레드가 0.5%까지 급락했지만, 실제 인플레이션은 이후 9%까지 치솟았다.</div>
+      <div class="example-box">FRED에서 "T10YIE"로 검색하면 확인 가능. 2022년 4월 3.0% 돌파(인플레 공포 정점) → FED 공격 인상 → 2023년 2.2%까지 하락하며 인플레 기대 안정.</div>
+    </div>
+  </div>
 </div>
 
 <!-- PART 3 -->
@@ -273,6 +311,38 @@
       </div>
     </div>
   </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📋</span><span class="card-name">주간 실업수당 청구건수 (Jobless Claims)</span><span class="card-tag tag-labor">노동시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">매주 목요일 발표. 처음 실업수당을 신청한 인원(Initial Claims)과 계속 수급 중인 인원(Continuing Claims). NFP가 월 1회, GDP가 분기 1회인 반면 이것은 매주 나오는 가장 빈도 높은 경제지표.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">경기 변화를 가장 빨리 감지하는 고주파(high-frequency) 지표. 4주 이동평균의 추세 전환이 핵심 신호. 경기침체는 항상 해고 증가로 시작되고, 이 지표가 가장 먼저 포착한다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">Initial Claims 25만+ 지속</span><span class="signal-result">고용 시장 냉각 시작 → 경기 하강 초기 신호. FED 인하 기대 강화.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">Initial Claims 20만↓ 유지</span><span class="signal-result">노동시장 견고 → 임금 인플레 지속 가능성. FED 긴축 유지 근거.</span></div>
+      </div>
+      <div class="warn-box">허리케인, 자동차 공장 일시 셧다운 등 계절적·일시적 요인에 민감. 1주 수치보다 4주 이동평균으로 추세를 봐야 한다. 명절 전후(추수감사절, 크리스마스) 데이터는 왜곡 가능.</div>
+      <div class="example-box">2020년 3월 셋째 주: Initial Claims가 전주 28만 → 330만으로 폭증(역사상 최고). 그 전 주 까지만 해도 "미국 고용 견고" 분위기였다. 이 지표가 매주 나오기 때문에 NFP보다 3주 먼저 경기 붕괴를 포착.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">💰</span><span class="card-name">임금상승률 & 경제활동참가율</span><span class="card-tag tag-labor">노동시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">시간당 평균임금(Average Hourly Earnings)은 NFP와 함께 매월 발표. 경제활동참가율(LFPR)은 생산가능인구 중 구직 의사가 있는 사람의 비율. NFP의 "수"를 보완하는 "질" 지표.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">임금이 오르면 소비가 늘어 경기에 좋지만, 너무 빠르게 오르면 임금-물가 스파이럴(wage-price spiral)이 시작된다. 참가율이 낮으면 실업률 하락이 "사람들이 구직을 포기했기 때문"인 착시일 수 있다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">임금 YoY +4%↑</span><span class="signal-result">임금 인플레 압력 → FED 긴축 지속 근거. 기업 이익률 압박.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">참가율 상승 + 임금 안정</span><span class="signal-result">골디락스. 고용 늘되 인플레 부담 적음 → 주식시장 최적 환경.</span></div>
+      </div>
+      <div class="warn-box">코로나 이후 미국 참가율이 62%대로 하락(코로나 전 63.3%). 조기퇴직, 장기 자가간병 등 구조적 요인. 이 구조적 변화를 감안하지 않으면 실업률을 오해하게 된다.</div>
+      <div class="example-box">2022~2023년: 실업률 3.4%(50년 최저)인데 임금 YoY +5% → FED가 "너무 뜨거운 고용"을 냉각시키기 위해 금리를 5.5%까지 올린 핵심 이유 중 하나.</div>
+    </div>
+  </div>
 </div>
 
 <!-- PART 4 -->
@@ -302,6 +372,22 @@
       <p class="def-text">소비자 소매 지출 합산. 미국 GDP의 약 70%가 소비에서 나온다. 자동차·주유소 제외 '근원 소매판매'로 추세 파악. 헤드라인은 자동차 판매에 오염될 수 있다.</p>
       <div class="section-label">주택 지표 (NAHB / 착공 / 기존주택판매)</div>
       <p class="def-text">주택은 경기 사이클에서 가장 먼저 꺾이고 가장 먼저 회복하는 섹터. 30년 모기지 금리와 역방향. NAHB가 먼저 반등하면 6개월 내 착공 증가 기대. 홈디포·로우스 등 주택 관련주의 선행지표.</p>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🔮</span><span class="card-name">경기선행지수 (LEI) & Conference Board</span><span class="card-tag tag-growth">경기</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">Conference Board에서 발표하는 10개 선행지표의 종합 지수. 제조업 신규주문, 주간 실업수당, S&P500, 장단기 스프레드, 소비자기대, 건축허가 등을 종합한다. GDP가 "이미 일어난 일"이라면, LEI는 "6~12개월 후에 일어날 일"이다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">6개월 연속 하락 시 경기침체 경고 신호로 해석. 역사적으로 모든 경기침체 전에 LEI가 먼저 하락했다. 개별 지표만 볼 때보다 종합 지수의 방향성이 노이즈를 걸러준다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">LEI 6개월 연속 하락</span><span class="signal-result">경기침체 경고. 방어적 포지셔닝 필요. 경기방어주·채권 비중 확대.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">LEI 반등 (하락→상승 전환)</span><span class="signal-result">경기 바닥 통과 신호 → 경기민감주 진입 타이밍. 역사적으로 가장 강한 주가 상승은 LEI 바닥 직후.</span></div>
+      </div>
+      <div class="warn-box">LEI는 "가짜 경보"도 낸다. 2022~2023년 20개월+ 연속 하락했지만 경기침체는 오지 않았다(AI 붐 + 재정지출이 상쇄). 단독으로 의존하지 말고 다른 지표와 교차 확인.</div>
+      <div class="example-box">2007년: LEI 5개월 연속 하락 → 2008년 금융위기. 2019년: LEI 소폭 하락 → 2020년 코로나 침체(외부 충격 가세). 반면 2023년: LEI 역대급 연속 하락 → 침체 없이 통과(희귀 사례).</div>
     </div>
   </div>
 </div>
@@ -360,6 +446,38 @@
       <div class="example-box">2021년 말 마진 부채 역대 최고(9,000억 달러) 기록 후 2022년 급감 → 주식시장 -30% 하락과 정확히 동행.</div>
     </div>
   </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">💵</span><span class="card-name">달러 인덱스 (DXY) & 실질금리</span><span class="card-tag tag-market">금융시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">DXY는 유로·엔·파운드 등 6개 주요 통화 대비 달러 가치를 지수화한 것. 실질금리는 명목금리에서 기대인플레를 뺀 값(=TIPS 금리). 실질금리야말로 모든 자산 가격의 "진짜 할인율"이다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">달러가 강해지면 신흥국 자금 유출, 원자재 가격 하락, 미국 기업 해외 실적 환산 손실. 실질금리가 높으면 "무위험으로 2% 실질 수익"이 가능하므로 위험자산(주식·암호화폐)의 매력이 감소. 금 가격은 실질금리와 강한 역상관.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">DXY 105+ & 실질금리 2%+</span><span class="signal-result">위험자산 역풍. 신흥국 통화 약세, 금 하락, 성장주 압박.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">DXY 100↓ & 실질금리 0% 근접</span><span class="signal-result">위험자산 순풍. 유동성 장세, 금·신흥국·기술주 동반 상승.</span></div>
+      </div>
+      <div class="warn-box">USD/JPY를 매일 보고 있다면, 그 배경이 DXY + 일미 금리차라는 것을 이해해야 한다. USD/JPY만 보면 "엔이 약한 건지, 달러가 강한 건지" 구분이 안 된다. DXY를 같이 봐야 원인이 보인다.</div>
+      <div class="example-box">2022년: 실질금리 -1% → +2.5%로 급등. 같은 기간 나스닥 -33%, 금 -20%, 비트코인 -65%. 실질금리 하나가 모든 자산을 지배한 해. 반면 2020년: 실질금리 -1%대 → 모든 자산 버블.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📉</span><span class="card-name">MOVE Index & 하이일드 스프레드 (HY OAS)</span><span class="card-tag tag-market">금융시장</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">MOVE Index는 채권시장의 VIX — 미국 국채 옵션에서 산출한 채권시장 변동성. HY OAS(Option-Adjusted Spread)는 하이일드(정크본드) 채권 금리에서 국채 금리를 뺀 값으로, 기업의 부도 리스크에 대한 시장의 가격.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">채권시장은 주식시장보다 규모가 크고, 위기를 먼저 감지한다. MOVE 급등은 "스마트 머니가 겁먹기 시작했다"는 신호. HY 스프레드 확대는 "가장 취약한 기업들의 자금 조달 비용 급등 → 연쇄 부도 가능성"을 의미.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">MOVE 120+ / HY OAS 500bp+</span><span class="signal-result">금융시장 스트레스 급상승. 주식보다 신용시장 경색이 더 위험. 현금 비중 확대.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">MOVE 80↓ / HY OAS 300bp↓</span><span class="signal-result">시장 안정. 자금 조달 원활 → 위험자산 우호적 환경. 다만 지나치게 낮으면 과열 경고.</span></div>
+      </div>
+      <div class="warn-box">VIX만 보면 "주식시장은 평온한데 채권시장은 패닉" 상황을 놓친다. 2023년 3월 SVB 사태 때 MOVE가 VIX보다 먼저 급등했고, 며칠 후에야 주식시장이 반응했다.</div>
+      <div class="example-box">2008년: HY OAS가 2,000bp(20%) 돌파 → 리먼 파산 → 주식시장 -50%. 2020년 3월: HY OAS 1,100bp 급등 → FED가 하이일드 ETF까지 매입하는 전례 없는 조치 → 스프레드 급락 → 주식 V자 반등.</div>
+    </div>
+  </div>
 </div>
 
 <!-- PART 6 -->
@@ -391,6 +509,38 @@
       <div class="section-label">ECB / BoJ 통화정책 & 엔캐리</div>
       <p class="def-text">유로화·엔화는 DXY의 핵심 구성 통화. 저금리 엔화를 빌려 고수익 자산에 투자하는 엔캐리 트레이드 — BoJ가 금리를 올리면 이 포지션이 일제히 청산.</p>
       <div class="example-box">2024년 8월 블랙먼데이: BoJ 금리 인상 발표 후 엔캐리 포지션 대규모 청산 → 닛케이 -12%, 나스닥 -6% 단기 급락. 글로벌 연쇄 반응의 교과서적 사례.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🔥</span><span class="card-name">천연가스 (Henry Hub) & LNG 시장 구조</span><span class="card-tag tag-fx">원자재</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">Henry Hub는 미국 천연가스 가격의 벤치마크. 루이지애나주 파이프라인 교차점에서 결정된다. JKM(Japan Korea Marker)은 아시아 LNG 가격 기준. 미국 국내 가격과 아시아 가격은 단기적으로 디커플링될 수 있다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">천연가스는 발전·난방·화학 원료로 에너지 인프라의 핵심. 겨울 수요 급증(계절성), LNG 수출 터미널 가동, 지정학(러시아-유럽) 3가지가 가격을 지배. 유가와 달리 저장시설 용량 한계로 변동성이 극단적.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">Henry Hub $4↑ + 재고 평년↓</span><span class="signal-result">에너지 비용 급등 → 전력·화학 기업 이익 압박. 인플레이션 재점화 요인.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">Henry Hub $2↓ + 재고 과잉</span><span class="signal-result">생산자 수익성 악화 → E&P 기업 실적 타격. 다만 소비자·제조업에는 비용 절감 호재.</span></div>
+      </div>
+      <div class="warn-box">천연가스 CFD는 레버리지 + 극단적 변동성이 결합되어 위험이 매우 높다. 2022년 유럽 위기 시 Henry Hub $10 돌파 후 $2대까지 폭락. 포지션 사이징과 손절 관리가 생명.</div>
+      <div class="example-box">2022년 8월: 유럽 에너지 위기로 Henry Hub $10, JKM $70/MMBtu. 미국 내 가격은 상대적으로 저평가 → LNG 수출 확대 기대 → 실제로 2024~2026년 신규 수출 터미널 가동으로 미국 국내 수급 타이트화 전망.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🇨🇳</span><span class="card-name">중국 PMI (Caixin) & 위안화 (USD/CNY)</span><span class="card-tag tag-fx">원자재</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">중국 제조업 PMI는 정부 발표(NBS)와 민간(Caixin) 두 가지. Caixin PMI는 중소기업 비중이 높아 실제 경기를 더 잘 반영. 위안화(USD/CNY)는 PBOC가 매일 기준환율을 설정하는 관리변동환율제.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">일본과 한국의 최대 수출 시장이 중국. 중국 PMI 하락 → 일본 제조업 수출 감소 → 닛케이 하락이라는 직접 전달 경로. 위안화 약세는 아시아 통화 약세를 견인하고, 한국·일본 수출기업의 가격 경쟁력을 약화시킨다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">Caixin PMI 50↑ + 위안화 안정</span><span class="signal-result">아시아 경기 회복 기대 → 일본 제조업(히타치, 니덱 등) 수혜. 한국 반도체 수출 호조.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">Caixin PMI 48↓ + 위안화 약세</span><span class="signal-result">중국 경기 둔화 → 아시아 수출주 타격. 원자재 수요 감소 → 구리·철광석 하락.</span></div>
+      </div>
+      <div class="warn-box">중국 정부 통계의 신뢰성 문제. 공식 GDP 발표와 리커창 지수(전력·화물·대출)가 괴리될 때가 있다. Caixin PMI + 수출입 데이터 + 위안화를 종합적으로 봐야 한다.</div>
+      <div class="example-box">2023년: 중국 리오프닝 기대 → Caixin PMI 반등 → 일본 기계수주 증가 → 닛케이 33년 만에 신고가. 중국 경기가 일본 주식의 숨은 드라이버였던 대표 사례.</div>
     </div>
   </div>
 </div>
@@ -567,6 +717,41 @@
       <div class="example-box">2022~2023: 금리 급등 → 기술주 폭락, 에너지주(XLE) +65% 폭등. 전형적인 둔화기→침체기 섹터 로테이션. 에너지·유틸리티가 방어주 역할을 완벽히 수행.</div>
     </div>
   </div>
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">💧</span><span class="card-name">FCF (잉여현금흐름) & 자사주매입·배당</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">FCF = 영업현금흐름 − 설비투자(CAPEX). 기업이 사업을 유지하면서 실제로 "자유롭게 쓸 수 있는 현금". 이 돈으로 배당, 자사주매입, 부채 상환, M&A를 한다. EPS는 회계적 이익이지만 FCF는 실제 현금.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">DCF 밸류에이션의 기반. 투자검토보고서(P2)에서 기업가치를 산출할 때 FCF를 예측하고 할인한다. 이익이 나도 FCF가 마이너스면 "돈을 못 벌고 있다"는 것. 자사주매입은 발행주식 감소 → EPS 상승 효과.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">FCF Yield 5%↑ + 자사주매입 확대</span><span class="signal-result">주주환원 매력적. 기업이 자기 주식이 싸다고 판단. 하방 지지력.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">FCF 마이너스 + 부채 증가</span><span class="signal-result">성장을 위한 투자일 수도, 사업 악화일 수도. CAPEX 내역 확인 필수.</span></div>
+      </div>
+      <div class="warn-box">일본 기업은 미국 대비 자사주매입·배당이 적었으나, 도쿄증권거래소의 PBR 1배 미달 기업 개선 요구(2023년~) 이후 주주환원이 급증 추세. 일본주식 투자 시 이 구조적 변화가 핵심 촉매.</div>
+      <div class="example-box">애플: 2012년부터 10년간 $600B+ 자사주매입 → 주식수 35% 감소 → 이익 성장 이상으로 EPS 가속. 일본: 히타치 2024년 3,000억엔 자사주매입 발표 → 주가 +40% 랠리의 주요 촉매.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🔬</span><span class="card-name">13F Filing 읽는 법 — 기관 포지션 추적</span><span class="card-tag tag-stock">주식</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">$100M 이상 운용하는 미국 기관투자자가 SEC에 분기별로 제출하는 보유 주식 목록. 분기 말 기준이며, 마감 후 45일 이내 공시. WhaleWisdom, Dataroma 등에서 무료로 조회 가능.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">버핏(버크셔), 달리오(브릿지워터), 드러켄밀러 등 전설적 투자자들의 실제 포트폴리오를 엿볼 수 있는 유일한 공식 데이터. 여러 슈퍼 투자자가 동시에 같은 종목을 매수하면(conviction 집중) 강한 신호.</p>
+      <table class="mini-table">
+        <tr><th>컬럼</th><th>의미</th><th>활용법</th></tr>
+        <tr><td>New Position</td><td>이번 분기 신규 매수</td><td>가장 중요. "왜 이 종목을 새로 샀는가" 연구</td></tr>
+        <tr><td>Added To</td><td>기존 보유 + 추가 매수</td><td>확신이 강해졌다는 신호</td></tr>
+        <tr><td>Reduced</td><td>일부 매도</td><td>리밸런싱일 수도, 경계일 수도</td></tr>
+        <tr><td>Sold Out</td><td>전량 매도</td><td>투자 논거 변경. 이유 분석 필수</td></tr>
+        <tr><td>% of Portfolio</td><td>전체 포트폴리오 내 비중</td><td>5%↑이면 고확신 종목</td></tr>
+      </table>
+      <div class="warn-box">13F는 분기 말 기준 + 45일 지연. 공시 시점에 이미 추가 매매를 했을 수 있다. "실시간 포지션"이 아니라 "방향성·집중도" 파악 용도로 활용. 옵션·숏 포지션은 13F에 안 나올 수 있다.</div>
+      <div class="example-box">2024 Q3: 드러켄밀러가 엔비디아를 전량 매도(13F 공시) → 시장 충격. 하지만 공시 시점(11월)에는 이미 2개월 전 데이터. 그 사이 엔비디아는 +20% 더 올랐다. 13F 맹신은 금물.</div>
+    </div>
+  </div>
 </div>
 
 <!-- PART 8 -->
@@ -605,6 +790,98 @@
       <div class="info-box">RSI + 볼린저 밴드 + 거래량 3중 확인: 모두 같은 방향 신호일 때 진입 신뢰도가 가장 높다.</div>
     </div>
   </div>
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📊</span><span class="card-name">MACD — 추세 전환의 핵심 시그널</span><span class="card-tag tag-tech">기술적</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">MACD(Moving Average Convergence Divergence) = 12일 EMA − 26일 EMA. 시그널선은 MACD의 9일 EMA. 히스토그램은 MACD − 시그널선. 두 이동평균의 "수렴과 발산"으로 추세의 강도와 전환을 판단.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">RSI가 "과매수/과매도"를 보여준다면, MACD는 "추세가 바뀌고 있는가"를 보여준다. 히스토그램이 줄어드는 것 자체가 추세 약화 신호. 가격이 신고가를 경신하는데 MACD는 전고점을 못 넘으면(다이버전스) 강력한 반전 경고.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">골든크로스 (MACD↑시그널)</span><span class="signal-result">상승 추세 시작 신호. 0선 위에서 발생하면 신뢰도 높음.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">데드크로스 (MACD↓시그널)</span><span class="signal-result">하락 추세 시작 경고. 0선 아래에서 발생하면 강한 매도 신호.</span></div>
+      </div>
+      <table class="mini-table">
+        <tr><th>패턴</th><th>의미</th><th>신뢰도</th></tr>
+        <tr><td>MACD 골든크로스 + 히스토그램 확대</td><td>상승 추세 가속</td><td>높음</td></tr>
+        <tr><td>가격 신고가 + MACD 전고점 미달</td><td>약세 다이버전스 → 반전 경고</td><td>매우 높음</td></tr>
+        <tr><td>가격 신저가 + MACD 전저점 상회</td><td>강세 다이버전스 → 바닥 신호</td><td>매우 높음</td></tr>
+        <tr><td>히스토그램 0선 돌파</td><td>추세 전환점</td><td>보통</td></tr>
+      </table>
+      <div class="warn-box">MACD는 이동평균 기반이라 후행적. 급등/급락장에서는 신호가 늦다. 횡보장에서 잦은 교차 → 거짓 신호 빈발. 반드시 거래량, RSI와 함께 확인.</div>
+      <div class="example-box">2023년 10월 닛케이225: 주봉 MACD 골든크로스 + 0선 돌파 → 이후 6개월간 30,000 → 40,000 랠리. 일봉 MACD만 보면 중간에 여러 번 데드크로스가 나왔지만, 주봉 추세가 살아있었으므로 "눌림목 매수" 전략이 유효.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">☁️</span><span class="card-name">일목균형표 (Ichimoku) — 일본 투자의 필수 도구</span><span class="card-tag tag-tech">기술적</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">일본에서 탄생한 기술적 분석 체계. 5개 선으로 구성: 전환선(9일), 기준선(26일), 선행스팬1(전환+기준 평균, 26일 앞), 선행스팬2(52일 고저 평균, 26일 앞), 후행스팬(종가를 26일 뒤로). 선행스팬1과 2 사이가 "구름대(쿠모)".</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">일본 기관투자자·개인투자자가 가장 많이 사용하는 지표. 구름대가 지지/저항 역할을 하고, 구름대의 두께가 지지/저항의 강도를 나타낸다. "삼역호전"(가격>구름, 전환>기준, 후행>가격)이면 가장 강한 매수 신호.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">삼역호전 (三役好転)</span><span class="signal-result">가격이 구름 위 + 전환선>기준선 + 후행스팬>가격 → 최강 매수 신호</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">삼역역전 (三役逆転)</span><span class="signal-result">가격이 구름 아래 + 전환선<기준선 + 후행스팬<가격 → 최강 매도 신호</span></div>
+      </div>
+      <table class="mini-table">
+        <tr><th>구성 요소</th><th>계산</th><th>역할</th></tr>
+        <tr><td>전환선 (転換線)</td><td>9일 고저 평균</td><td>단기 추세. RSI의 역할과 유사</td></tr>
+        <tr><td>기준선 (基準線)</td><td>26일 고저 평균</td><td>중기 추세. 지지/저항의 축</td></tr>
+        <tr><td>선행스팬1</td><td>(전환+기준)/2, 26일 앞</td><td>미래의 지지/저항선 (구름 상단)</td></tr>
+        <tr><td>선행스팬2</td><td>52일 고저평균, 26일 앞</td><td>미래의 지지/저항선 (구름 하단)</td></tr>
+        <tr><td>후행스팬 (遅行線)</td><td>종가를 26일 뒤로</td><td>현재와 과거의 비교. 확인 신호</td></tr>
+      </table>
+      <div class="warn-box">구름대는 26일 앞의 미래 지지/저항을 예측하지만, 예측이 아니라 "현재 데이터의 투영"이다. 급변하는 시장에서는 구름대가 무력화될 수 있다. 주봉 일목균형표가 일봉보다 신뢰도 높음.</div>
+      <div class="example-box">라쿠텐 iSPEED Set 2에서 매일 확인하는 지표. 닛케이225 주봉에서 구름대 상단 돌파 + 삼역호전 성립 시 중기 상승 추세를 확신할 수 있다. 구름대 두께가 얇은 구간에서 돌파가 일어나면 방향 전환이 쉽다(지지/저항 약함).</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">📈</span><span class="card-name">RCI (Rank Correlation Index)</span><span class="card-tag tag-tech">기술적</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">일정 기간 동안 "시간의 순위"와 "가격의 순위"의 상관관계. -100 ~ +100 범위. +80 이상이면 "시간이 지남에 따라 가격이 계속 올랐다"(과매수), -80 이하면 그 반대(과매도). RSI와 비슷하지만 계산 방식이 다르고, 일본 시장에서 더 선호.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">9일(단기), 26일(중기), 52일(장기) 3개 RCI를 동시에 보면 단기/중기/장기 추세의 정렬 상태를 한눈에 파악. 3개 RCI가 모두 +80 이상이면 "모든 시간대에서 과매수" → 강한 조정 경고. RSI와 달리 방향성(추세의 질)을 더 잘 포착.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">RCI 9일 -80↓에서 반등</span><span class="signal-result">단기 바닥 신호. 26일·52일이 양의 영역이면 "눌림목 매수" 적기.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">RCI 9·26·52 모두 +80↑</span><span class="signal-result">전 시간대 과매수. 단기 조정 임박. 신규 매수 자제, 이익실현 검토.</span></div>
+      </div>
+      <table class="mini-table">
+        <tr><th>RCI 조합</th><th>해석</th><th>전략</th></tr>
+        <tr><td>9일↑ + 26일↑ + 52일↑</td><td>전 시간대 상승 추세 정렬</td><td>보유 유지 (최적 상태)</td></tr>
+        <tr><td>9일↓ + 26일↑ + 52일↑</td><td>단기 조정, 중장기 추세 건재</td><td>눌림목 매수 기회</td></tr>
+        <tr><td>9일↓ + 26일↓ + 52일↑</td><td>중기까지 약화, 장기만 양호</td><td>관망. 52일마저 꺾이면 매도</td></tr>
+        <tr><td>9일↓ + 26일↓ + 52일↓</td><td>전 시간대 하락 추세</td><td>매도 또는 공매도 검토</td></tr>
+      </table>
+      <div class="warn-box">RCI는 RSI와 달리 "순위 기반"이라 급등·급락에도 +100/-100에 바로 도달할 수 있다. 강한 추세 구간에서 RCI가 과매수 상태를 오래 유지하는 것은 추세 강도의 증거이지 반전 신호가 아닐 수 있다.</div>
+      <div class="example-box">라쿠텐 iSPEED Set 2에서 일목균형표와 함께 매일 확인하는 지표. CFD 닛케이225 트레이딩에서 9일 RCI가 -80 이하로 떨어진 후 반등 시작할 때 진입, 26일 RCI가 +80에서 꺾이기 시작하면 청산하는 패턴이 기본 전략.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🕯️</span><span class="card-name">캔들스틱 패턴 & 피보나치 되돌림</span><span class="card-tag tag-tech">기술적</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">캔들스틱 — 가격의 심리</div>
+      <p class="def-text">일본에서 탄생한 분석법. 시가·고가·저가·종가를 하나의 봉으로 표현. 몸통(시가↔종가)과 그림자(고가·저가)의 모양으로 시장 심리를 읽는다. 단일 봉 패턴과 복합 봉 패턴으로 나뉜다.</p>
+      <table class="mini-table">
+        <tr><th>패턴</th><th>형태</th><th>의미</th></tr>
+        <tr><td>도지 (Doji)</td><td>시가 ≈ 종가, 긴 그림자</td><td>매수·매도 균형 → 추세 전환 가능성</td></tr>
+        <tr><td>해머 (Hammer)</td><td>하락 후 긴 아래꼬리</td><td>하락 중 매수세 유입 → 바닥 신호</td></tr>
+        <tr><td>장악형 (Engulfing)</td><td>전일 몸통을 완전히 감싸는 봉</td><td>강한 반전 신호 (양봉이면 매수, 음봉이면 매도)</td></tr>
+        <tr><td>샛별/석별 (Morning/Evening Star)</td><td>3봉 조합: 큰봉 + 작은봉 + 큰봉</td><td>추세 전환의 클래식 패턴</td></tr>
+      </table>
+      <div class="section-label">피보나치 되돌림 — 수학적 지지/저항</div>
+      <p class="def-text">상승 또는 하락 파동의 23.6%, 38.2%, 50%, 61.8%, 78.6% 지점을 지지/저항선으로 사용. 자연계에 존재하는 황금비율(1.618)에 기반. 시장 참여자들이 많이 사용하기 때문에 "자기실현적 예언"으로 실제 작동.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">38.2% 되돌림에서 반등</span><span class="signal-result">건강한 조정 후 추세 재개. 강한 상승 추세에서 가장 흔한 되돌림 수준.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">61.8% 되돌림 이탈</span><span class="signal-result">추세 자체가 약화된 것. 전저점 테스트 가능성. 손절 고려.</span></div>
+      </div>
+      <div class="warn-box">캔들 패턴의 신뢰도는 시간대에 따라 다르다. 1분봉 패턴은 노이즈가 많고, 주봉·월봉 패턴은 신뢰도 높음. 피보나치는 "매직 넘버"가 아니라 많은 사람이 같은 레벨을 보기 때문에 작동하는 것.</div>
+      <div class="example-box">CFD 트레이딩에서 진입/청산/손절 레벨을 잡을 때 핵심 도구. 예: 닛케이225가 40,000→35,000 하락 후 반등 시, 38.2% 되돌림 = 36,910, 50% = 37,500, 61.8% = 38,090. 각 레벨에서 저항 확인 후 포지션 판단.</div>
+    </div>
+  </div>
 </div>
 
 <!-- PART 9 -->
@@ -627,6 +904,154 @@
       </table>
     </div>
   </div>
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🧙</span><span class="card-name">버핏 지표 & CNN Fear & Greed 구성요소</span><span class="card-tag tag-alt">이색</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">버핏 지표 (Buffett Indicator)</div>
+      <p class="def-text">미국 주식시장 총 시가총액 ÷ GDP. 워런 버핏이 "어느 한 시점에서 시장의 밸류에이션을 가장 잘 보여주는 단일 지표"라고 언급. 100% 이상이면 과열, 70% 이하면 저평가.</p>
+      <div class="section-label">CNN Fear & Greed Index</div>
+      <p class="def-text">7개 지표를 종합한 시장 심리 게이지: VIX, 풋/콜 비율, 정크본드 수요, 시장 모멘텀(S&P vs 125일선), 주가강도(52주 신고가 vs 신저가), 시장변동성(VIX), 안전자산 수요(채권 vs 주식 수익률 차이). 0(극공포) ~ 100(극탐욕).</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">버핏 지표 200%+ / F&G 80+</span><span class="signal-result">극단적 과열. "남들이 탐욕스러울 때 두려워하라." 현금 비중 확대.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">버핏 지표 100%↓ / F&G 20↓</span><span class="signal-result">극단적 공포. "남들이 두려워할 때 탐욕스러워라." 역발상 매수 기회.</span></div>
+      </div>
+      <div class="warn-box">버핏 지표는 2010년대 이후 구조적으로 높아졌다(기술주 비중 증가, 해외 매출 비중 증가). 절대값보다 추세 변화를 봐야 한다. CNN F&G는 단기 타이밍 도구이지 장기 투자 판단 도구가 아니다.</div>
+      <div class="example-box">2022년 10월: CNN F&G 지수 16(극공포) + S&P500 3,500 → 이후 1년간 +30% 랠리. 반면 2021년 11월: F&G 78(극탐욕) + S&P 4,800 → 이후 1년간 -25% 하락. 역발상의 교과서.</div>
+    </div>
+  </div>
+</div>
+
+<div id="part10">
+  <div class="part-header"><span class="part-num">PART 10</span><span class="part-title">일본 시장 특화 — 도쿄에서 투자하는 법</span></div>
+  <p class="part-desc">일본 시장에는 미국과 다른 고유한 메커니즘이 있다. 도쿄에서 일본·미국·한국 주식을 운용하려면 이것들을 이해해야 한다.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🏯</span><span class="card-name">BOJ 정책 — YCC에서 정상화까지</span><span class="card-tag tag-japan">일본</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">일본은행(BOJ)의 금융정책. 2016년부터 YCC(수익률곡선제어)로 10년 국채 금리를 0% 부근에 고정했고, ETF 매입, 마이너스 금리 등 이례적 정책을 시행. 2024년부터 YCC 해제 → 마이너스 금리 종료 → 점진적 금리 인상으로 "정상화" 진행 중.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">BOJ 정상화 = 30년간의 초완화 정책 종료. 일본 금리 상승 → 엔화 강세 → 수출주 역풍 + 내수·금융주 호재. 일미 금리차 축소 → USD/JPY 하방 압력. BOJ의 한 마디가 엔화와 닛케이를 수백 포인트 움직인다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">BOJ 금리 인상 / 매파 발언</span><span class="signal-result">엔화 강세 → 수출주(도요타, 소니) 하락. 은행주(미쓰비시UFJ, 미즈호) 상승. USD/JPY 하락.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">BOJ 동결 / 비둘기 발언</span><span class="signal-result">엔화 약세 유지 → 수출주 호재. 해외 투자자 입장에서 환차손 리스크 지속.</span></div>
+      </div>
+      <div class="warn-box">우에다 총재의 기자회견 발언이 결정 자체보다 중요. "당분간"(当面) vs "적절한 시기에"(適切な時期に)의 미묘한 뉘앙스 차이에 시장이 반응. 일본어 원문 확인이 중요.</div>
+      <div class="example-box">2024년 7월 BOJ 금리 인상(0.25%→0.5%) → 닛케이 하루 -12%(블랙먼데이 이후 최대) + 엔캐리 청산 → 글로벌 증시 동반 급락. BOJ의 정책 변경이 글로벌 시장을 흔든 대표 사례.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">💴</span><span class="card-name">엔캐리 트레이드 — 글로벌 유동성의 숨은 엔진</span><span class="card-tag tag-japan">일본</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">저금리 엔화를 빌려서 고금리 자산(미국 채권, 신흥국 주식 등)에 투자하는 전략. 일미 금리차(현재 약 4%)가 수익의 원천. 엔화가 약세를 유지하는 한 환차익까지 더해져 "이중 수익"이 된다.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">수조 달러 규모의 엔캐리 포지션이 글로벌 유동성을 공급. 이것이 청산(unwind)되면 → 엔화 급등 + 글로벌 자산 급락이 동시에 발생. 엔캐리 청산은 글로벌 유동성 위기의 뇌관 중 하나.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">엔캐리 청산 (Unwind)</span><span class="signal-result">엔화 급등 + 주식 급락 + VIX 급등. 2024년 8월 사태가 정확히 이 패턴.</span></div>
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">엔캐리 확대</span><span class="signal-result">엔화 약세 지속 + 글로벌 위험자산 호재. 다만 포지션이 쌓일수록 청산 시 충격 커짐.</span></div>
+      </div>
+      <div class="warn-box">엔캐리 청산 리스크는 눈에 보이지 않다가 한순간에 터진다. USD/JPY 급락(엔화 급등), VIX 급등, 일본 금융주 급락이 동시에 발생하면 엔캐리 청산 진행 중이라 판단. 이 때 숏 포지션이 위험.</div>
+      <div class="example-box">2024년 7~8월: BOJ 금리 인상 + 미국 경기 둔화 우려 → USD/JPY 162→142 급락(엔화 +12%) → 엔캐리 포지션 대규모 청산 → 닛케이 -20%, 나스닥 -8%. 수 주만에 수조 엔 규모 청산 추정.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🏢</span><span class="card-name">TSE 기업 개혁 & PBR 1배 문제</span><span class="card-tag tag-japan">일본</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">2023년 도쿄증권거래소(TSE)가 PBR 1배 미달 기업에 "자본 비용과 주가를 의식한 경영"을 요구. 일본 프라임시장 상장사의 약 50%가 PBR 1배 미만 — 이론적으로 "해산하면 더 가치 있는" 상태. TSE는 개선계획 공시를 요구하고, 미이행 기업은 상장폐지까지 시사.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">일본 주식시장의 구조적 전환점. 자사주매입·배당 확대, 정책보유주(政策株) 매각, 비핵심 사업 정리가 가속화. 해외 투자자(버핏 포함)가 일본에 주목하는 핵심 이유. 이 변화는 1~2년이 아니라 5~10년에 걸쳐 진행될 구조적 상승 동력.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">PBR 개선 계획 공시 + 자사주매입</span><span class="signal-result">저PBR 종목의 재평가 촉매. 은행·상사·제조업 등 저평가 섹터 수혜.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">개선 계획 미제출 기업</span><span class="signal-result">TSE 모니터링 강화, 외국인 투자 기피 → 주가 디스카운트 지속.</span></div>
+      </div>
+      <div class="warn-box">PBR 1배는 "시작점"이지 "목표"가 아니다. ROE 개선 없이 자사주매입만으로 PBR을 올리면 일시적. 진짜 변화는 사업 포트폴리오 재편과 수익성 개선이 동반될 때.</div>
+      <div class="example-box">2023~2024년: 히타치 — 비핵심 사업 매각 + 3,000억엔 자사주매입 + Lumada(DX 사업) 집중 → PBR 0.8배 → 3.5배로 재평가. 시총 10조엔 돌파. TSE 개혁의 모범 사례.</div>
+    </div>
+  </div>
+</div>
+
+<div id="part11">
+  <div class="part-header"><span class="part-num">PART 11</span><span class="part-title">한국 시장 특화 — 코리아 디스카운트를 읽는 법</span></div>
+  <p class="part-desc">한국 시장은 높은 외국인 비중, 반도체 편중, 독특한 수급 구조를 가진다. 한국 투자자라면 알아야 할 지표들.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🇰🇷</span><span class="card-name">외국인 순매수 & 수급 3주체</span><span class="card-tag tag-korea">한국</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">한국 주식시장은 외국인·기관·개인 3주체의 수급으로 움직인다. 외국인은 KOSPI 시총의 약 30%를 보유하며, 외국인 순매수/순매도 추세가 지수 방향을 지배. 개인은 역추세(하락 시 매수, 상승 시 매도), 기관은 선물 헤지 연동.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">KOSPI는 글로벌 매크로(달러, 미국 금리)에 민감한 "수출·달러 연동형" 시장. 외국인이 빠지면 지수가 빠지고, 들어오면 오른다. 프로그램 매매(선물·옵션 만기일)가 단기 변동성을 극대화.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">외국인 20일 연속 순매수</span><span class="signal-result">글로벌 자금 한국 유입 → 환율 하락(원화 강세) + 지수 상승 동반.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">외국인 대량 순매도 + 원화 약세</span><span class="signal-result">글로벌 위험 회피. 달러 강세 → 외국인 이탈 → KOSPI 하락 → 원화 추가 약세 악순환.</span></div>
+      </div>
+      <div class="warn-box">외국인 매매 데이터는 당일 장 마감 후 공개. 실시간으로는 프로그램 매매 동향(순차익/비차익)으로 추정. 삼성전자·SK하이닉스 2개 종목이 외국인 매매의 절반 이상을 차지.</div>
+      <div class="example-box">2023년 하반기: 외국인 반도체 대량 매수(AI 테마) → KOSPI 2,200→2,700 랠리. 반면 2022년: 외국인 역대급 순매도(-26조원) → KOSPI 2,990→2,200 폭락. 외국인 수급이 KOSPI의 방향.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">⚡</span><span class="card-name">코리아 디스카운트 & 밸류업 프로그램</span><span class="card-tag tag-korea">한국</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">한국 주식이 동일 실적 대비 다른 나라보다 낮은 밸류에이션(PER, PBR)을 받는 현상. 원인: 재벌 지배구조(소액주주 경시), 낮은 배당성향, 북한 리스크, 상속세 구조. 2024년부터 정부의 "밸류업 프로그램"으로 개선 시도 중.</p>
+      <div class="section-label">왜 중요한가</div>
+      <p class="imp-text">KOSPI PBR은 약 0.9배로 선진국 중 최저 수준(미국 4배, 일본 1.4배). 밸류업이 성공하면 구조적 재평가(일본 TSE 개혁과 유사한 경로). 실패하면 디스카운트 고착화. 한국 투자 시 이 구조를 모르면 "왜 이렇게 싼데 안 오르지?"를 이해 못 한다.</p>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">밸류업 참여 기업 확대 + 배당 증가</span><span class="signal-result">코리아 디스카운트 축소 기대 → 저PBR 금융·지주사 재평가.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">밸류업 실효성 의문 + 지배구조 미개선</span><span class="signal-result">디스카운트 유지. 외국인의 구조적 저비중 지속.</span></div>
+      </div>
+      <div class="warn-box">일본 TSE 개혁이 1년 만에 효과를 봤다고 한국도 같을 거라 기대하기 어렵다. 일본은 지배구조가 상대적으로 양호했고, 한국은 재벌 오너 일가의 의사결정 구조가 핵심 변수.</div>
+      <div class="example-box">2024년: 밸류업 지수 발표 → 초기 기대감으로 금융주(KB, 신한) +20% → 실효성 의문 제기 후 반락. 일본과 비교: TSE 개혁 발표(2023.03) → 닛케이 +40%(1년), KOSPI는 밸류업 발표 후 횡보.</div>
+    </div>
+  </div>
+</div>
+
+<div id="part12">
+  <div class="part-header"><span class="part-num">PART 12</span><span class="part-title">CFD & 선물 기초 — 레버리지 상품의 구조</span></div>
+  <p class="part-desc">현물과 다른 게임의 규칙. 레버리지가 수익을 증폭시키지만, 손실도 증폭시킨다.</p>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">⚙️</span><span class="card-name">CFD 구조 — 증거금·스왑·배당조정</span><span class="card-tag tag-cfd">CFD</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">무엇인가</div>
+      <p class="def-text">CFD(Contract for Difference)는 실물 자산을 보유하지 않고 가격 차이에 대해 거래하는 계약. 증거금(margin)만으로 전체 포지션을 운용 — 닛케이225 CFD를 레버리지 10배로 거래하면 100만엔으로 1,000만엔 규모 포지션. 롱·숏 양방향 가능.</p>
+      <div class="section-label">핵심 개념</div>
+      <table class="mini-table">
+        <tr><th>개념</th><th>설명</th><th>주의점</th></tr>
+        <tr><td>증거금 (Margin)</td><td>포지션 유지에 필요한 최소 금액</td><td>증거금률 이하로 떨어지면 강제 청산(마진콜)</td></tr>
+        <tr><td>레버리지</td><td>투입 자금 대비 포지션 배수</td><td>10배 레버리지 = 1% 하락이 10% 손실</td></tr>
+        <tr><td>스왑포인트</td><td>일일 보유 비용 (금리차 기반)</td><td>롱 포지션은 매일 스왑을 지불 (대부분)</td></tr>
+        <tr><td>배당조정금</td><td>배당락일에 롱은 수령, 숏은 지급</td><td>일본 3월·9월 결산 집중, 대형 배당 시 주의</td></tr>
+        <tr><td>롤오버</td><td>선물 만기 시 다음 한월로 자동 전환</td><td>가격 차이(콘탱고/백워데이션)로 손익 발생</td></tr>
+      </table>
+      <div class="warn-box">레버리지는 양날의 검. 닛케이 100랏 × 1,000pt 하락 = 10만엔 손실. 일일 목표 수익(10만엔)과 동일한 금액이 한 번에 날아갈 수 있다. 반드시 손절 라인을 사전에 설정하고 지킬 것.</div>
+      <div class="example-box">라쿠텐증권 CFD 기준: 닛케이225 레버리지 10배, 100랏 × 100pt = 10,000엔, 100랏 × 1,000pt = 10만엔. 주간 목표 10만엔 달성을 위해 1,000pt 캐치가 필요. 리스크 관리 없이 레버리지만 올리면 "한 번의 실수로 수주 수익 소진".</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggle(this)">
+    <div class="card-header"><span class="card-icon">🛡️</span><span class="card-name">CFD 실전 전략 — 헤지·배당·단타</span><span class="card-tag tag-cfd">CFD</span><span class="chevron">▼</span></div>
+    <div class="card-body">
+      <div class="section-label">3가지 실전 활용법</div>
+      <table class="mini-table">
+        <tr><th>전략</th><th>방법</th><th>용도</th></tr>
+        <tr><td>헤지</td><td>현물 롱 보유 + CFD 숏</td><td>이벤트(FOMC, 결산) 리스크 중립화. 방향성 없이 이벤트 통과 대기.</td></tr>
+        <tr><td>배당 수취</td><td>배당락일 전 CFD 롱 보유</td><td>배당조정금 수령. 주가 하락분은 조정금으로 상쇄(이론상).</td></tr>
+        <tr><td>수급 기반 단타</td><td>거래량·호가 분석 → 진입/청산</td><td>CFD의 핵심 전략. 방향 예측보다 흐름 대응. 손절 필수.</td></tr>
+      </table>
+      <div class="signal-grid">
+        <div class="signal-box signal-down"><span class="signal-label sig-down-label">볼린저 -2σ + RCI -80</span><span class="signal-result">단기 과매도. CFD 롱 진입 검토. 이전 지지선에서 반등 확인 후.</span></div>
+        <div class="signal-box signal-up"><span class="signal-label sig-up-label">볼린저 +2σ + RCI +80 + 거래량 감소</span><span class="signal-result">상승 탄력 약화. CFD 숏 또는 롱 청산 검토.</span></div>
+      </div>
+      <div class="warn-box">CFD 단기 트레이딩과 장기 주식 투자의 철학을 분리해야 한다. CFD는 수급·거래량 중심이고 방향 예측보다 흐름 대응. 개별주 장기 투자는 멀티배거 목표로 수년 단위 보유. 같은 머리로 하면 안 된다.</div>
+      <div class="example-box">천연가스 대규모 롱 포지션 운용 경험: 고단가 평균 포지션을 단타 수익으로 순차 정리 + 저가 추매로 평단 인하. 포지션 축소하면서 평단을 낮추는 것이 핵심. 무한 물타기와의 차이는 "계획된 평단 관리".</div>
+    </div>
+  </div>
 </div>
 
 <!-- SUMMARY -->
@@ -642,6 +1067,9 @@
     <tr><td><span class="summary-cat">원자재·글로벌</span></td><td class="summary-items">DXY, 금, 유가, 구리, 엔캐리</td><td class="summary-signal">글로벌 유동성·리스크 환경</td></tr>
     <tr><td><span class="summary-cat">주식 특화</span></td><td class="summary-items">EPS·가이던스, 내부자매매, 공매도, PER/PBR/PEG</td><td class="summary-signal">개별 종목 진입·청산 타이밍</td></tr>
     <tr><td><span class="summary-cat">경기 사이클</span></td><td class="summary-items">ISM + 수익률 곡선 + 실업률</td><td class="summary-signal">회복→확장→둔화→침체 → 섹터 ETF 로테이션</td></tr>
+    <tr><td><span class="summary-cat">일본</span></td><td class="summary-items">BOJ 정책, 엔캐리 트레이드, TSE 기업개혁, PBR 1배</td><td class="summary-signal">BOJ 정상화 속도 → 엔화 방향 + 일본주 섹터 선택</td></tr>
+    <tr><td><span class="summary-cat">한국</span></td><td class="summary-items">외국인 수급, 코리아 디스카운트, 밸류업</td><td class="summary-signal">외국인 매매 방향 → KOSPI 방향. 밸류업 실효성 모니터링</td></tr>
+    <tr><td><span class="summary-cat">CFD</span></td><td class="summary-items">증거금, 레버리지, 스왑, 헤지, 단타 전략</td><td class="summary-signal">리스크 관리가 수익보다 먼저. 현물과 철학 분리</td></tr>
     <tr><td><span class="summary-cat">기술적 분석</span></td><td class="summary-items">거래량, 200MA, RSI, VWAP, 볼린저</td><td class="summary-signal">진입·청산 타이밍 정밀화</td></tr>
   </table>
 </div>
