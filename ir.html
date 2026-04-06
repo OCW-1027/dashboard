@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>일본 기업 IR 리서치</title>
+<title>기업 IR 리서치</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#080b10;--surface:#0e1218;--surface2:#131922;--border:#1c2333;--border2:#242d42;--text:#dde3ee;--muted:#6b7a96;--accent:#3d8ef5;--accent2:#56ccb2;--red:#e8495a;--green:#1fbd8a;--amber:#e8a030;--gold:#c9964a;--shadow:0 2px 20px rgba(0,0,0,.6);}
@@ -543,16 +543,8 @@
 // 관심 종목 데이터 (로컬스토리지 저장)
 // ═══════════════════════════════════════════════════
 
-// 기본 관심종목 (처음 실행 시)
-const DEFAULT_WATCHLIST = [
-  {code:'3697', name:'QPS홀딩스',       sector:'위성·우주',      market:'JP'},
-  {code:'4689', name:'LINEヤフー',       sector:'IT·플랫폼',     market:'JP'},
-  {code:'7013', name:'IHI',              sector:'중공업·항공',    market:'JP'},
-  {code:'8136', name:'サンリオ',         sector:'엔터·라이선스',  market:'JP'},
-  {code:'6501', name:'日立製作所',       sector:'인프라·IT',      market:'JP'},
-  {code:'7201', name:'日産自動車',       sector:'자동차',          market:'JP'},
-  {code:'3350', name:'メタプラネット',   sector:'비트코인·투자',  market:'JP'},
-];
+// 기본 관심종목 (처음 실행 시 — 비어있음)
+const DEFAULT_WATCHLIST = [];
 
 function loadWatchlist(){
   const saved = localStorage.getItem('ir_watchlist');
