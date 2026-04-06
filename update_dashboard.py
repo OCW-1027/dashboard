@@ -586,7 +586,7 @@ def update_dashboard():
 
         # 푸터
         today_ja = datetime.now(JST).strftime("%Y年%m月%d日")
-        ja = sub(ja, r'最終.*?更新: [\d年月日 ]+',
+        ja = sub(ja, r'最終自動更新: [\d年月日 ]+',
                  lambda m: f'最終自動更新: {today_ja}')
 
         with open(ja_path, "w", encoding="utf-8") as f:
