@@ -485,6 +485,114 @@ def update_dashboard():
         f.write(html)
 
     print(f"\n✅ 저장 완료: {html_path}")
+
+    # ── 일본어 버전 (index_ja.html) 업데이트 ──────────────────────
+    ja_path = os.path.join(os.path.dirname(__file__), "index_ja.html")
+    if os.path.exists(ja_path):
+        print("\n[5] 일본어 버전 업데이트...")
+        with open(ja_path, "r", encoding="utf-8") as f:
+            ja = f.read()
+
+        # ID 기반 업데이트 (한국어와 동일 — ID는 같음)
+        ja = update_index_card(ja, "nk225",   nk225,   "JPY")
+        ja = update_index_card(ja, "topix",   topix,   "JPY")
+        ja = update_index_card(ja, "mothers", mothers, "JPY")
+        ja = update_index_card(ja, "kospi",   kospi,   "KRW")
+        ja = update_index_card(ja, "kosdaq",  kosdaq,  "KRW")
+        ja = update_index_card(ja, "spx",     spx,     "USD")
+        ja = update_index_card(ja, "ndx",     ndx,     "USD")
+        ja = update_index_card(ja, "dji",     dji,     "USD")
+        ja = update_index_card(ja, "rut",     rut,     "USD")
+        ja = update_index_card(ja, "sox",     sox,     "USD")
+
+        # 타임스탬프
+        ja = set_text(ja, "idx-timestamp",
+                      f"📊 前日終値基準 · 毎日6回自動更新 · 最終: {now_str}")
+
+        # 거시지표 (ID 기반)
+        if vix:   ja = set_text(ja, "val-vix",   f"{vix:.2f}")
+        if y10:   ja = set_text(ja, "val-y10",   f"{y10:.2f}%")
+        if y2:    ja = set_text(ja, "val-y2",    f"{y2:.2f}%")
+        if spread: ja = set_text(ja, "val-spread", f"{spread:+.2f}%p")
+        if y30:
+            ja = re.subn(r'(id="val-y30"[^>]*>)[^<]+',
+                         lambda m: m.group(1) + f'{y30:.2f}', ja, count=1)[0]
+
+        # Fear & Greed
+        if fg:
+            fg_map = {(0,24):"EXTREME FEAR",(25,44):"FEAR",(45,55):"NEUTRAL",
+                      (56,75):"GREED",(76,100):"EXTREME GREED"}
+            fg_lbl = next(v for (lo,hi),v in fg_map.items() if lo <= fg <= hi)
+            fg_col = "#e8495a" if fg<=24 else "#e8a030" if fg<=44 else "#dde3ee" if fg<=55 else "#1fbd8a"
+            ja = sub(ja, r'(gauge-num" style="color:)[^"]+',
+                     lambda m: m.group(1) + fg_col)
+            ja = sub(ja, r'(gauge-num" style="color:[^"]+">)\d+',
+                     lambda m: m.group(1) + str(fg))
+            ja = sub(ja, r'(gauge-status" style="color:)[^"]+',
+                     lambda m: m.group(1) + fg_col)
+            ja = sub(ja, r'(gauge-status" style="color:[^"]+">)[^<]+',
+                     lambda m: m.group(1) + fg_lbl)
+            ja = sub(ja, r'(pbar-fill" style="width:)\d+(%;background:var\(--red\);)',
+                     lambda m: m.group(1) + str(fg) + m.group(2))
+
+        # 리스크 카드 (ID 기반)
+        if wti:   ja = sub(ja, r'(id="risk-wti"[^>]*>)\$[0-9.]+',
+                           lambda m: m.group(1) + f'${wti:.2f}')
+        if brent: ja = sub(ja, r'(id="risk-brent"[^>]*>)\$[0-9.]+',
+                           lambda m: m.group(1) + f'${brent:.0f}')
+        if vix:   ja = sub(ja, r'(id="risk-vix"[^>]*>)[0-9.]+',
+                           lambda m: m.group(1) + f'{vix:.2f}')
+
+        # 요약표 (일본어 텍스트 매칭)
+        if usdjpy:
+            ja = sub(ja, r'(id="summary-usdjpy"[^>]*>)¥[0-9,.]+',
+                     lambda m: m.group(1) + f'¥{usdjpy:,.2f}')
+        if nk225:
+            ja = sub(ja, r'(<td>日経225</td><td class="mono">)[0-9,]+',
+                     lambda m: m.group(1) + f'{nk225["price"]:,.0f}')
+        if vix:
+            ja = sub(ja, r'(<td>VIX恐怖指数</td><td class="mono">)[0-9.]+',
+                     lambda m: m.group(1) + f'{vix:.2f}')
+        if spread:
+            ja = sub(ja, r'(<td[^>]*>イールドカーブ[^<]*</td><td class="mono">)[+\-0-9.]+%p',
+                     lambda m: m.group(1) + f'{spread:+.2f}%p')
+        if pce_yoy:
+            ja = sub(ja, r'(<td>コア PCE[^<]*</td><td class="mono">)[0-9.]+%',
+                     lambda m: m.group(1) + f'{pce_yoy:.1f}%')
+        if ism:
+            ja = sub(ja, r'(<td>ISM製造業PMI[^<]*</td><td class="mono">)[0-9.]+',
+                     lambda m: m.group(1) + f'{ism:.1f}')
+        if michigan:
+            ja = sub(ja, r'(<td>ミシガン消費者心理[^<]*</td><td class="mono">)[0-9.]+',
+                     lambda m: m.group(1) + f'{michigan:.1f}')
+        if nfp_chg is not None:
+            ja = sub(ja, r'(<td>非農業 雇用[^<]*</td><td class="mono">)[+\-,\d]+',
+                     lambda m: m.group(1) + f'{nfp_chg:+,}')
+        if fg:
+            ja = sub(ja, r'(<td>Fear &amp; Greed</td><td class="mono">)\d+',
+                     lambda m: m.group(1) + str(fg))
+        if fedwatch:
+            ja = sub(ja, r'(<td>FedWatch[^<]*</td><td class="mono">)[0-9.]+%',
+                     lambda m: m.group(1) + f'{fedwatch}%')
+        if wti:
+            ja = sub(ja, r'(<td>WTI原油</td><td class="mono">\$)[0-9.]+',
+                     lambda m: m.group(1) + f'{wti:.2f}')
+        if brent:
+            ja = sub(ja, r'(<td>ブレント原油</td><td class="mono">\$)[0-9.]+',
+                     lambda m: m.group(1) + f'{brent:.0f}')
+        if buffett:
+            ja = sub(ja, r'(<td>バフェット指標</td><td class="mono">)[0-9~.%]+',
+                     lambda m: m.group(1) + f'{buffett}%')
+
+        # 푸터
+        today_ja = datetime.now(JST).strftime("%Y年%m月%d日")
+        ja = sub(ja, r'最終.*?更新: [\d年月日 ]+',
+                 lambda m: f'最終自動更新: {today_ja}')
+
+        with open(ja_path, "w", encoding="utf-8") as f:
+            f.write(ja)
+        print(f"  ✅ 일본어 버전 저장 완료: {ja_path}")
+
     print("=" * 55)
 
 if __name__ == "__main__":

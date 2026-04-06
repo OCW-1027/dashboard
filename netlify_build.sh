@@ -11,10 +11,14 @@ echo "  ✅ docs.html 삭제"
 # 2. index.html에서 자료실 버튼 제거 (여러줄에 걸친 <a> 태그 포함)
 python3 -c "
 import re
-with open('index.html','r') as f: h=f.read()
-h=re.sub(r'<a href=\"docs\.html\"[^>]*>.*?</a>', '', h, flags=re.DOTALL)
-with open('index.html','w') as f: f.write(h)
-print('  ✅ index.html 자료실 링크 제거')
+for fname in ['index.html', 'index_ja.html']:
+    try:
+        with open(fname,'r') as f: h=f.read()
+        h=re.sub(r'<a href=\"docs\.html\"[^>]*>.*?</a>', '', h, flags=re.DOTALL)
+        with open(fname,'w') as f: f.write(h)
+        print(f'  ✅ {fname} 자료실 링크 제거')
+    except FileNotFoundError:
+        print(f'  ⚠️ {fname} 미발견 — 스킵')
 "
 
 # 3. ir.html 네비게이션 바에서 자료실 링크 제거
