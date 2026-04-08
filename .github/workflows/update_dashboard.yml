@@ -36,6 +36,12 @@ jobs:
         with:
           python-version: '3.11'
  
+      - name: 의존성 설치
+        run: pip install requests beautifulsoup4
+
+      - name: 뉴스 수집 (텔레그램 → 번역)
+        run: python fetch_news.py
+
       - name: 대시보드 업데이트 실행
         run: python update_dashboard.py
  
@@ -43,6 +49,6 @@ jobs:
         run: |
           git config user.name  "Dashboard Bot"
           git config user.email "bot@dashboard.auto"
-          git add index.html index_ja.html
+          git add index.html index_ja.html news_kr.json news_ja.json
           git diff --staged --quiet || git commit -m "📊 자동 업데이트: $(TZ='Asia/Tokyo' date '+%Y-%m-%d %H:%M JST')"
           git push
