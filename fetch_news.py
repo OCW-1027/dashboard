@@ -13,7 +13,7 @@ JST = timezone(timedelta(hours=9))
 
 # ── 수집 대상 채널 ──
 CHANNELS = [
-    {"username": "firstsquawk", "label": "First Squawk", "lang": "en"},
+    {"username": "firstsquaw", "label": "First Squawk", "lang": "en"},
     {"username": "FinancialJuice", "label": "Financial Juice", "lang": "en"},
     {"username": "aetherjapanresearch", "label": "에테르 리서치", "lang": "ko"},
 ]
