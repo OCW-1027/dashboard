@@ -1,7 +1,98 @@
 [
-  {"date":"2026-04-09T14:30","source":"First Squawk","text":"미국 10년물 국채 금리가 4.3%로 하락, 이란 휴전 협상 진전에 따른 안전자산 수요 감소","link":"https://t.me/firstsquawk/12345"},
-  {"date":"2026-04-09T13:15","source":"Financial Juice","text":"BOJ 우에다 총재: 경제 상황에 따라 추가 금리 인상 가능성 열어둠. USD/JPY 159.20 반응","link":"https://t.me/FinancialJuice/67890"},
-  {"date":"2026-04-09T11:00","source":"에테르 리서치","text":"닛케이225 반도체 섹터 강세. 도쿄일렉트론 +3.2%, 어드반테스트 +2.8%. AI 수요 기대감 지속","link":"https://t.me/aetherjapanresearch/11111"},
-  {"date":"2026-04-09T09:30","source":"First Squawk","text":"이란-미국 45일 휴전안 협상 중. 호르무즈 해협 재개통 조건부. WTI $98대로 하락","link":"https://t.me/firstsquawk/12340"},
-  {"date":"2026-04-08T22:00","source":"Financial Juice","text":"S&P500 소폭 상승 마감. 기술주 혼조세 속 에너지·방산 섹터 강세 지속","link":"https://t.me/FinancialJuice/67885"}
+  {
+    "date": "2026-04-08T15:28",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108017",
+    "text": "휴전을 요약하는 방법| FJ"
+  },
+  {
+    "date": "2026-04-08T15:26",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108016",
+    "text": "미국 고위 관리: 트럼프 대통령이 이란과의 휴전에 대해 업데이트하는 동안 트럼프 대통령과 네타냐후 총리 간의 전화통화에서 레바논에서의 전투 지속 문제가 제기되었습니다. - Axios| FJ"
+  },
+  {
+    "date": "2026-04-08T15:25",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108015",
+    "text": "미국 고위 관리: 트럼프는 헤즈볼라와의 전쟁을 계속하는 데 반대를 표명하지 않았습니다. - Axios| FJ"
+  },
+  {
+    "date": "2026-04-08T15:24",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108014",
+    "text": "미국 고위 관리: 트럼프와 네타냐후의 전화통화에서 레바논에서의 전투 지속 문제가 제기되었습니다. - Axios| FJ"
+  },
+  {
+    "date": "2026-04-08T15:21",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108013",
+    "text": "이스라엘은 발표에 만족하지 않았으며 거래 조건에 대해 협의하지 않았습니다. - WSJ| FJ"
+  },
+  {
+    "date": "2026-04-08T15:20",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108012",
+    "text": "이스라엘 안보내각, 수요일 소집해 이란 휴전 논의 - WSJ| FJ"
+  },
+  {
+    "date": "2026-04-08T15:15",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108010",
+    "text": "맥락: 파키스탄 총리는 이란과 미국, 그리고 그 동맹국들이 레바논을 포함한 모든 곳에서 즉각적인 휴전에 합의했다고 발표했지만, 이스라엘은 레바논에서 헤즈볼라와 싸우는 것은 휴전의 일부가 아니라고 말하며 이에 대해 이의를 제기했습니다. - The Guardian| FJ"
+  },
+  {
+    "date": "2026-04-08T15:15",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/108011",
+    "text": "바그다드 주재 미국 대사관: 이란이 지원하는 이라크 무장단체가 수요일 바그다드 외교시설과 공항 근처에서 드론 공격을 감행했습니다.| FJ"
+  },
+  {
+    "date": "2026-04-08T15:07",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21080",
+    "text": "Citi) 글로벌 주식 전략: 스태그플레이션 플레이북 (2026년 4월 2일) 시티 리서치는 중동 분쟁으로 인한 에너지 가격 상승과 스태그플레이션(인플레이션 상승 + 성장 둔화) 리스크를 중심으로, 2022년 러시아-우크라이나 전쟁 당시의 시장 경험을 참고 삼아 현재 주식시장 대응 전략을 제시했습니다.   1. 거시경제 리스크 현황 시티 이코노미스트들은 기본 시나리오에서 2026년 글로벌 GDP 성장률을 2.7%(전월 대비 20bp 하향), 인플레이션을 3.1%(전월 대비 50bp 상향)로 소폭 조정하는 데 그쳤습니다. 다만 유가가"
+  },
+  {
+    "date": "2026-04-08T14:56",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21079",
+    "text": "WSJ) 중재자들과 이 사안에 정통한 한 관계자에 따르면, 이란 핵 협상에 공식적으로 참여하지 않았던 이스라엘은 협상이 막바지에 이르러 합의가 타결되었다는 소식을 접하고도 사전 협의가 이루어지지 않았다는 점에 불만을 품었다.  https://www.wsj.com/livecoverage/iran-war-2026-trump-deadline-latest-news/card/exclusive-israel-was-informed-late-about-cease-fire-deal-and-wasn-t-happy-s18QUNCt1s4fL60Rnn03"
+  },
+  {
+    "date": "2026-04-08T14:52",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21077",
+    "text": "🚨  [HIGH] 호르무즈 해협 알림 📍  위치: 호르무즈 해협 시간: 2026-04-08 23:31 KST 제목: 이란 파르스통신: 이스라엘의 ‘휴전 위반’으로 호르무즈를 통과하던 유조선 운항이 중단됐다. 📝  요약: 호르무즈 해협 관련 상선·유조선 관련 공격 또는 나포 리스크가 부각됐습니다. 핵심 기사 제목은 '이란 파르스통신: 이스라엘의 ‘휴전 위반’으로 호르무즈를 통과하던 유조선 운항이 중단됐다.' 입니다. 상선/유조선 + 공격/나포 관련 표현 동시 감지 해상 보험료와 운임, 유가 변동성을 자극할 수 있습니다. 🏷  카테고리"
+  },
+  {
+    "date": "2026-04-08T14:52",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21078",
+    "text": "🚨  [CRITICAL] 호르무즈 해협 알림 📍  위치: 이란 시간: 2026-04-08 23:39 KST 제목: 이란-미국 휴전 몇 시간 뒤 이스라엘의 레바논 전역 공격으로 수십 명 사망 📝  요약: 이란 관련 이란·미국·이스라엘 축의 군사 충돌 또는 확전 위험이 부각됐습니다. 핵심 기사 제목은 '이란-미국 휴전 몇 시간 뒤 이스라엘의 레바논 전역 공격으로 수십 명 사망' 입니다. 이란-미국/이스라엘 조합 + 군사 충돌/전쟁 위험 표현 감지 유가와 안전자산 선호를 자극하며 중동 해상 리스크 프리미엄을 키울 수 있습니다. 🏷  카테"
+  },
+  {
+    "date": "2026-04-08T14:47",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21076",
+    "text": "16시간 전 CNN뉴스: 소식통에 따르면 이스라엘 관리들, 미국-이란 휴전 합의에 우려 표명 이 사안에 정통한 이스라엘 소식통에 따르면, 이스라엘 관리들은 미국이 이란과 체결한 임시 휴전 합의에 우려를 나타내고 있습니다. 해당 소식통은 이스라엘이 도널드 트럼프 미국 대통령의 주도에 따라 휴전을 준수할 것이라고 밝혔습니다. 그러나 이스라엘은 마지못해 이에 따르고 있는 상황입니다.  소식통에 따르면 이스라엘은 아직 목표 목록에 더 많은 타깃이 남아 있으며, 이란에 대한 군사 행동을 통해 달성하고자 하는 목표도 더 있다고 합니다. 3월 "
+  },
+  {
+    "date": "2026-04-08T14:43",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21074",
+    "text": "진짜 이러고 협상해야한다니까?"
+  },
+  {
+    "date": "2026-04-08T14:43",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21075",
+    "text": "그냥 트럼프야 너가 책임지고 12시간 마다 협박트윗 올려서 12시간마다 휴전 갱신하자..."
+  },
+  {
+    "date": "2026-04-08T14:41",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/21073",
+    "text": "호르무즈 해협을 통한 유조선 통행이 중단되었다: 파르스 통신"
+  }
 ]
