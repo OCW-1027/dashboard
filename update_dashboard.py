@@ -509,14 +509,26 @@ def update_dashboard():
         ja = set_text(ja, "idx-timestamp",
                       f"📊 前日終値基準 · 毎日6回自動更新 · 最終: {now_str}")
 
-        # 거시지표 (ID 기반)
-        if vix:   ja = set_text(ja, "val-vix",   f"{vix:.2f}")
-        if y10:   ja = set_text(ja, "val-y10",   f"{y10:.2f}%")
-        if y2:    ja = set_text(ja, "val-y2",    f"{y2:.2f}%")
-        if spread: ja = set_text(ja, "val-spread", f"{spread:+.2f}%p")
+        # VIX (텍스트 매칭 — ID 없음)
+        if vix:
+            ja = sub(ja, r'(📊 VIX — 恐怖指数.*?<div class="bval"[^>]+>)[0-9.]+',
+                     lambda m: m.group(1) + f'{vix:.2f}')
+            ja = sub(ja, r'(VIX — 恐怖指数.*?<div class="blabel">)[^<]+',
+                     lambda m: m.group(1) + f'{today} 終値')
+
+        # 수익률 곡선 (텍스트 매칭)
+        if spread is not None:
+            ja = sub(ja, r'(📉 米国イールドカーブ.*?<div class="bval"[^>]+>)[^<]+',
+                     lambda m: m.group(1) + f'{spread:+.2f}%p')
+        if y2:
+            ja = sub(ja, r'(<td>2年</td><td class="mono">)[0-9.]+(%</td>)',
+                     lambda m: m.group(1) + f'{y2:.2f}' + m.group(2))
+        if y10:
+            ja = sub(ja, r'(<td>10年</td><td class="mono">)[0-9.]+(%</td>)',
+                     lambda m: m.group(1) + f'{y10:.2f}' + m.group(2))
         if y30:
-            ja = re.subn(r'(id="val-y30"[^>]*>)[^<]+',
-                         lambda m: m.group(1) + f'{y30:.2f}', ja, count=1)[0]
+            ja = sub(ja, r'(<td>30年</td><td class="mono">)[0-9.]+(%</td>)',
+                     lambda m: m.group(1) + f'{y30:.2f}' + m.group(2))
 
         # Fear & Greed
         if fg:
