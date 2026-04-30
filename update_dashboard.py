@@ -232,6 +232,28 @@ def fetch_buffett():
         print(f"  버핏 지표 오류: {e}")
     return None
 
+def fetch_shiller_cape():
+    """multpl.com에서 Shiller CAPE Ratio 스크래핑"""
+    try:
+        import re as _re
+        r = requests.get("https://www.multpl.com/shiller-pe", 
+                         headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+        # "Current Shiller PE Ratio is XX.XX" 패턴
+        m = _re.search(r'Current Shiller PE Ratio is\s*([\d.]+)', r.text)
+        if m:
+            cape = float(m.group(1))
+            print(f"  ✅ Shiller CAPE: {cape}")
+            return cape
+        # 백업 패턴
+        m = _re.search(r'id="current">\s*<[^>]*>\s*([\d.]+)', r.text)
+        if m:
+            cape = float(m.group(1))
+            print(f"  ✅ Shiller CAPE (백업): {cape}")
+            return cape
+    except Exception as e:
+        print(f"  Shiller CAPE 오류: {e}")
+    return None
+
 # ── 포맷 함수 ──────────────────────────────────────────────────────
 def fmt_num(v, fmt="USD"):
     if v is None: return "—"
@@ -321,6 +343,7 @@ def update_dashboard():
     nfp_chg  = fetch_nfp_chg()
     fedwatch = fetch_fedwatch()
     buffett  = fetch_buffett()
+    cape     = fetch_shiller_cape()
 
     html_path = os.path.join(os.path.dirname(__file__), "index.html")
     with open(html_path, "r", encoding="utf-8") as f:
@@ -475,6 +498,17 @@ def update_dashboard():
                    lambda m: m.group(1) + f'{buffett}%')
         print(f"  ✅ 버핏 지표: {buffett}%")
 
+    # Shiller CAPE
+    if cape:
+        # bval 직접 매칭 (Shiller CAPE 카드 본문)
+        html = sub(html, r'(Shiller CAPE \(P/E10\).*?<div class="bval"[^>]+>)[0-9.]+',
+                   lambda m: m.group(1) + f'{cape}')
+        # 카드 헤더의 날짜 갱신
+        today_iso = datetime.now(JST).strftime("%Y.%m.%d")
+        html = sub(html, r'(Shiller CAPE \(P/E10\).*?)20\d\d\.\d\d\.\d\d 기준',
+                   lambda m: m.group(1) + f'{today_iso} 기준')
+        print(f"  ✅ Shiller CAPE: {cape}")
+
     print("  ✅ 요약표 완료")
 
     # 푸터
@@ -595,6 +629,13 @@ def update_dashboard():
         if buffett:
             ja = sub(ja, r'(<td>バフェット指標</td><td class="mono">)[0-9~.%]+',
                      lambda m: m.group(1) + f'{buffett}%')
+        if cape:
+            # 일본어 Shiller CAPE 카드 본문 직접 매칭
+            ja = sub(ja, r'(Shiller CAPE \(P/E10\).*?<div class="bval"[^>]+>)[0-9.]+',
+                     lambda m: m.group(1) + f'{cape}')
+            today_iso = datetime.now(JST).strftime("%Y.%m.%d")
+            ja = sub(ja, r'(Shiller CAPE \(P/E10\).*?)20\d\d\.\d\d\.\d\d基準',
+                     lambda m: m.group(1) + f'{today_iso}基準')
 
         # 푸터
         today_ja = datetime.now(JST).strftime("%Y年%m月%d日")
