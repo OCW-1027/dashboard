@@ -603,7 +603,7 @@ def update_dashboard():
             ja = sub(ja, r'(<td[^>]*>イールドカーブ[^<]*</td><td class="mono">)[+\-0-9.]+%p',
                      lambda m: m.group(1) + f'{spread:+.2f}%p')
         if pce_yoy:
-            ja = sub(ja, r'(<td>コア PCE[^<]*</td><td class="mono">)[0-9.]+%',
+            ja = sub(ja, r'(<td>コアPCE[^<]*</td><td class="mono"[^>]*>)[0-9.]+%',
                      lambda m: m.group(1) + f'{pce_yoy:.1f}%')
         if ism:
             ja = sub(ja, r'(<td>ISM製造業PMI[^<]*</td><td class="mono">)[0-9.]+',
