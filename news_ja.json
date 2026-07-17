@@ -1,51 +1,105 @@
 [
   {
+    "date": "2026-07-17T21:43",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123864",
+    "text": "米国、主要な AI モデルを監督する Finra と同様の規制当局の設立を検討| FJ"
+  },
+  {
+    "date": "2026-07-17T21:22",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123863",
+    "text": "イランのタスニム: イラン中部ヤズド市を5回の爆発が襲った| FJ"
+  },
+  {
+    "date": "2026-07-17T21:16",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123862",
+    "text": "イランのメフル氏：米国のミサイルが南西部の都市アフヴァーズの地区を攻撃| FJ"
+  },
+  {
+    "date": "2026-07-17T20:58",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123861",
+    "text": "トランプ・メディアは金融会社に対し、真実APIを月額6万ドルの割引価格で提供する3年間プランを売り込んだ - 情報源| FJ"
+  },
+  {
+    "date": "2026-07-17T20:19",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157272",
+    "text": "アップルの時価総額は、その日の早い時間にNVIDIAを上回った後、NVIDIAを下回って終了 (@FirstSquaw )"
+  },
+  {
+    "date": "2026-07-17T20:16",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123860",
+    "text": "米国の銀行預金は、前週の 19 兆 4,350 億ドルから 19 兆 3,610 億ドルに減少しました。 FJ"
+  },
+  {
+    "date": "2026-07-17T20:09",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157270",
+    "text": "下院中国委員会が書簡で「SECは中国軍事企業を制限すべき」（@FirstSquaw）"
+  },
+  {
+    "date": "2026-07-17T20:09",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157271",
+    "text": "下院中国委員会が書簡で：企業への資本移動制限を求める ( @FirstSquaw )"
+  },
+  {
+    "date": "2026-07-17T20:07",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123859",
+    "text": "AI支出への懸念が深まる中、チップメーカーが弱気相場に参入 – 米国マーケットラップ| FJ"
+  },
+  {
+    "date": "2026-07-17T20:05",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123858",
+    "text": "下院中国委員会は企業に対する資本移動制限を求めている。| FJ"
+  },
+  {
+    "date": "2026-07-17T20:03",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/123857",
+    "text": "下院中国委員会: SEC は中国の軍事企業を制限する必要がある| FJ"
+  },
+  {
+    "date": "2026-07-17T20:01",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157269",
+    "text": "ナスダックは331.16ポイント、または1.28パーセントの25,550.79で非公式に取引を終了 S&P 500は非公式に71.33ポイント、または0.95パーセントの7,462.44で取引を終了 ダウ・ジョーンズは非公式に取引を終了358.55 ポイント、または 0.68 パーセント、52,194.42 ( @FirstSquaw )"
+  },
+  {
+    "date": "2026-07-17T19:58",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157268",
+    "text": "米国セントコム：東部時間午後3時にイランに対する一連の攻撃を開始 (@FirstSquaw)"
+  },
+  {
+    "date": "2026-07-17T19:52",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157266",
+    "text": "クウェート軍は、イラン軍が複数の軍施設とキャンプを標的にドローンで攻撃したと発表 (@FirstSquaw )"
+  },
+  {
+    "date": "2026-07-17T19:52",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157267",
+    "text": "米国がイランに対する海上封鎖を厳格に強化している中、米軍は引き続き警戒を続けている。更新された実施の最初の3日間に、米軍は完全な遵守を確保するために4隻の商船を転向させ、1隻が障害者となり、1隻が乗船した。 ( @FirstSquaw )"
+  },
+  {
+    "date": "2026-07-17T19:51",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/157265",
+    "text": "クウェート軍、電力や淡水化ステーションを含む重要施設や民間施設が標的にされたと発表 (@FirstSquaw)"
+  },
+  {
     "date": "2026-07-17T15:51",
     "source": "에테르 리서치",
     "link": "https://t.me/aetherjapanresearch/23664",
     "text": "バーンスタイン）中国インターネット：キミモーメント - 蝶効果についての短い考え Kimi K3はホームランです。アジア時間ベースの木曜日に、Kimiは合計2.8兆のパラメータとトークンあたり896の専門家のうち16がアクティブになるK3をリリースしました。 K3モデルカードは、Claude Fable 5とGPT-5.6に近いパフォーマンスを主張しており、初期の公開ベンチマークの結果は、特定のタスク（フロントエンドコードなど）でどちらか一方または両方を上回るパフォーマンスを指しています。オンライン反応と私たちの初期の使用経験の両方が印象的な推論とアセットの生成能力を示しました。その間、Kim"
-  },
-  {
-    "date": "2026-07-17T15:47",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123803",
-    "text": "ブーシェフル副知事：空っぽでカールグ島に停泊していた石油タンカーが再び米国のミサイル攻撃を受けた - イランのIRNA| FJ"
-  },
-  {
-    "date": "2026-07-17T15:41",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157223",
-    "text": "グアテマラとメキシコの海岸では、潮位より0.3～1メートル高い津波が襲来する可能性があります。 ( @FirstSquaw )"
-  },
-  {
-    "date": "2026-07-17T15:41",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157224",
-    "text": "コロンビア、コスタリカ、エクアドルの沿岸では、津波が潮位上0.3メートル未満に達すると予想されています。 ( @FirstSquaw )"
-  },
-  {
-    "date": "2026-07-17T15:41",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157225",
-    "text": "米国の津波警報システムは、エルサルバドル、ホンジュラス、ニカラグア、パナマ、ペルーの海岸で波の高さが潮位より0.3メートル未満になると予測しています。 ( @FirstSquaw )"
-  },
-  {
-    "date": "2026-07-17T15:36",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157222",
-    "text": "イランのIRNAは、ハーグ島に停泊中の空の石油タンカーが再び米国のミサイルによる攻撃を受けたとブシェフル副知事から報告した。 ( @FirstSquaw )"
-  },
-  {
-    "date": "2026-07-17T15:33",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157221",
-    "text": "フランスのCAC 40は0.45%下落。スペインのIBEXは0.45%下落、英国のFTSE 100は0.12%上昇。ドイツのDAX 0.35%下落 ( @FirstSquaw )"
-  },
-  {
-    "date": "2026-07-17T15:33",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123802",
-    "text": "ブーシェフル副知事：空っぽでカールグ島に停泊していた石油タンカーが再び米国のミサイル攻撃を受けた - イランのIRNA| FJ"
   },
   {
     "date": "2026-07-17T15:20",
@@ -54,69 +108,15 @@
     "text": "https://youtu.be/TTj2MrO0NXQ?si=lT1fLaJ0o04dAH6t ㄷㄷㄷㄷ"
   },
   {
-    "date": "2026-07-17T14:57",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157220",
-    "text": "7.4等メキシコ、プエルトマデロの西南西71キロメートルで地震-USGS (@FirstSquaw)"
-  },
-  {
-    "date": "2026-07-17T14:54",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157218",
-    "text": "ロシア、ムィコライウ港で乾貨物船4隻に衝突と発表 - IFX (@FirstSquaw)"
-  },
-  {
-    "date": "2026-07-17T14:54",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/157219",
-    "text": "コノコフィリップスのCEOはテクノロジーの導入に意欲を示している。そしてイラクの首都 (@FirstSquaw )"
-  },
-  {
-    "date": "2026-07-17T14:41",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123801",
-    "text": "イラン軍: 米陸軍の動きと装備は海軍の監督下にある。 FJ"
-  },
-  {
-    "date": "2026-07-17T14:40",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123800",
-    "text": "イラン軍：米国、地域海域におけるCENTCOM海軍部隊に対する作戦開始時刻が近づく - タスニムニュース| FJ"
-  },
-  {
     "date": "2026-07-17T14:21",
     "source": "에테르 리서치",
     "link": "https://t.me/aetherjapanresearch/23661",
     "text": "日本のアリは凄まじく突き当たったㅠㅠ"
   },
   {
-    "date": "2026-07-17T14:18",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123799",
-    "text": "恐怖と貪欲指数: 39/100 - 恐怖 | FJ"
-  },
-  {
-    "date": "2026-07-17T14:17",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123798",
-    "text": "暗号通貨の恐怖と貪欲指数: 27/100 - 恐怖 | FJ"
-  },
-  {
     "date": "2026-07-17T14:16",
     "source": "에테르 리서치",
     "link": "https://t.me/aetherjapanresearch/23660",
     "text": "アリのパニックセルを防ぐための閣下の恩恵でした。"
-  },
-  {
-    "date": "2026-07-17T14:07",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123797",
-    "text": "FRBのハンマック: インフレを抑制するために行動を起こす必要があると考えている企業や、生活のやりくりができない消費者から絶望感が高まっていると聞いています。| FJ"
-  },
-  {
-    "date": "2026-07-17T14:06",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/123796",
-    "text": "FRB のハンマック: 良好な成長率と安定した消費支出が見られます。| FJ"
   }
 ]
