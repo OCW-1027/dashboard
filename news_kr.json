@@ -1,105 +1,111 @@
 [
   {
-    "date": "2026-08-18T15:00",
+    "date": "2026-08-18T21:08",
     "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167549",
-    "text": "현물 금은 1% 이상 하락하여 $4,362.79/OZ를 기록했습니다( @FirstSquaw )"
+    "link": "https://t.me/firstsquaw/167622",
+    "text": "북한은 미국과 한국의 합동군사훈련을 비난하며 자위권 행사가 계속해서 적의 군사적 위협을 완전히 무력화할 것이라고 말했습니다. - KCNA(@FirstSquaw)"
   },
   {
-    "date": "2026-08-18T15:00",
+    "date": "2026-08-18T21:07",
     "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128987",
-    "text": "미국은 8월 20일에 1,100억 달러 규모의 4주권을 매도하고 8월 25일에 결제할 예정입니다.| FJ"
+    "link": "https://t.me/FinancialJuice/129042",
+    "text": "북한: 적들의 군사적 위협을 완전히 무력화하기 위해 자위권 행사를 지속할 것 - KCNA| FJ"
   },
   {
-    "date": "2026-08-18T14:59",
+    "date": "2026-08-18T21:06",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/129041",
+    "text": "북한, 한미 합동 군사훈련 비난: KCNA| FJ"
+  },
+  {
+    "date": "2026-08-18T20:55",
     "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167548",
-    "text": "UAE 국방부는 대공방어 시스템이 미사일 위협을 발견했다고 X에서 발표했습니다. ( @FirstSquaw )"
+    "link": "https://t.me/firstsquaw/167621",
+    "text": "RBNZ 주지사 BREMAN은 RBNZ가 은행 경쟁을 촉진하기 위한 계획을 진행하고 있다고 말했습니다( @FirstSquaw )."
   },
   {
-    "date": "2026-08-18T14:58",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128986",
-    "text": "UAE: 방공 시스템이 미사일 위협을 감지했습니다.| FJ"
-  },
-  {
-    "date": "2026-08-18T14:57",
+    "date": "2026-08-18T20:51",
     "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167546",
-    "text": "프랑스 예산 장관이 발표한 정부는 OPENAI를 고용하지 않을 것입니다. ( @FirstSquaw )"
+    "link": "https://t.me/firstsquaw/167619",
+    "text": "미국 API 원유 재고 변화는 -0.328MLN으로, 이전 빌드는 9.072MLN, 증류유 재고는 2.797MLN 감소, 휘발유 재고는 1.076MLN 증가, 쿠싱 재고는 1.438MLN 감소했습니다( @FirstSquaw )"
   },
   {
-    "date": "2026-08-18T14:57",
+    "date": "2026-08-18T20:51",
     "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167547",
-    "text": "프랑스 예산 장관은 미스트랄과 같은 \"주권\" AI를 고용하려는 정부 계획을 발표했습니다. ( @FirstSquaw )"
+    "link": "https://t.me/firstsquaw/167620",
+    "text": "이스라엘 전투기가 IDLIB와 시리아 사막 상공을 비행합니다 - TASNIM NEWS(@FirstSquaw)"
   },
   {
-    "date": "2026-08-18T14:57",
+    "date": "2026-08-18T20:49",
     "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128985",
-    "text": "프랑스 예산장관: 정부는 미스트랄과 같은 주권 AI를 고용할 것입니다.| FJ"
+    "link": "https://t.me/FinancialJuice/129040",
+    "text": "미국 API 가솔린 재고 변동 실제 1.076M(예측 -, 이전 -1.531M) $MACRO| FJ"
   },
   {
-    "date": "2026-08-18T14:56",
+    "date": "2026-08-18T20:48",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/129037",
+    "text": "미국 API 원유 재고 변동 실제 -0.328M(예측 -, 이전 9.072M) $MACRO| FJ"
+  },
+  {
+    "date": "2026-08-18T20:48",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/129038",
+    "text": "미국 API 쿠싱 재고 변동 실제 -1.438M(예측 -, 이전 1.571M) $MACRO| FJ"
+  },
+  {
+    "date": "2026-08-18T20:48",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/129039",
+    "text": "미국 API 증류액 재고 변동 실제 -2.797M(예측 -, 이전 -0.596M) $MACRO| FJ"
+  },
+  {
+    "date": "2026-08-18T20:46",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/129036",
+    "text": "이스라엘 전투기, 이들리브와 시리아 사막 상공 비행 - Tasnim News| FJ"
+  },
+  {
+    "date": "2026-08-18T20:42",
+    "source": "Financial Juice",
+    "link": "https://t.me/FinancialJuice/129035",
+    "text": "이란 외무부 대변인은 이란에서 걸프만 국가를 향해 발사된 미사일에 대한 UAE의 성명을 거부했습니다. FJ"
+  },
+  {
+    "date": "2026-08-18T20:34",
     "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167545",
-    "text": "두바이: 주민들이 UAE 미사일 위협 경보를 받음(@FirstSquaw)"
+    "link": "https://t.me/firstsquaw/167618",
+    "text": "FLETCHER BUILDING은 경제적, 정치적, 지정학적 배경이 여전히 불확실하고 2027 회계연도 1분기 실적에 영향을 미칠 것으로 예상되지만 EBIT가 26% 증가하여 흑자로 돌아섰습니다. 2027년. FLETCHER BUILDING에서는 NZ$170 MLN의 FY27 자본 지출을 예상합니다. ( @FirstSquaw )"
   },
   {
-    "date": "2026-08-18T14:56",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128984",
-    "text": "두바이 주민들은 UAE 미사일 위협 경보를 받습니다.| FJ"
-  },
-  {
-    "date": "2026-08-18T14:55",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128983",
-    "text": "두바이에서 경보 사이렌이 울렸다 - Tasnim News| FJ"
-  },
-  {
-    "date": "2026-08-18T14:51",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128980",
-    "text": "영란은행(Bank of England)은 내년 1분기까지 은행 금리를 3.75%로 안정적으로 유지할 것으로 중앙값이 나타났습니다. - 여론조사| FJ"
-  },
-  {
-    "date": "2026-08-18T14:51",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128981",
-    "text": "2026년 영국의 인플레이션은 평균 3.1%, 경제성장률은 1.1%로 예상됩니다(vs 7월 여론조사 3.1%, 1.0%) - 여론조사| FJ"
-  },
-  {
-    "date": "2026-08-18T14:51",
-    "source": "Financial Juice",
-    "link": "https://t.me/FinancialJuice/128982",
-    "text": "경제학자 64명 중 56명이 영란은행(BoE)이 2026년 은행 금리를 3.75%로 유지할 것이라고 밝혔습니다. - 여론조사| FJ"
-  },
-  {
-    "date": "2026-08-18T14:48",
+    "date": "2026-08-18T20:27",
     "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167544",
-    "text": "러시아 국방부, 러시아군이 흑해에서 화물선 한 척을 공격했다고 밝혔습니다 - IFX( @FirstSquaw )"
+    "link": "https://t.me/firstsquaw/167616",
+    "text": "이스라엘 총리실은 시리아가 알레포 인근 공군기지에 터키군 배치를 허용함으로써 이스라엘과의 안보 문제에 있어 현 상태를 위반할 위기에 처해 있었으며 시리아는 그러한 배치에 대한 이스라엘의 경고를 무시하기로 결정했다고 밝혔습니다. ( @FirstSquaw )"
+  },
+  {
+    "date": "2026-08-18T20:27",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/167617",
+    "text": "이스라엘 총리실은 이스라엘이 안보에 대한 위협을 용납하지 않을 것이라고 밝혔습니다. ( @FirstSquaw )"
+  },
+  {
+    "date": "2026-08-18T20:26",
+    "source": "First Squawk",
+    "link": "https://t.me/firstsquaw/167615",
+    "text": "네타냐후 사무소는 이스라엘과 시리아가 보안 문제에 관한 현재 상황에 합의했다고 밝혔습니다. 시리아는 터키군이 알레포 인근 공군기지에 배치하도록 허용함으로써 위반 직전에 있었습니다. - SKY NEWS ARABIA(@FirstSquaw)"
+  },
+  {
+    "date": "2026-08-18T15:36",
+    "source": "에테르 리서치",
+    "link": "https://t.me/aetherjapanresearch/24617",
+    "text": "JP모건) 일본은행의 딜레마; 보다 빠른 금리인상 예상 1) 일본은행의 차기 금리 인상 예상 시기를 기존 10월에서 9월로 앞당깁니다 2) 또한 12월 인상도 전망하며, 2026년 말 정책금리 전망치를 1.5%로 상향합니다 3) 재정 스탠스에 큰 변화가 없다는 전제 하에, 2027년에는 4월·7월·12월 총 3회의 인상을 예상하며 정책금리는 2027년 말까지 2.25%에 도달할 것으로 전망합니다 일본은행의 차기 금리 인상 시점 전망을 기존 10월에서 9월로 앞당깁니다. 일본은행 집행부는 가능하다면 경제에 미치는 영향을 신중히 확인하"
   },
   {
     "date": "2026-08-18T14:39",
     "source": "에테르 리서치",
     "link": "https://t.me/aetherjapanresearch/24616",
     "text": "Anthropic은 2026년 2분기에 간접 채널(Bedrock, Foundry, Gemini Agent Enterprise)에서 발생한 ARR 비중이 40%를 넘어섰으며, 랩(lab)들 전반에서 순증 ARR(NNARR) 금액의 대부분은 API와 B2B가 차지했습니다. 이러한 믹스 변화가 중요한 이유는 간접 매출이 직접 매출과 동일한 방식으로 수익화되지 않기 때문입니다. 딜 구조에 따라 하이퍼스케일러는 IaaS 수수료 및/또는 레비뉴 셰어를 가져가는 반면, 랩은 판매 기록 주체(seller of record)로서 총(gross) A"
-  },
-  {
-    "date": "2026-08-18T14:31",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167542",
-    "text": "일본 생명보험사, 금리 급등으로 미실현 채권 손실 2000억 달러에 육박 ( @FirstSquaw )"
-  },
-  {
-    "date": "2026-08-18T14:31",
-    "source": "First Squawk",
-    "link": "https://t.me/firstsquaw/167543",
-    "text": "영국 해군: 제3자 벌크선이 발사체에 맞았다고 보고됨( @FirstSquaw )"
   },
   {
     "date": "2026-08-18T14:06",
@@ -112,11 +118,5 @@
     "source": "에테르 리서치",
     "link": "https://t.me/aetherjapanresearch/24614",
     "text": "美 돌아간 서학개미, 또 AI·레버리지 베팅…외신 \"제정신 아냐\" 지난달 SK하이닉스 ADR 8억달러 순매수 CNBC \"지리적 투자처만 바꾸고 전략은 유지\" https://www.news1.kr/world/international-economy/6261447"
-  },
-  {
-    "date": "2026-08-18T13:49",
-    "source": "에테르 리서치",
-    "link": "https://t.me/aetherjapanresearch/24612",
-    "text": "📱  Citi) Global Tech Hardware; 1H26 서프라이즈, 2026년 상향 / 2027~28년 하향 (2026.08.18, Kyna Wong 외) ━━━━━━━━━━━━━━━ ▪️  핵심 요약 Citi는 글로벌 스마트폰 출하량 전망을 2026년 +5%, 2027년 -5%, 2028년 -4% 조정해 각각 10.9억대/11.2억대/12.1억대(전년비 -14%/+2%/+8%)로 제시했습니다. 반면 ASP 전망은 기존 +7%/+2%/+3%에서 +14%/+5%/+2%로 대폭 상향했는데, 메모리 가격 강세가 장기화되고 프리미"
   }
 ]
