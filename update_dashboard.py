@@ -275,6 +275,34 @@ def sub(html, pattern, repl_fn):
         print(f"  ⚠️  미매칭: {pattern[:60]}")
     return new_html
 
+def latest_written_month(html):
+    """HTML 내 data-written 속성 중 가장 최신 날짜의 (연, 월)을 반환.
+    수동 노트가 하나도 없으면 None."""
+    dates = re.findall(r'data-written="(\d{4})-(\d{2})-\d{2}"', html)
+    if not dates:
+        return None
+    y, m = max(dates)
+    return int(y), int(m)
+
+def update_written_month(html, ja=False):
+    """헤더의 '경제지표 최신: N월 기준' 표기 갱신.
+    이 표기는 '마지막으로 수동 지표를 손본 시점'을 뜻하므로 cron 실행일(오늘)이
+    아니라 data-written 속성 중 최신 날짜의 '월'을 사용한다. 자동 수집 지표만
+    갱신된 날에는 값이 그대로 유지된다."""
+    ym = latest_written_month(html)
+    if ym is None:
+        print("  ⚠️  data-written 속성 없음 — 경제지표 최신 표기 건너뜀")
+        return html
+    y, m = ym
+    if ja:
+        html = sub(html, r'(経済指標最新: <span class="date">)\d{4}年\d{1,2}月基準',
+                   lambda mt: mt.group(1) + f'{y}年{m}月基準')
+    else:
+        html = sub(html, r'(경제지표 최신: <span class="date">)\d{4}년 \d{1,2}월 기준',
+                   lambda mt: mt.group(1) + f'{y}년 {m}월 기준')
+    print(f"  ✅ 경제지표 최신: {y}년 {m}월 기준 (수동 노트 최신일 기준)")
+    return html
+
 def set_text(html, el_id, text):
     return sub(html, rf'(id="{el_id}"[^>]*>).*?(?=<)',
                lambda m: m.group(1) + text)
@@ -511,6 +539,9 @@ def update_dashboard():
 
     print("  ✅ 요약표 완료")
 
+    # 헤더 '경제지표 최신' 표기 (수동 노트 최신일 기준)
+    html = update_written_month(html)
+
     # 푸터
     html = sub(html, r'최종 .{0,5}업데이트: [\d년월일 ]+',
                lambda m: f'최종 자동 업데이트: {today_kr}')
@@ -636,6 +667,9 @@ def update_dashboard():
             today_iso = datetime.now(JST).strftime("%Y.%m.%d")
             ja = sub(ja, r'(Shiller CAPE \(P/E10\).*?)20\d\d\.\d\d\.\d\d基準',
                      lambda m: m.group(1) + f'{today_iso}基準')
+
+        # 헤더 '経済指標最新' 표기 (수동 노트 최신일 기준)
+        ja = update_written_month(ja, ja=True)
 
         # 푸터
         today_ja = datetime.now(JST).strftime("%Y年%m月%d日")
