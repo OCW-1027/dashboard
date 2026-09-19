@@ -133,7 +133,7 @@ def fetch_fear_greed():
         print(f"  ✅ Fear&Greed: {score}")
         return score
     except Exception as e:
-        print(f"  Fear&Greed 오류: {e}")
+        note_fetch_fail("Fear & Greed", e)
         return None
 
 # ── USD/JPY (Stooq) ────────────────────────────────────────────────
@@ -154,7 +154,7 @@ def fetch_ism():
     if v:
         print(f"  ✅ ISM PMI: {v}")
         return v
-    print("  ⏭️  ISM PMI: FRED NAPM 폐지 — 수동 입력 유지 (오폴백 제거됨)")
+    note_known_skip("ISM 제조업 PMI", "FRED NAPM 시리즈 폐지(HTTP 400) — 수동 입력 유지")
     return None
 
 # ── 코어 PCE YoY (FRED 2개값으로 YoY 계산) ─────────────────────────
@@ -175,7 +175,9 @@ def fetch_core_pce_yoy():
             print(f"  ✅ 코어 PCE YoY: {yoy:.1f}% ({mon}월분)")
             return (round(yoy, 1), mon)
     except Exception as e:
-        print(f"  ❌ 코어 PCE YoY 오류: {e}")
+        note_fetch_fail("코어 PCE", e)
+        return None
+    note_fetch_fail("코어 PCE", "FRED 관측치 13개 미만 — YoY 계산 불가")
     return None
 
 # ── NFP 전월대비 ───────────────────────────────────────────────────
@@ -195,7 +197,9 @@ def fetch_nfp_chg():
             print(f"  ✅ NFP 전월比: {chg_k:+,}K ({mon}월분)")
             return (chg_k, mon)
     except Exception as e:
-        print(f"  ❌ NFP 오류: {e}")
+        note_fetch_fail("비농업 고용(NFP)", e)
+        return None
+    note_fetch_fail("비농업 고용(NFP)", "FRED 관측치 2개 미만 — 전월비 계산 불가")
     return None
 
 # ── FedWatch (CME) ─────────────────────────────────────────────────
@@ -220,9 +224,9 @@ def fetch_fedwatch():
                         print(f"  ✅ FedWatch 동결확률: {val}%")
                         return val
     except Exception as e:
-        print(f"  ⏭️  FedWatch: CME 엔드포인트 차단 ({e}) — 수동 입력 유지")
+        note_known_skip("FedWatch", f"CME 엔드포인트 차단 ({e}) — 수동 입력 유지")
         return None
-    print("  ⏭️  FedWatch: 응답에 동결 확률 없음 — 수동 입력 유지")
+    note_known_skip("FedWatch", "응답에 동결 확률 필드 없음 — 수동 입력 유지")
     return None
 
 # ── 버핏 지표 (Wilshire5000 / GDP) ────────────────────────────────
@@ -238,7 +242,7 @@ def fetch_buffett():
             ratio = round(wilshire / gdp * 100, 1)
             print(f"  ✅ 버핏 지표: {ratio}%")
             return ratio
-        print("  ⏭️  버핏 지표: Wilshire 시리즈 폐지 — 수동 입력 유지")
+        note_known_skip("버핏 지표", "FRED Wilshire 시리즈 폐지(HTTP 400) — 수동 입력 유지")
     except Exception as e:
         print(f"  ❌ 버핏 지표 오류: {e}")
     return None
@@ -262,9 +266,10 @@ def fetch_shiller_cape():
             cape = float(m.group(1))
             print(f"  ✅ Shiller CAPE: {cape}")
             return cape
-        print("  ⚠️  Shiller CAPE: multpl 페이지에서 값 패턴 미발견")
+        note_fetch_fail("Shiller CAPE", "multpl.com 응답에서 값 패턴 미발견 — 페이지 구조 변경 의심")
+        return None
     except Exception as e:
-        print(f"  ❌ Shiller CAPE 오류: {e}")
+        note_fetch_fail("Shiller CAPE", e)
     return None
 
 # ── 포맷 함수 ──────────────────────────────────────────────────────
@@ -282,11 +287,114 @@ def border_col(chg):
     if chg is None: return "rgba(28,35,51,1)"
     return "rgba(31,189,138,.35)" if chg >= 0 else "rgba(232,73,90,.35)"
 
-def sub(html, pattern, repl_fn):
+# ── 실패 추적 (GitHub Actions 로그 경고용) ────────────────────────
+# 조용히 넘어가면 다음에 깨져도 알 수 없으므로, 실패를 모아 실행 말미에
+# GitHub Actions 주석(annotation)과 스텝 요약으로 올린다.
+MATCH_FAILURES = []   # (지표명, 파일, 정규식) — 패턴 매칭 실패 = HTML 구조 변경 의심
+FETCH_FAILURES = []   # (지표명, 사유)        — 수집 자체 실패 (예상 밖)
+KNOWN_SKIPS    = []   # (지표명, 사유)        — 상류 폐지·차단 등 알려진 상태
+
+IS_GHA = os.environ.get("GITHUB_ACTIONS") == "true"
+CURRENT_FILE = "index.html"   # sub() 호출 시점의 대상 파일 (로그 구분용)
+
+def gha(kind, msg):
+    """GitHub Actions 주석 출력. Actions에서는 실행 요약 화면에 뜨고,
+    로컬에서는 평문으로 보인다. kind: warning | error | notice"""
+    if IS_GHA:
+        # 주석 본문에 개행이 있으면 파싱이 깨지므로 한 줄로 정리
+        one_line = " ".join(str(msg).split())
+        print("::%s file=update_dashboard.py::%s" % (kind, one_line))
+    else:
+        icon = {"warning": "⚠️", "error": "❌", "notice": "ℹ️"}.get(kind, "·")
+        print("  %s %s" % (icon, msg))
+
+_LABEL_STOP = "\\[(<" + chr(34) + chr(39)
+
+def _derive_label(pattern):
+    """정규식에서 사람이 읽을 지표명을 추출 (명시 label이 없을 때)."""
+    m = re.search(r'id="([a-zA-Z0-9_-]+)"', pattern)
+    if m:
+        return m.group(1)
+    # class="xref">라벨 / <td>라벨</td> 형태
+    m = re.search(r'(?:xref">|<td>)\s*([^' + _LABEL_STOP + r']{2,30}?)\s*(?:\\\(|</|<)', pattern)
+    if m and m.group(1).strip():
+        return m.group(1).strip()
+    # 한글/일본어 덩어리
+    m = re.search("([가-힣ぁ-ヿ一-鿿][^" + _LABEL_STOP + "]{1,28})", pattern)
+    if m:
+        return m.group(1).strip()
+    # 영문 클래스명 등
+    m = re.search(r'([a-zA-Z][a-zA-Z0-9 &;_-]{2,28})', pattern)
+    if m:
+        return m.group(1).strip()
+    return pattern[:40]
+
+def sub(html, pattern, repl_fn, label=None):
     new_html, n = re.subn(pattern, repl_fn, html, count=1, flags=re.DOTALL)
     if n == 0:
-        print(f"  ⚠️  미매칭: {pattern[:60]}")
+        name = label or _derive_label(pattern)
+        MATCH_FAILURES.append((name, CURRENT_FILE, pattern))
+        gha("warning", "[%s] 패턴 매칭 실패 — HTML 구조 변경 의심 (%s)" % (name, CURRENT_FILE))
     return new_html
+
+def note_fetch_fail(name, reason):
+    """수집기가 값을 못 가져온 경우 (예상 밖 — 경고)."""
+    FETCH_FAILURES.append((name, str(reason)))
+    gha("warning", "[%s] 수집 실패 — %s" % (name, reason))
+
+def note_known_skip(name, reason):
+    """상류 폐지·차단 등 이미 파악된 사유 (경고 아님 — 알림)."""
+    KNOWN_SKIPS.append((name, str(reason)))
+    gha("notice", "[%s] 자동 수집 건너뜀 — %s" % (name, reason))
+
+def report_failures():
+    """실행 말미 요약. Actions 실행 요약 화면($GITHUB_STEP_SUMMARY)에도 남긴다."""
+    print("\n" + "=" * 55)
+    if not MATCH_FAILURES and not FETCH_FAILURES:
+        print("✅ 패턴 매칭·수집 실패 없음")
+    else:
+        if MATCH_FAILURES:
+            print("⚠️  패턴 매칭 실패 %d건 — HTML 구조 변경 의심" % len(MATCH_FAILURES))
+            for name, fname, pat in MATCH_FAILURES:
+                print("     · [%s] (%s)" % (name, fname))
+                print("       정규식: %s" % pat[:90])
+        if FETCH_FAILURES:
+            print("⚠️  수집 실패 %d건" % len(FETCH_FAILURES))
+            for name, reason in FETCH_FAILURES:
+                print("     · [%s] %s" % (name, reason))
+    if KNOWN_SKIPS:
+        print("ℹ️  알려진 건너뜀 %d건 (상류 폐지·차단 — 수동 유지)" % len(KNOWN_SKIPS))
+        for name, reason in KNOWN_SKIPS:
+            print("     · [%s] %s" % (name, reason))
+    print("=" * 55)
+
+    path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not path:
+        return
+    try:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write("## 대시보드 자동 업데이트 결과\n\n")
+            if MATCH_FAILURES:
+                f.write("### ⚠️ 패턴 매칭 실패 %d건 — HTML 구조 변경 의심\n\n" % len(MATCH_FAILURES))
+                f.write("| 지표 | 파일 | 정규식 |\n|---|---|---|\n")
+                for name, fname, pat in MATCH_FAILURES:
+                    f.write("| %s | %s | `%s` |\n" % (name, fname, pat[:80].replace("|", "\\|")))
+                f.write("\n")
+            if FETCH_FAILURES:
+                f.write("### ⚠️ 수집 실패 %d건\n\n" % len(FETCH_FAILURES))
+                f.write("| 지표 | 사유 |\n|---|---|\n")
+                for name, reason in FETCH_FAILURES:
+                    f.write("| %s | %s |\n" % (name, reason.replace("|", "\\|")))
+                f.write("\n")
+            if not MATCH_FAILURES and not FETCH_FAILURES:
+                f.write("✅ 패턴 매칭·수집 실패 없음\n\n")
+            if KNOWN_SKIPS:
+                f.write("<details><summary>ℹ️ 알려진 건너뜀 %d건 (수동 유지)</summary>\n\n" % len(KNOWN_SKIPS))
+                for name, reason in KNOWN_SKIPS:
+                    f.write("- **%s** — %s\n" % (name, reason))
+                f.write("\n</details>\n")
+    except Exception as e:
+        print("  (스텝 요약 기록 실패: %s)" % e)
 
 def latest_written_month(html):
     """HTML 내 data-written 속성 중 가장 최신 날짜의 (연, 월)을 반환.
@@ -309,20 +417,20 @@ def update_written_month(html, ja=False):
     y, m = ym
     if ja:
         html = sub(html, r'(経済指標最新: <span class="date">)\d{4}年\d{1,2}月基準',
-                   lambda mt: mt.group(1) + f'{y}年{m}月基準')
+                   lambda mt: mt.group(1) + f'{y}年{m}月基準', label="経済指標最新 표기 (JA)")
     else:
         html = sub(html, r'(경제지표 최신: <span class="date">)\d{4}년 \d{1,2}월 기준',
-                   lambda mt: mt.group(1) + f'{y}년 {m}월 기준')
+                   lambda mt: mt.group(1) + f'{y}년 {m}월 기준', label="경제지표 최신 표기")
     print(f"  ✅ 경제지표 최신: {y}년 {m}월 기준 (수동 노트 최신일 기준)")
     return html
 
 def set_text(html, el_id, text):
     return sub(html, rf'(id="{el_id}"[^>]*>).*?(?=<)',
-               lambda m: m.group(1) + text)
+               lambda m: m.group(1) + text, label=el_id)
 
 def set_chg(html, el_id, content):
     return sub(html, rf'(<div[^>]*\bid="{el_id}"[^>]*>)(.*?)(</div>)',
-               lambda m: m.group(1) + content + m.group(3))
+               lambda m: m.group(1) + content + m.group(3), label=el_id)
 
 def set_border(html, el_id, border):
     new_html, n = re.subn(
@@ -345,6 +453,8 @@ def update_index_card(html, idx_id, data, fmt="USD"):
 
 # ── 메인 ──────────────────────────────────────────────────────────
 def update_dashboard():
+    global CURRENT_FILE
+    CURRENT_FILE = "index.html"
     print("=" * 55)
     print(f"대시보드 업데이트: {datetime.now(JST).strftime('%Y-%m-%d %H:%M JST')}")
     print("=" * 55)
@@ -415,23 +525,23 @@ def update_dashboard():
     # VIX
     if vix:
         html = sub(html, r'(📊 VIX — 공포지수.*?<div class="bval"[^>]+>)[0-9.]+',
-                   lambda m: m.group(1) + f'{vix:.2f}')
+                   lambda m: m.group(1) + f'{vix:.2f}', label="VIX 카드 값")
         html = sub(html, r'(VIX — 공포지수.*?<div class="blabel">)[^<]+',
-                   lambda m: m.group(1) + f'{today} 종가')
+                   lambda m: m.group(1) + f'{today} 종가', label="VIX 카드 라벨")
 
     # 수익률 곡선
     if spread is not None:
         html = sub(html, r'(📉 미국 수익률 곡선.*?<div class="bval"[^>]+>)[^<]+',
-                   lambda m: m.group(1) + f'{spread:+.2f}%p')
+                   lambda m: m.group(1) + f'{spread:+.2f}%p', label="수익률 곡선 카드 값")
     if y2:
         html = sub(html, r'(<td>2년</td><td class="mono">)[0-9.]+(%</td>)',
-                   lambda m: m.group(1) + f'{y2:.2f}' + m.group(2))
+                   lambda m: m.group(1) + f'{y2:.2f}' + m.group(2), label="수익률 곡선 2Y")
     if y10:
         html = sub(html, r'(<td>10년</td><td class="mono">)[0-9.]+(%</td>)',
-                   lambda m: m.group(1) + f'{y10:.2f}' + m.group(2))
+                   lambda m: m.group(1) + f'{y10:.2f}' + m.group(2), label="수익률 곡선 10Y")
     if y30:
         html = sub(html, r'(<td>30년</td><td class="mono">)[0-9.]+(%</td>)',
-                   lambda m: m.group(1) + f'{y30:.2f}' + m.group(2))
+                   lambda m: m.group(1) + f'{y30:.2f}' + m.group(2), label="수익률 곡선 30Y")
 
     # Fear & Greed
     if fg:
@@ -441,127 +551,127 @@ def update_dashboard():
         fg_col = "#e8495a" if fg<=24 else "#e8a030" if fg<=44 else "#dde3ee" if fg<=55 else "#1fbd8a"
         fg_mmdd = datetime.now(JST).strftime("%m/%d").lstrip("0").replace("/0", "/")
         html = sub(html, r'(gauge-num" style="color:)[^"]+',
-                   lambda m: m.group(1) + fg_col)
+                   lambda m: m.group(1) + fg_col, label="F&G 게이지 색상")
         html = sub(html, r'(gauge-num" style="color:[^"]+">)\d+',
-                   lambda m: m.group(1) + str(fg))
+                   lambda m: m.group(1) + str(fg), label="F&G 게이지 수치")
         html = sub(html, r'(gauge-status" style="color:)[^"]+',
-                   lambda m: m.group(1) + fg_col)
+                   lambda m: m.group(1) + fg_col, label="F&G 상태 색상")
         html = sub(html, r'(gauge-status" style="color:[^"]+">)[^<]+',
-                   lambda m: m.group(1) + fg_lbl)
+                   lambda m: m.group(1) + fg_lbl, label="F&G 상태 라벨")
         # F&G 카드의 pbar는 배경이 hex(게이지 색)라 var(--red) 패턴으로는 잡히지 않았다.
         # pbar-wrap margin-top:14px 는 F&G 카드에만 있어 앵커로 쓴다.
         html = sub(html, r'(pbar-wrap" style="margin-top:14px;"><div class="pbar-track"><div class="pbar-fill" style="width:)\d+(%;background:)#[0-9a-fA-F]{6}',
-                   lambda m: m.group(1) + str(fg) + m.group(2) + fg_col)
+                   lambda m: m.group(1) + str(fg) + m.group(2) + fg_col, label="F&G 진행바")
         html = sub(html, r'(pbar-wrap" style="margin-top:14px;".{0,220}?<span style="color:)#[0-9a-fA-F]{6}(;font-weight:700;">▲ )\d+',
-                   lambda m: m.group(1) + fg_col + m.group(2) + str(fg))
+                   lambda m: m.group(1) + fg_col + m.group(2) + str(fg), label="F&G 진행바 라벨")
         # 게이지 좌측 '현재 (M/D) NN' 행
         html = sub(html, r'(<div class="gauge-item"><span>현재 \()\d+/\d+(\)</span><span style="color:)[^"]+(">)\d+',
-                   lambda m: m.group(1) + fg_mmdd + m.group(2) + fg_col + ";" + m.group(3) + str(fg))
+                   lambda m: m.group(1) + fg_mmdd + m.group(2) + fg_col + ";" + m.group(3) + str(fg), label="F&G 현재값 행")
 
     # WTI / 브렌트
     if wti:
         html = sub(html, r'(WTI 원유</div><div class="sv"[^>]+>\$)[0-9.]+',
-                   lambda m: m.group(1) + f'{wti:.2f}')
+                   lambda m: m.group(1) + f'{wti:.2f}', label="WTI 리스크카드(텍스트)")
     if brent:
         html = sub(html, r'(브렌트유</div><div class="sv"[^>]+>\$)[0-9.]+',
-                   lambda m: m.group(1) + f'{brent:.0f}')
+                   lambda m: m.group(1) + f'{brent:.0f}', label="브렌트 리스크카드(텍스트)")
 
     # ── 요약표 업데이트 ──────────────────────────────────────────
     # USD/JPY 요약표
     if usdjpy:
         html = sub(html, r'(id="summary-usdjpy"[^>]*>)¥[0-9,.]+',
-                   lambda m: m.group(1) + f'¥{usdjpy:,.2f}')
+                   lambda m: m.group(1) + f'¥{usdjpy:,.2f}', label="USD/JPY 요약표")
         print(f"  ✅ USD/JPY: ¥{usdjpy:,.2f}")
 
     # 닛케이225
     if nk225:
         html = sub(html, r'(class="xref">닛케이225</a></td><td class="mono">)[0-9,]+',
-                   lambda m: m.group(1) + f'{nk225["price"]:,.0f}')
+                   lambda m: m.group(1) + f'{nk225["price"]:,.0f}', label="닛케이225 요약표")
 
     # VIX
     if vix:
         html = sub(html, r'(class="xref">VIX 공포지수</a></td><td class="mono">)[0-9.]+',
-                   lambda m: m.group(1) + f'{vix:.2f}')
+                   lambda m: m.group(1) + f'{vix:.2f}', label="VIX 요약표")
 
     # 수익률 곡선
     if spread:
         html = sub(html, r'(class="xref">수익률 곡선 10Y-2Y</a></td><td class="mono">)[+\-0-9.]+%p',
-                   lambda m: m.group(1) + f'{spread:+.2f}%p')
+                   lambda m: m.group(1) + f'{spread:+.2f}%p', label="수익률 곡선 요약표")
         # 노트 본문의 '스프레드 +X.XX%p'도 같이 갱신 (표↔노트 수치 불일치 방지)
         html = sub(html, r'(스티프닝 가속\. 스프레드 )[+\-0-9.]+%p',
-                   lambda m: m.group(1) + f'{spread:+.2f}%p')
+                   lambda m: m.group(1) + f'{spread:+.2f}%p', label="수익률 곡선 노트 스프레드")
 
     # 코어 PCE — 요약표 (값 + 월 라벨을 FRED 관측월로 동기화)
     if pce_yoy:
         v, mon = pce_yoy
         html = sub(html, r'(class="xref">코어 PCE \()\d+(월\)</a></td><td class="mono">)[0-9.]+(%)',
-                   lambda m: m.group(1) + str(mon) + m.group(2) + f'{v:.1f}' + m.group(3))
+                   lambda m: m.group(1) + str(mon) + m.group(2) + f'{v:.1f}' + m.group(3), label="코어 PCE 요약표")
         print(f"  ✅ 코어 PCE YoY: {v:.1f}% ({mon}월)")
 
     # ISM PMI — FRED NAPM 폐지로 현재 항상 None (수동 유지)
     if ism:
         html = sub(html, r'(class="xref">ISM 제조업 PMI[^<]*</a></td><td class="mono">)[0-9.]+',
-                   lambda m: m.group(1) + f'{ism:.1f}')
+                   lambda m: m.group(1) + f'{ism:.1f}', label="ISM 제조업 PMI 요약표")
 
     # 미시간 소비심리 — 자동 갱신하지 않는다.
     # FRED UMCSENT는 '최종치'만 월 1회 늦게 들어와 대시보드가 표시하는
     # '예비치'보다 1~2개월 뒤처진다. 자동 반영하면 최신 예비치(예: 9월 47.8)가
     # 과거 최종치(예: 7월 55.2)로 되돌아간다.
     if michigan:
-        print(f"  ⏭️  미시간: FRED 최종치 {michigan:.1f} — 예비치 표기와 시점 불일치로 자동 반영 안 함")
+        note_known_skip("미시간 소비심리", f"FRED 최종치 {michigan:.1f} — 대시보드 예비치와 시점 불일치로 자동 반영 안 함")
 
     # 비농업 고용 — 요약표 (K 단위 + 월 라벨 동기화)
     if nfp_chg is not None:
         chg_k, mon = nfp_chg
         html = sub(html, r'(class="xref">비농업 고용 \()\d+(월\)</a></td><td class="mono">)[+\-−][\d,]+K',
-                   lambda m: m.group(1) + str(mon) + m.group(2) + f'{chg_k:+,}K')
+                   lambda m: m.group(1) + str(mon) + m.group(2) + f'{chg_k:+,}K', label="비농업 고용(NFP) 요약표")
         print(f"  ✅ NFP: {chg_k:+,}K ({mon}월)")
 
     # Fear & Greed 요약표
     if fg:
         html = sub(html, r'(class="xref">Fear &amp; Greed</a></td><td class="mono">)\d+',
-                   lambda m: m.group(1) + str(fg))
+                   lambda m: m.group(1) + str(fg), label="Fear & Greed 요약표")
 
     # FedWatch — CME 403으로 현재 항상 None (수동 유지)
     if fedwatch:
         html = sub(html, r'(class="xref">FedWatch[^<]*</a></td><td class="mono">)[0-9.]+%',
-                   lambda m: m.group(1) + f'{fedwatch}%')
+                   lambda m: m.group(1) + f'{fedwatch}%', label="FedWatch 요약표")
         print(f"  ✅ FedWatch 동결확률: {fedwatch}%")
 
     # WTI / 브렌트 요약표
     if wti:
         html = sub(html, r'(class="xref">WTI 원유</a></td><td class="mono">\$)[0-9.]+',
-                   lambda m: m.group(1) + f'{wti:.0f}')
+                   lambda m: m.group(1) + f'{wti:.0f}', label="WTI 요약표")
     if brent:
         html = sub(html, r'(class="xref">브렌트유</a></td><td class="mono">\$)[0-9.]+',
-                   lambda m: m.group(1) + f'{brent:.0f}')
+                   lambda m: m.group(1) + f'{brent:.0f}', label="브렌트 요약표")
 
     # 리스크 카드 (WTI, 브렌트, VIX 실시간 반영)
     if wti:
         html = sub(html, r'(id="risk-wti"[^>]*>)\$[0-9.]+',
-                   lambda m: m.group(1) + f'${wti:.2f}')
+                   lambda m: m.group(1) + f'${wti:.2f}', label="WTI 리스크카드(id)")
     if brent:
         html = sub(html, r'(id="risk-brent"[^>]*>)\$[0-9.]+',
-                   lambda m: m.group(1) + f'${brent:.0f}')
+                   lambda m: m.group(1) + f'${brent:.0f}', label="브렌트 리스크카드(id)")
     if vix:
         html = sub(html, r'(id="risk-vix"[^>]*>)[0-9.]+',
-                   lambda m: m.group(1) + f'{vix:.2f}')
+                   lambda m: m.group(1) + f'{vix:.2f}', label="VIX 리스크카드(id)")
 
     # 버핏 지표
     if buffett:
         html = sub(html, r'(class="xref">버핏 지표</a></td><td class="mono">)[0-9~.%]+',
-                   lambda m: m.group(1) + f'{buffett}%')
+                   lambda m: m.group(1) + f'{buffett}%', label="버핏 지표 요약표")
         print(f"  ✅ 버핏 지표: {buffett}%")
 
     # Shiller CAPE
     if cape:
         # bval 직접 매칭 (Shiller CAPE 카드 본문)
         html = sub(html, r'(Shiller CAPE \(P/E10\).*?<div class="bval"[^>]+>)[0-9.]+',
-                   lambda m: m.group(1) + f'{cape}')
+                   lambda m: m.group(1) + f'{cape}', label="Shiller CAPE 카드 값")
         # 카드 헤더의 날짜 갱신
         today_iso = datetime.now(JST).strftime("%Y.%m.%d")
         html = sub(html, r'(Shiller CAPE \(P/E10\).*?)20\d\d\.\d\d\.\d\d 기준',
-                   lambda m: m.group(1) + f'{today_iso} 기준')
+                   lambda m: m.group(1) + f'{today_iso} 기준', label="Shiller CAPE 기준일")
         print(f"  ✅ Shiller CAPE: {cape}")
 
     print("  ✅ 요약표 완료")
@@ -571,7 +681,7 @@ def update_dashboard():
 
     # 푸터
     html = sub(html, r'최종 .{0,5}업데이트: [\d년월일 ]+',
-               lambda m: f'최종 자동 업데이트: {today_kr}')
+               lambda m: f'최종 자동 업데이트: {today_kr}', label="푸터 갱신일")
 
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(html)
@@ -582,6 +692,7 @@ def update_dashboard():
     ja_path = os.path.join(os.path.dirname(__file__), "index_ja.html")
     if os.path.exists(ja_path):
         print("\n[5] 일본어 버전 업데이트...")
+        CURRENT_FILE = "index_ja.html"   # 이후 sub() 경고에 파일명이 함께 찍힌다
         with open(ja_path, "r", encoding="utf-8") as f:
             ja = f.read()
 
@@ -604,23 +715,23 @@ def update_dashboard():
         # VIX (텍스트 매칭 — ID 없음)
         if vix:
             ja = sub(ja, r'(📊 VIX — 恐怖指数.*?<div class="bval"[^>]+>)[0-9.]+',
-                     lambda m: m.group(1) + f'{vix:.2f}')
+                     lambda m: m.group(1) + f'{vix:.2f}', label="VIX 카드 값 (JA)")
             ja = sub(ja, r'(VIX — 恐怖指数.*?<div class="blabel">)[^<]+',
-                     lambda m: m.group(1) + f'{today} 終値')
+                     lambda m: m.group(1) + f'{today} 終値', label="VIX 카드 라벨 (JA)")
 
         # 수익률 곡선 (텍스트 매칭)
         if spread is not None:
             ja = sub(ja, r'(📉 米国イールドカーブ.*?<div class="bval"[^>]+>)[^<]+',
-                     lambda m: m.group(1) + f'{spread:+.2f}%p')
+                     lambda m: m.group(1) + f'{spread:+.2f}%p', label="수익률 곡선 카드 값 (JA)")
         if y2:
             ja = sub(ja, r'(<td>2年</td><td class="mono">)[0-9.]+(%</td>)',
-                     lambda m: m.group(1) + f'{y2:.2f}' + m.group(2))
+                     lambda m: m.group(1) + f'{y2:.2f}' + m.group(2), label="수익률 곡선 2Y (JA)")
         if y10:
             ja = sub(ja, r'(<td>10年</td><td class="mono">)[0-9.]+(%</td>)',
-                     lambda m: m.group(1) + f'{y10:.2f}' + m.group(2))
+                     lambda m: m.group(1) + f'{y10:.2f}' + m.group(2), label="수익률 곡선 10Y (JA)")
         if y30:
             ja = sub(ja, r'(<td>30年</td><td class="mono">)[0-9.]+(%</td>)',
-                     lambda m: m.group(1) + f'{y30:.2f}' + m.group(2))
+                     lambda m: m.group(1) + f'{y30:.2f}' + m.group(2), label="수익률 곡선 30Y (JA)")
 
         # Fear & Greed
         if fg:
@@ -630,78 +741,78 @@ def update_dashboard():
             fg_col = "#e8495a" if fg<=24 else "#e8a030" if fg<=44 else "#dde3ee" if fg<=55 else "#1fbd8a"
             fg_mmdd = datetime.now(JST).strftime("%m/%d").lstrip("0").replace("/0", "/")
             ja = sub(ja, r'(gauge-num" style="color:)[^"]+',
-                     lambda m: m.group(1) + fg_col)
+                     lambda m: m.group(1) + fg_col, label="F&G 게이지 색상 (JA)")
             ja = sub(ja, r'(gauge-num" style="color:[^"]+">)\d+',
-                     lambda m: m.group(1) + str(fg))
+                     lambda m: m.group(1) + str(fg), label="F&G 게이지 수치 (JA)")
             ja = sub(ja, r'(gauge-status" style="color:)[^"]+',
-                     lambda m: m.group(1) + fg_col)
+                     lambda m: m.group(1) + fg_col, label="F&G 상태 색상 (JA)")
             ja = sub(ja, r'(gauge-status" style="color:[^"]+">)[^<]+',
-                     lambda m: m.group(1) + fg_lbl)
+                     lambda m: m.group(1) + fg_lbl, label="F&G 상태 라벨 (JA)")
             ja = sub(ja, r'(pbar-wrap" style="margin-top:14px;"><div class="pbar-track"><div class="pbar-fill" style="width:)\d+(%;background:)#[0-9a-fA-F]{6}',
-                     lambda m: m.group(1) + str(fg) + m.group(2) + fg_col)
+                     lambda m: m.group(1) + str(fg) + m.group(2) + fg_col, label="F&G 진행바 (JA)")
             ja = sub(ja, r'(pbar-wrap" style="margin-top:14px;".{0,220}?<span style="color:)#[0-9a-fA-F]{6}(;font-weight:700;">▲ )\d+',
-                     lambda m: m.group(1) + fg_col + m.group(2) + str(fg))
+                     lambda m: m.group(1) + fg_col + m.group(2) + str(fg), label="F&G 진행바 라벨 (JA)")
             ja = sub(ja, r'(<div class="gauge-item"><span>現在 \()\d+/\d+(\)</span><span style="color:)[^"]+(">)\d+',
-                     lambda m: m.group(1) + fg_mmdd + m.group(2) + fg_col + ";" + m.group(3) + str(fg))
+                     lambda m: m.group(1) + fg_mmdd + m.group(2) + fg_col + ";" + m.group(3) + str(fg), label="F&G 현재값 행 (JA)")
 
         # 리스크 카드 (ID 기반)
         if wti:   ja = sub(ja, r'(id="risk-wti"[^>]*>)\$[0-9.]+',
-                           lambda m: m.group(1) + f'${wti:.2f}')
+                           lambda m: m.group(1) + f'${wti:.2f}', label="WTI 리스크카드(id) (JA)")
         if brent: ja = sub(ja, r'(id="risk-brent"[^>]*>)\$[0-9.]+',
-                           lambda m: m.group(1) + f'${brent:.0f}')
+                           lambda m: m.group(1) + f'${brent:.0f}', label="브렌트 리스크카드(id) (JA)")
         if vix:   ja = sub(ja, r'(id="risk-vix"[^>]*>)[0-9.]+',
-                           lambda m: m.group(1) + f'{vix:.2f}')
+                           lambda m: m.group(1) + f'{vix:.2f}', label="VIX 리스크카드(id) (JA)")
 
         # 요약표 (일본어 텍스트 매칭)
         if usdjpy:
             ja = sub(ja, r'(id="summary-usdjpy"[^>]*>)¥[0-9,.]+',
-                     lambda m: m.group(1) + f'¥{usdjpy:,.2f}')
+                     lambda m: m.group(1) + f'¥{usdjpy:,.2f}', label="USD/JPY 요약표 (JA)")
         if nk225:
             ja = sub(ja, r'(class="xref">日経225</a></td><td class="mono">)[0-9,]+',
-                     lambda m: m.group(1) + f'{nk225["price"]:,.0f}')
+                     lambda m: m.group(1) + f'{nk225["price"]:,.0f}', label="닛케이225 요약표 (JA)")
         if vix:
             ja = sub(ja, r'(class="xref">VIX ?恐怖指数</a></td><td class="mono">)[0-9.]+',
-                     lambda m: m.group(1) + f'{vix:.2f}')
+                     lambda m: m.group(1) + f'{vix:.2f}', label="VIX 요약표 (JA)")
         if spread:
             ja = sub(ja, r'(class="xref">イールドカーブ[^<]*</a></td><td class="mono">)[+\-0-9.]+%p',
-                     lambda m: m.group(1) + f'{spread:+.2f}%p')
+                     lambda m: m.group(1) + f'{spread:+.2f}%p', label="수익률 곡선 요약표 (JA)")
             ja = sub(ja, r'(スティープニング加速。スプレッド)[+\-0-9.]+%p',
-                     lambda m: m.group(1) + f'{spread:+.2f}%p')
+                     lambda m: m.group(1) + f'{spread:+.2f}%p', label="수익률 곡선 노트 스프레드 (JA)")
         if pce_yoy:
             v, mon = pce_yoy
             ja = sub(ja, r'(class="xref">コアPCE \()\d+(月\)</a></td><td class="mono">)[0-9.]+(%)',
-                     lambda m: m.group(1) + str(mon) + m.group(2) + f'{v:.1f}' + m.group(3))
+                     lambda m: m.group(1) + str(mon) + m.group(2) + f'{v:.1f}' + m.group(3), label="코어 PCE 요약표 (JA)")
         if ism:
             ja = sub(ja, r'(class="xref">ISM製造業PMI[^<]*</a></td><td class="mono">)[0-9.]+',
-                     lambda m: m.group(1) + f'{ism:.1f}')
+                     lambda m: m.group(1) + f'{ism:.1f}', label="ISM 제조업 PMI 요약표 (JA)")
         if michigan:
             pass  # 미시간: FRED 최종치와 대시보드 예비치의 시점 불일치로 자동 반영 안 함
         if nfp_chg is not None:
             chg_k, mon = nfp_chg
             ja = sub(ja, r'(class="xref">非農業雇用 \()\d+(月\)</a></td><td class="mono">)[+\-−][\d,]+K',
-                     lambda m: m.group(1) + str(mon) + m.group(2) + f'{chg_k:+,}K')
+                     lambda m: m.group(1) + str(mon) + m.group(2) + f'{chg_k:+,}K', label="비농업 고용(NFP) 요약표 (JA)")
         if fg:
             ja = sub(ja, r'(class="xref">Fear &amp; Greed</a></td><td class="mono">)\d+',
-                     lambda m: m.group(1) + str(fg))
+                     lambda m: m.group(1) + str(fg), label="Fear & Greed 요약표 (JA)")
         if fedwatch:
             ja = sub(ja, r'(class="xref">FedWatch[^<]*</a></td><td class="mono">)[0-9.]+%',
-                     lambda m: m.group(1) + f'{fedwatch}%')
+                     lambda m: m.group(1) + f'{fedwatch}%', label="FedWatch 요약표 (JA)")
         if wti:
             ja = sub(ja, r'(class="xref">WTI原油</a></td><td class="mono">\$)[0-9.]+',
-                     lambda m: m.group(1) + f'{wti:.0f}')
+                     lambda m: m.group(1) + f'{wti:.0f}', label="WTI 요약표 (JA)")
         if brent:
             ja = sub(ja, r'(class="xref">ブレント原油</a></td><td class="mono">\$)[0-9.]+',
-                     lambda m: m.group(1) + f'{brent:.0f}')
+                     lambda m: m.group(1) + f'{brent:.0f}', label="브렌트 요약표 (JA)")
         if buffett:
             ja = sub(ja, r'(class="xref">バフェット指標</a></td><td class="mono">)[0-9~.%]+',
-                     lambda m: m.group(1) + f'{buffett}%')
+                     lambda m: m.group(1) + f'{buffett}%', label="버핏 지표 요약표 (JA)")
         if cape:
             # 일본어 Shiller CAPE 카드 본문 직접 매칭
             ja = sub(ja, r'(Shiller CAPE \(P/E10\).*?<div class="bval"[^>]+>)[0-9.]+',
-                     lambda m: m.group(1) + f'{cape}')
+                     lambda m: m.group(1) + f'{cape}', label="Shiller CAPE 카드 값 (JA)")
             today_iso = datetime.now(JST).strftime("%Y.%m.%d")
             ja = sub(ja, r'(Shiller CAPE \(P/E10\).*?)20\d\d\.\d\d\.\d\d基準',
-                     lambda m: m.group(1) + f'{today_iso}基準')
+                     lambda m: m.group(1) + f'{today_iso}基準', label="Shiller CAPE 기준일 (JA)")
 
         # 헤더 '経済指標最新' 표기 (수동 노트 최신일 기준)
         ja = update_written_month(ja, ja=True)
@@ -709,13 +820,14 @@ def update_dashboard():
         # 푸터
         today_ja = datetime.now(JST).strftime("%Y年%m月%d日")
         ja = sub(ja, r'最終自動更新: [\d年月日 ]+',
-                 lambda m: f'最終自動更新: {today_ja}')
+                 lambda m: f'最終自動更新: {today_ja}', label="푸터 갱신일 (JA)")
 
         with open(ja_path, "w", encoding="utf-8") as f:
             f.write(ja)
         print(f"  ✅ 일본어 버전 저장 완료: {ja_path}")
 
     print("=" * 55)
+    report_failures()
 
 if __name__ == "__main__":
     update_dashboard()
